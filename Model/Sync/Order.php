@@ -155,6 +155,27 @@ class Order extends \Magento\Framework\Model\AbstractModel implements SyncOrderI
     }
 
     /**
+     * Get the Shipping Method
+     *
+     * @return string|null
+     */
+    public function getShippingMethod()
+    {
+        return $this->getData(self::SHIPPING_METHOD);
+    }
+
+    /**
+     * Set the Shipping Method
+     *
+     * @param string $shippingMethod
+     * @return string|null
+     */
+    public function setShippingMethod($shippingMethod)
+    {
+        return $this->setData(self::SHIPPING_METHOD, $shippingMethod);
+    }
+
+    /**
      * Get the attempt count
      *
      * @return string|null
@@ -225,14 +246,11 @@ class Order extends \Magento\Framework\Model\AbstractModel implements SyncOrderI
      */
     public function addOrder($order)
     {
-        $sync = array(
-            'order_id' => $order->getId(),
-            // @TODO: shipping method based on live quote or mapping
-            'shipping_method' => 'standard',
-            'status' => self::STATUS_PENDING,
-        );
+        $this->setOrderId($order->getId());
+        $this->setShippingMethod('standard');
+        $this->setStatus(self::STATUS_PENDING);
 
-        return $this->setData($sync);
+        return $this;
     }
 
     public function getOrder()

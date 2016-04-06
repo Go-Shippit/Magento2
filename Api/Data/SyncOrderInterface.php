@@ -24,6 +24,7 @@ interface SyncOrderInterface
     const SYNC_ORDER_ID         = 'sync_order_id';
     const STORE_ID              = 'store_id';
     const ORDER_ID              = 'order_id';
+    const SHIPPING_METHOD       = 'shipping_method';
     const ATTEMPT_COUNT         = 'attempt_count';
     const STATUS                = 'status';
     const TRACKING_NUMBER       = 'tracking_number';
@@ -88,6 +89,21 @@ interface SyncOrderInterface
      * @return string|null
      */
     public function setOrderId($orderId);
+
+    /**
+     * Get the Shipping Method
+     *
+     * @return string|null
+     */
+    public function getShippingMethod();
+
+    /**
+     * Set the Shipping Method
+     *
+     * @param string $shippingMethod
+     * @return string|null
+     */
+    public function setShippingMethod($shippingMethod);
 
     /**
      * Get the attempt count

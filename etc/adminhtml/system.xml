@@ -56,10 +56,10 @@
                     <source_model>Shippit\Shipping\Model\Config\Source\Shippit\Sync\Order\Mode</source_model>
                 </field>
 
-                <field id="send_all_orders_active" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0">
+                <!-- <field id="send_all_orders_active" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Send All Orders to Shippit</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>
+                </field> -->
             </group>
 
             <!-- <group id="sync_shipping" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">

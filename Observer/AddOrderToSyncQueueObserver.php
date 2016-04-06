@@ -26,7 +26,7 @@ use Shippit\Shipping\Model\Sync\Order as SyncOrder;
 class addOrderToSyncQueueObserver implements ObserverInterface
 {
     protected $syncOrderhelper;
-    protected $carrier;
+    // protected $carrier;
     protected $syncOrderFactory;
     protected $apiOrderFactory;
     protected $logger;
@@ -35,13 +35,13 @@ class addOrderToSyncQueueObserver implements ObserverInterface
  
     public function __construct (
         \Shippit\Shipping\Helper\Sync\Order $syncOrderhelper,
-        \Shippit\Shipping\Model\Carrier\Shippit $carrier,
+        // \Shippit\Shipping\Model\Carrier\Shippit $carrier,
         \Shippit\Shipping\Model\Sync\OrderFactory $syncOrderFactory,
         \Shippit\Shipping\Model\Api\OrderFactory $apiOrderFactory,
         \Shippit\Shipping\Logger\Logger $logger
     ) {
         $this->syncOrderhelper = $syncOrderhelper;
-        $this->carrier = $carrier;
+        // $this->carrier = $carrier;
         $this->syncOrderFactory = $syncOrderFactory;
         $this->apiOrderFactory = $apiOrderFactory;
         $this->logger = $logger;
@@ -59,10 +59,9 @@ class addOrderToSyncQueueObserver implements ObserverInterface
         $shippingMethod = $order->getShippingMethod();
         $shippingCountry = $order->getShippingAddress()->getCountryId();
 
-        // If send all orders + AU delivery, or shippit method is selected
-        if (($this->syncOrderhelper->isSendAllOrdersActive() && $shippingCountry == 'AU')
-            || strpos($shippingMethod, $this->carrier->getCarrierCode() !== FALSE)) {
-
+        // If shipping destination is AU
+        // @TODO: Add logic for shippit method or send all orders
+        if ($shippingCountry == 'AU') {
             // create an order sync item
             $syncOrder = $this->syncOrderFactory->create();
             $syncOrder->addOrder($order);
