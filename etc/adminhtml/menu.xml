@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+    	<add id="Shippit_Shipping::sync_order" title="Shippit Order Sync" module="Shippit_Shipping" sortOrder="10" parent="Magento_Sales::sales_operation" action="shippit/sync_order" resource="Shippit_Shipping::sync_order" />
+   	</menu>
+</config>

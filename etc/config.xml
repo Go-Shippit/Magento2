@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<!--
+/**
+ *  Shippit Pty Ltd
+ *
+ *  NOTICE OF LICENSE
+ *
+ *  This source file is subject to the terms
+ *  that is available through the world-wide-web at this URL:
+ *  http://www.shippit.com/terms
+ *
+ *  @category   Shippit
+ *  @copyright  Copyright (c) 2016 by Shippit Pty Ltd (http://www.shippit.com)
+ *  @author     Matthew Muscat <matthew@mamis.com.au>
+ *  @license    http://www.shippit.com/terms
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <!-- Shippit Core Module Configuration -->
+        <shippit>
+            <general>
+                <active>0</active>
+                <api_key/>
+                <environment>production</environment>
+                <debug_active>0</debug_active>
+            </general>
+
+            <!-- <checkout>
+                <authority_to_leave>1</authority_to_leave>
+                <delivery_instructions>1</delivery_instructions>
+            </checkout> -->
+
+            <sync_order>
+                <active>0</active>
+                <mode>realtime</mode>
+                <send_all_orders_active>0</send_all_orders_active>
+                <product_location_active>0</product_location_active>
+                <product_location_attribute_code></product_location_attribute_code>
+            </sync_order>
+
+            <!-- <sync_shipping>
+                <active>0</active>
+                <update_template_active>0</update_template_active>
+            </sync_shipping> -->
+        </shippit>
+
+        <!-- Shippit Carrier Module Configuration -->
+        <!-- <carriers>
+            <shippit>
+                <active>1</active>
+                <sallowspecific>0</sallowspecific>
+                <model>Shippit\Shipping\Model\Carrier\Shippit</model>
+                <name>Shippit Shipping</name>
+                <price>15.00</price>
+                <title>Shippit</title>
+                <type>I</type>
+                <specificerrmsg>This shipping method is not available. To use this shipping method, please contact us.</specificerrmsg>
+            </shippit>
+        </carriers> -->
+    </default>
+</config>
