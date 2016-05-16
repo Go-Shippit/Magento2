@@ -1,22 +1,37 @@
 <?xml version="1.0"?>
 <!--
 /**
- *  Shippit Pty Ltd
+ * Shippit Pty Ltd
  *
- *  NOTICE OF LICENSE
+ * NOTICE OF LICENSE
  *
- *  This source file is subject to the terms
- *  that is available through the world-wide-web at this URL:
- *  http://www.shippit.com/terms
+ * This source file is subject to the terms
+ * that is available through the world-wide-web at this URL:
+ * http://www.shippit.com/terms
  *
- *  @category   Shippit
- *  @copyright  Copyright (c) 2016 by Shippit Pty Ltd (http://www.shippit.com)
- *  @author     Matthew Muscat <matthew@mamis.com.au>
- *  @license    http://www.shippit.com/terms
+ * @category   Shippit
+ * @copyright  Copyright (c) 2016 by Shippit Pty Ltd (http://www.shippit.com)
+ * @author     Matthew Muscat <matthew@mamis.com.au>
+ * @license    http://www.shippit.com/terms
  */
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <preference for="Shippit\Shipping\Api\Data\SyncOrderInterface" type="Shippit\Shipping\Model\Sync\Order" />
+    <preference for="Shippit\Shipping\Api\Request\OrderInterface" type="Shippit\Shipping\Model\Request\Order" />
+    <preference for="Shippit\Shipping\Api\Request\QuoteInterface" type="Shippit\Shipping\Model\Request\Quote" />
+    <preference for="Shippit\Shipping\Api\Request\ShipmentInterface" type="Shippit\Shipping\Model\Request\Shipment" />
+
+    <type name="Magento\Framework\App\RouterList">
+        <arguments>
+            <argument name="routerList" xsi:type="array">
+                <item name="shippitshipping" xsi:type="array">
+                    <item name="class" xsi:type="string">Shippit\Shipping\Controller\Router</item>
+                    <item name="disable" xsi:type="boolean">false</item>
+                    <item name="sortOrder" xsi:type="string">20</item>
+                </item>
+            </argument>
+        </arguments>
+    </type>
 
     <type name="Magento\Framework\Console\CommandList">
         <arguments>
@@ -37,68 +52,6 @@
             <argument name="name" xsi:type="string">shippit_shipping</argument>
             <argument name="handlers"  xsi:type="array">
                 <item name="system" xsi:type="object">Shippit\Shipping\Logger\Handler</item>
-            </argument>
-        </arguments>
-    </type>
-
-    <type name="Shippit\Shipping\Helper\Api">
-        <arguments>
-            <argument name="helper" xsi:type="object">Shippit\Shipping\Helper\Data</argument>
-        </arguments>
-    </type>
-
-    <type name="Shippit\Shipping\Helper\Data">
-        <arguments>
-            <argument name="scopeConfig" xsi:type="object">Magento\Framework\App\Config\ScopeConfigInterface</argument>
-        </arguments>
-    </type>
-
-    <type name="Shippit\Shipping\Helper\Carrier">
-        <arguments>
-            <argument name="scopeConfig" xsi:type="object">Magento\Framework\App\Config\ScopeConfigInterface</argument>
-        </arguments>
-    </type>
-
-    <type name="Shippit\Shipping\Helper\Sync\Order">
-        <arguments>
-            <argument name="scopeConfig" xsi:type="object">Magento\Framework\App\Config\ScopeConfigInterface</argument>
-        </arguments>
-    </type>
-
-    <type name="Shippit\Shipping\Helper\Sync\Shipping">
-        <arguments>
-            <argument name="scopeConfig" xsi:type="object">Magento\Framework\App\Config\ScopeConfigInterface</argument>
-        </arguments>
-    </type>
-
-    <!-- Sync Order Grid -->
-    <virtualType name="OrderGridFilterPool" type="Magento\Framework\View\Element\UiComponent\DataProvider\FilterPool">
-        <arguments>
-            <argument name="appliers" xsi:type="array">
-                <item name="regular" xsi:type="object">Magento\Framework\View\Element\UiComponent\DataProvider\RegularFilter</item>
-                <item name="fulltext" xsi:type="object">Magento\Framework\View\Element\UiComponent\DataProvider\FulltextFilter</item>
-            </argument>
-        </arguments>
-    </virtualType>
-
-    <virtualType name="SyncGridDataProvider" type="Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider">
-        <arguments>
-            <argument name="collection" xsi:type="object" shared="false">Shippit\Shipping\Model\Resource\Sync\Order\Collection</argument>
-            <argument name="filterPool" xsi:type="object" shared="false">OrderGirdFilterPool</argument>
-        </arguments>
-    </virtualType>
-
-    <virtualType name="Shippit\Shipping\Model\ResourceModel\Sync\Order\Grid\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
-        <arguments>
-            <argument name="mainTable" xsi:type="string">shippit_sync_order</argument>
-            <argument name="resourceModel" xsi:type="string">Shippit\Shipping\Model\ResourceModel\Sync\Order</argument>
-        </arguments>
-    </virtualType>
-
-    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
-        <arguments>
-            <argument name="collections" xsi:type="array">
-                <item name="sync_order_listing_data_source" xsi:type="string">Shippit\Shipping\Model\ResourceModel\Sync\Order\Grid\Collection</item>
             </argument>
         </arguments>
     </type>

@@ -22,7 +22,6 @@ interface SyncOrderInterface
      * Constants for keys of data array. Identical to the name of the getter in snake case
      */
     const SYNC_ORDER_ID         = 'sync_order_id';
-    const STORE_ID              = 'store_id';
     const ORDER_ID              = 'order_id';
     const SHIPPING_METHOD       = 'shipping_method';
     const ATTEMPT_COUNT         = 'attempt_count';
@@ -59,21 +58,6 @@ interface SyncOrderInterface
      * @return string|null
      */
     public function setSyncOrderId($syncOrderId);
-
-    /**
-     * Get the Store Id
-     *
-     * @return string|null
-     */
-    public function getStoreId();
-
-    /**
-     * Set the Store Id
-     *
-     * @param string $storeId
-     * @return string|null
-     */
-    public function setStoreId($storeId);
 
     /**
      * Get the Order Id

@@ -1,17 +1,17 @@
 <?php
 /**
- *  Shippit Pty Ltd
+ * Shippit Pty Ltd
  *
- *  NOTICE OF LICENSE
+ * NOTICE OF LICENSE
  *
- *  This source file is subject to the terms
- *  that is available through the world-wide-web at this URL:
- *  http://www.shippit.com/terms
+ * This source file is subject to the terms
+ * that is available through the world-wide-web at this URL:
+ * http://www.shippit.com/terms
  *
- *  @category   Shippit
- *  @copyright  Copyright (c) 2016 by Shippit Pty Ltd (http://www.shippit.com)
- *  @author     Matthew Muscat <matthew@mamis.com.au>
- *  @license    http://www.shippit.com/terms
+ * @category   Shippit
+ * @copyright  Copyright (c) 2016 by Shippit Pty Ltd (http://www.shippit.com)
+ * @author     Matthew Muscat <matthew@mamis.com.au>
+ * @license    http://www.shippit.com/terms
  */
 
 namespace Shippit\Shipping\Model\Sync;
@@ -31,31 +31,34 @@ class Order extends \Magento\Framework\Model\AbstractModel implements SyncOrderI
     const SYNC_MAX_ATTEMPTS = 5;
 
     /**
-     * @var \Magento\Sales\Model\OrderFactory
+     * @var \Magento\Sales\Api\Data\OrderInterface
      */
-    protected $_orderFactory;
+    protected $_orderInterface;
 
     /**
-     * @var \Magento\Sales\Model\Order
+     * An instance of an order
+     *
+     * @var \Magento\Sales\Api\Data\OrderInterface
      */
     protected $_order;
 
     /**
      * @param \Magento\Framework\Model\Context $context
      * @param \Magento\Framework\Registry $registry
+     * @param \Magento\Sales\Api\Data\OrderInterface $orderInterface
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource $resource
      * @param \Magento\Framework\Data\Collection\AbstractDb $resourceCollection
      * @param array $data
      */
     public function __construct(
-        \Magento\Sales\Model\OrderFactory $orderFactory,
         \Magento\Framework\Model\Context $context,
         \Magento\Framework\Registry $registry,
+        \Magento\Sales\Api\Data\OrderInterface $orderInterface,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
     ) {
-        $this->_orderFactory = $orderFactory;
+        $this->_orderInterface = $orderInterface;
 
         parent::__construct($context, $registry, $resource, $resourceCollection, $data);
     }
@@ -113,24 +116,27 @@ class Order extends \Magento\Framework\Model\AbstractModel implements SyncOrderI
     }
 
     /**
-     * Get the Store Id
+     * Populates the order details in the sync table
      *
-     * @return string|null
+     * @param object $order [description]
+     * @return object $this;
      */
-    public function getStoreId()
+    public function addOrder($order)
     {
-        return $this->getData(self::STORE_ID);
+        $this->setOrderId($order->getId());
+        $this->setShippingMethod('standard');
+        $this->setStatus(self::STATUS_PENDING);
+
+        return $this;
     }
 
-    /**
-     * Set the Store Id
-     *
-     * @param string $storeId
-     * @return string|null
-     */
-    public function setStoreId($storeId)
+    public function getOrder()
     {
-        return $this->setData(self::STORE_ID, $storeId);
+        if (!$this->_order instanceof $this->_orderInterface) {
+            $this->_order = $this->_orderInterface->load($this->getOrderId());
+        }
+
+        return $this->_order;
     }
 
     /**
@@ -236,29 +242,5 @@ class Order extends \Magento\Framework\Model\AbstractModel implements SyncOrderI
     public function setTrackingNumber($trackingNumber)
     {
         return $this->setData(self::TRACKING_NUMBER, $trackingNumber);
-    }
-
-    /**
-     * Populates the order details in the sync table
-     *
-     * @param object $order [description]
-     * @return object $this;
-     */
-    public function addOrder($order)
-    {
-        $this->setOrderId($order->getId());
-        $this->setShippingMethod('standard');
-        $this->setStatus(self::STATUS_PENDING);
-
-        return $this;
-    }
-
-    public function getOrder()
-    {
-        if (!$this->_order instanceof \Magento\Sales\Model\Order) {
-            $this->_order = $this->_orderFactory->create()->load($this->getOrderId());
-        }
-
-        return $this->_order;
     }
 }

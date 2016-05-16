@@ -16,9 +16,9 @@
  */
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:App/etc/routes.xsd">
-    <router id="admin">
+    <router id="standard">
         <route id="shippit" frontName="shippit">
-            <module name="Shippit_Shipping" before="Magento_Backend" />
+            <module name="Shippit_Shipping" />
         </route>
     </router>
 </config>

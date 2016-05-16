@@ -1,21 +1,38 @@
 <?php
 /**
-*  Shippit Pty Ltd
-*
-*  NOTICE OF LICENSE
-*
-*  This source file is subject to the terms
-*  that is available through the world-wide-web at this URL:
-*  http://www.shippit.com/terms
-*
-*  @category   Shippit
-*  @copyright  Copyright (c) 2016 by Shippit Pty Ltd (http://www.shippit.com)
-*  @author     Matthew Muscat <matthew@mamis.com.au>
-*  @license    http://www.shippit.com/terms
-*/
+ * Shippit Pty Ltd
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the terms
+ * that is available through the world-wide-web at this URL:
+ * http://www.shippit.com/terms
+ *
+ * @category   Shippit
+ * @copyright  Copyright (c) 2016 by Shippit Pty Ltd (http://www.shippit.com)
+ * @author     Matthew Muscat <matthew@mamis.com.au>
+ * @license    http://www.shippit.com/terms
+ */
 
-class Shippit_Shippit_Model_System_Config_Source_Catalog_Attributes
+namespace Shippit\Shipping\Model\Config\Source\Catalog;
+
+class Attributes implements \Magento\Framework\Option\ArrayInterface
 {
+    protected $_entityType;
+
+    /**
+     * Inject Dependancies
+     */
+    public function __construct(
+        \Magento\Catalog\Api\Data\ProductInterface $product,
+        \Magento\Eav\Model\Entity\Type $entityType,
+        \Magento\Eav\Model\Entity\Attribute $entityAttribute
+    ) {
+        $this->_product = $product;
+        $this->_entityType = $entityType;
+        $this->_entityAttribute = $entityAttribute;
+    }
+
     /**
      * Returns code => code pairs of attributes for all product attributes
      *
@@ -23,26 +40,25 @@ class Shippit_Shippit_Model_System_Config_Source_Catalog_Attributes
      */
     public function toOptionArray()
     {
-        $entityType = Mage::getModel('eav/entity_type')
-            ->loadByCode(Mage_Catalog_Model_Product::ENTITY);
+        $entityType = $this->_entityType
+            ->loadByCode($this->_product->getEntityId());
 
-        $attributes = Mage::getModel('eav/entity_attribute')
+        $attributes = $this->_entityAttribute
             ->getCollection()
             ->addFieldToSelect('attribute_code')
             ->setEntityTypeFilter($entityType)
             ->setOrder('attribute_code', 'ASC');
 
-        $attributeArray[] = array(
+        $attributeArray[] = [
             'label' => ' -- Please Select -- ',
             'value' => ''
-        );
+        ];
 
-        foreach ($attributes as $attribute)
-        {
-            $attributeArray[] = array(
+        foreach ($attributes as $attribute) {
+            $attributeArray[] = [
                 'label' => $attribute->getAttributeCode(),
                 'value' => $attribute->getAttributeCode()
-            );
+            ];
         }
         
         return $attributeArray;

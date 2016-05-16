@@ -1,89 +1,94 @@
 <?php
 /**
- *  Shippit Pty Ltd
+ * Shippit Pty Ltd
  *
- *  NOTICE OF LICENSE
+ * NOTICE OF LICENSE
  *
- *  This source file is subject to the terms
- *  that is available through the world-wide-web at this URL:
- *  http://www.shippit.com/terms
+ * This source file is subject to the terms
+ * that is available through the world-wide-web at this URL:
+ * http://www.shippit.com/terms
  *
- *  @category   Shippit
- *  @copyright  Copyright (c) 2016 by Shippit Pty Ltd (http://www.shippit.com)
- *  @author     Matthew Muscat <matthew@mamis.com.au>
- *  @license    http://www.shippit.com/terms
+ * @category   Shippit
+ * @copyright  Copyright (c) 2016 by Shippit Pty Ltd (http://www.shippit.com)
+ * @author     Matthew Muscat <matthew@mamis.com.au>
+ * @license    http://www.shippit.com/terms
  */
 
 namespace Shippit\Shipping\Observer;
 
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use Shippit\Shipping\Model\Config\Source\Shippit\Sync\Order\Mode as SyncOrderMode;
+use Shippit\Shipping\Model\Config\Source\Shippit\Sync\Order\Mode;
 
 use Magento\Sales\Model\Order;
 use Shippit\Shipping\Model\Sync\Order as SyncOrder;
 
 class addOrderToSyncQueueObserver implements ObserverInterface
 {
-    protected $syncOrderhelper;
-    // protected $carrier;
-    protected $syncOrderFactory;
-    protected $apiOrderFactory;
-    protected $logger;
+    protected $_helper;
+    protected $_syncOrderInterface;
+    protected $_orderInterface;
+    protected $_logger;
 
     protected $_hasAttemptedSync = false;
  
     public function __construct (
-        \Shippit\Shipping\Helper\Sync\Order $syncOrderhelper,
-        // \Shippit\Shipping\Model\Carrier\Shippit $carrier,
-        \Shippit\Shipping\Model\Sync\OrderFactory $syncOrderFactory,
-        \Shippit\Shipping\Model\Api\OrderFactory $apiOrderFactory,
+        \Shippit\Shipping\Helper\Sync\Order $helper,
+        \Shippit\Shipping\Api\Data\SyncOrderInterface $syncOrderInterface,
+        \Shippit\Shipping\Api\Request\OrderInterface $orderInterface,
         \Shippit\Shipping\Logger\Logger $logger
     ) {
-        $this->syncOrderhelper = $syncOrderhelper;
-        // $this->carrier = $carrier;
-        $this->syncOrderFactory = $syncOrderFactory;
-        $this->apiOrderFactory = $apiOrderFactory;
-        $this->logger = $logger;
+        $this->_helper = $helper;
+        $this->_syncOrderInterface = $syncOrderInterface;
+        $this->_orderInterface = $orderInterface;
+        $this->_logger = $logger;
     }
  
     public function execute(Observer $observer)
     {
         // Ensure the module is active
-        if (!$this->syncOrderhelper->isActive()) {
+        if (!$this->_helper->isActive()) {
             return $this;
         }
 
-        $order = $observer->getOrder();
+        $order = $observer->getEvent()->getOrder();
 
-        $shippingMethod = $order->getShippingMethod();
+        // Ensure we have an order
+        if (!$order && $order->getId()) {
+            return $this;
+        }
+
         $shippingCountry = $order->getShippingAddress()->getCountryId();
 
-        // If shipping destination is AU
-        // @TODO: Add logic for shippit method or send all orders
-        if ($shippingCountry == 'AU') {
-            // create an order sync item
-            $syncOrder = $this->syncOrderFactory->create();
-            $syncOrder->addOrder($order);
+        // Ensure the order is destined for Australia
+        if ($shippingCountry != 'AU') {
+            return $this;
+        }
 
+        $shippingMethod = $order->getShippingMethod();
+
+        // If shipping destination is AU
+        if ($this->_helper->isSendAllOrdersActive()) {
             try {
-                $syncOrder->save();
+                // create an order sync item and save to the DB
+                $syncOrder = $this->_syncOrderInterface
+                    ->addOrder($order)
+                    ->save();
 
                 // If the sync mode is realtime,
-                // or the shipping method is a premium service,
                 // attempt realtime sync now
-                if ($this->syncOrderhelper->getSyncMode() == SyncOrderMode::REALTIME) {
+                if ($this->_helper->getMode() == Mode::REALTIME) {
                     $this->_syncOrder($syncOrder);
                 }
             }
             catch (\Magento\Framework\Exception\LocalizedException $e) {
-                $this->logger->notice($e->getMessage());
+                $this->_logger->addError($e->getMessage());
             }
             catch (\RuntimeException $e) {
-                $this->logger->notice($e->getMessage());
+                $this->_logger->addError($e->getMessage());
             }
             catch (\Exception $e) {
-                $this->logger->notice($e->getMessage());
+                $this->_logger->addError($e->getMessage());
             }
         }
 
@@ -102,8 +107,7 @@ class addOrderToSyncQueueObserver implements ObserverInterface
             $this->_hasAttemptedSync = true;
             
             // attempt the sync
-            $syncOrderResult = $this->apiOrderFactory->create()
-                ->sync($syncOrder);
+            $syncOrderResult = $this->_orderInterface->sync($syncOrder);
 
             return $syncOrderResult;
         }

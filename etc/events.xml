@@ -1,7 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
+<!--
+/**
+ * Shippit Pty Ltd
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the terms
+ * that is available through the world-wide-web at this URL:
+ * http://www.shippit.com/terms
+ *
+ * @category   Shippit
+ * @copyright  Copyright (c) 2016 by Shippit Pty Ltd (http://www.shippit.com)
+ * @author     Matthew Muscat <matthew@mamis.com.au>
+ * @license    http://www.shippit.com/terms
+ */
+-->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
-    <event name="sales_order_place_after">
+    <event name="checkout_submit_all_after">
         <observer name="shippit_add_order_to_sync_queue" instance="Shippit\Shipping\Observer\AddOrderToSyncQueueObserver" />
     </event>
 

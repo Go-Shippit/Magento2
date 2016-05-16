@@ -1,17 +1,17 @@
 <?php
 /**
- *  Shippit Pty Ltd
+ * Shippit Pty Ltd
  *
- *  NOTICE OF LICENSE
+ * NOTICE OF LICENSE
  *
- *  This source file is subject to the terms
- *  that is available through the world-wide-web at this URL:
- *  http://www.shippit.com/terms
+ * This source file is subject to the terms
+ * that is available through the world-wide-web at this URL:
+ * http://www.shippit.com/terms
  *
- *  @category   Shippit
- *  @copyright  Copyright (c) 2016 by Shippit Pty Ltd (http://www.shippit.com)
- *  @author     Matthew Muscat <matthew@mamis.com.au>
- *  @license    http://www.shippit.com/terms
+ * @category   Shippit
+ * @copyright  Copyright (c) 2016 by Shippit Pty Ltd (http://www.shippit.com)
+ * @author     Matthew Muscat <matthew@mamis.com.au>
+ * @license    http://www.shippit.com/terms
  */
 
 namespace Shippit\Shipping\Controller\Adminhtml\Sync\Order;
@@ -45,10 +45,17 @@ class Sync extends \Magento\Backend\App\Action
         if ($id) {
             try {
                 $syncOrder = $this->_objectManager
-                    ->create('Shippit\Shipping\Model\Sync\Order')
+                    ->create('Shippit\Shipping\Api\Data\SyncOrderInterface')
                     ->load($id);
 
-                $request = $this->_objectManager->create('Shippit\Shipping\Model\Api\Order')
+                $syncOrder->setStatus(\Shippit\Shipping\Model\Sync\Order::STATUS_PENDING)
+                    ->setAttemptCount(0)
+                    ->setTrackingNumber(null)
+                    ->setSyncedAt(null)
+                    ->save();
+
+                $request = $this->_objectManager
+                    ->create('Shippit\Shipping\Model\Api\Order')
                     ->sync($syncOrder, true);
             }
             catch (\Exception $e) {

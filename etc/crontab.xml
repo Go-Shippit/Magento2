@@ -1,7 +1,23 @@
 <?xml version="1.0"?>
+<!--
+/**
+ * Shippit Pty Ltd
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the terms
+ * that is available through the world-wide-web at this URL:
+ * http://www.shippit.com/terms
+ *
+ * @category   Shippit
+ * @copyright  Copyright (c) 2016 by Shippit Pty Ltd (http://www.shippit.com)
+ * @author     Matthew Muscat <matthew@mamis.com.au>
+ * @license    http://www.shippit.com/terms
+ */
+-->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
-    <group id="default">
-        <job name="shippit_sync_orders" instance="Shippit\Shipping\Model\Api\Order"
+    <group id="shippit">
+        <job name="shippit_sync_orders" instance="\Shippit\Shipping\Model\Api\Order"
         method="run">
             <schedule>* * * * *</schedule>
         </job>

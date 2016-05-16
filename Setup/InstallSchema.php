@@ -63,7 +63,7 @@ class InstallSchema implements InstallSchemaInterface
                 'attempt_count',
                 \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
                 null,
-                [],
+                ['unsigned' => true, 'nullable' => false, 'default' => '0'],
                 'Sync Attempt Count'
             )
             ->addColumn(
@@ -87,20 +87,6 @@ class InstallSchema implements InstallSchemaInterface
                 [],
                 'Sync Time'
             )
-            ->addColumn(
-                'created_at',
-                \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
-                null,
-                ['nullable' => false, 'default' => \Magento\Framework\DB\Ddl\Table::TIMESTAMP_INIT],
-                'Created At'
-            )
-            ->addColumn(
-                'updated_at',
-                \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
-                null,
-                ['nullable' => false, 'default' => \Magento\Framework\DB\Ddl\Table::TIMESTAMP_INIT_UPDATE],
-                'Updated At'
-            )
             ->addIndex(
                 $installer->getIdxName(
                     'shippit_sync_order',
@@ -117,14 +103,6 @@ class InstallSchema implements InstallSchemaInterface
             ->addIndex(
                 $installer->getIdxName('shippit_sync_order', ['tracking_number']),
                 ['tracking_number']
-            )
-            ->addIndex(
-                $installer->getIdxName('shippit_sync_order', ['created_at']),
-                ['created_at']
-            )
-            ->addIndex(
-                $installer->getIdxName('shippit_sync_order', ['updated_at']),
-                ['updated_at']
             )
             ->addForeignKey(
                 $installer->getFkName('shippit_sync_order', 'order_id', 'sales_order', 'entity_id'),

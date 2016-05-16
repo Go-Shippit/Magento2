@@ -1,17 +1,17 @@
 <?php
 /**
- *  Shippit Pty Ltd
+ * Shippit Pty Ltd
  *
- *  NOTICE OF LICENSE
+ * NOTICE OF LICENSE
  *
- *  This source file is subject to the terms
- *  that is available through the world-wide-web at this URL:
- *  http://www.shippit.com/terms
+ * This source file is subject to the terms
+ * that is available through the world-wide-web at this URL:
+ * http://www.shippit.com/terms
  *
- *  @category   Shippit
- *  @copyright  Copyright (c) 2016 by Shippit Pty Ltd (http://www.shippit.com)
- *  @author     Matthew Muscat <matthew@mamis.com.au>
- *  @license    http://www.shippit.com/terms
+ * @category   Shippit
+ * @copyright  Copyright (c) 2016 by Shippit Pty Ltd (http://www.shippit.com)
+ * @author     Matthew Muscat <matthew@mamis.com.au>
+ * @license    http://www.shippit.com/terms
  */
 
 namespace Shippit\Shipping\Model\Request;
@@ -20,9 +20,22 @@ use Shippit\Shipping\Api\Request\OrderInterface;
 
 class Order extends \Magento\Framework\Model\AbstractModel implements OrderInterface
 {
-    protected $helper;
-    protected $carrierCode;
-    protected $order;
+    /**
+     * @var \Shippit\Shipping\Helper\Data
+     */
+    protected $_helper;
+
+    /**
+     * The carrier code used for Shippit Live Quotes
+     * @var string
+     */
+    protected $_carrierCode;
+
+    /**
+     * The order object
+     * @var Magento\Sales\Model\Order
+     */
+    protected $_order;
 
     // Shippit Service Class API Mappings
     const SHIPPING_SERVICE_STANDARD = 'CouriersPlease';
@@ -30,15 +43,25 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
     const SHIPPING_SERVICE_PREMIUM  = 'Bonds';
 
     /**
+     * @param \Magento\Framework\Model\Context $context
+     * @param \Magento\Framework\Registry $registry
+     * @param \Magento\Framework\Model\ResourceModel\AbstractResource $resource
+     * @param \Magento\Framework\Data\Collection\AbstractDb $resourceCollection
      * @param \Shippit\Shipping\Helper\Data $helper
+     * @param array $data
      */
     public function __construct(
-        \Shippit\Shipping\Helper\Data $helper
+        \Magento\Framework\Model\Context $context,
+        \Magento\Framework\Registry $registry,
+        \Shippit\Shipping\Helper\Data $helper,
+        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
+        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
+        array $data = []
     ) {
-        $this->helper = $helper;
+        $this->_helper = $helper;
+        $this->_carrierCode = $helper::CARRIER_CODE;
         
-        // @TODO: get the carrier code from a central helper
-        $this->carrierCode = 'shippit';
+        parent::__construct($context, $registry, $resource, $resourceCollection, $data);
     }
 
     public function processSyncOrder(\Shippit\Shipping\Model\Sync
@@ -65,25 +88,25 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
     public function setOrder($order)
     {
         if ($order instanceof \Magento\Sales\Model\Order) {
-            $this->order = $order;
+            $this->_order = $order;
         }
         else {
-            $this->order = $this->load($order);
+            $this->_order = $this->load($order);
         }
 
-        $billingAddress = $this->order->getBillingAddress();
-        $shippingAddress = $this->order->getShippingAddress();
+        $billingAddress = $this->_order->getBillingAddress();
+        $shippingAddress = $this->_order->getShippingAddress();
 
-        $this->setRetailerInvoice($this->order->getIncrementId())
-            ->setAuthorityToLeave($this->order->getShippitAuthorityToLeave())
-            ->setDeliveryInstructions($this->order->getShippitDeliveryInstructions())
+        $this->setRetailerInvoice($this->_order->getIncrementId())
+            ->setAuthorityToLeave($this->_order->getShippitAuthorityToLeave())
+            ->setDeliveryInstructions($this->_order->getShippitDeliveryInstructions())
             ->setUserAttributes($billingAddress->getEmail(), $billingAddress->getFirstname(), $billingAddress->getLastname())
             ->setReceiverName($shippingAddress->getName())
             ->setReceiverContactNumber($shippingAddress->getTelephone())
             ->setDeliveryAddress(implode(' ', $shippingAddress->getStreet()))
             ->setDeliverySuburb($shippingAddress->getCity())
             ->setDeliveryPostcode($shippingAddress->getPostcode())
-            ->setDeliveryState($shippingAddress->getRegionCode());
+            ->setDeliveryState('VIC');//$shippingAddress->getRegionCode());
 
         return $this;
     }
@@ -93,21 +116,20 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
      */
     public function addItems()
     {
-        $items = $this->order->getAllItems();
-        //     array(
-        //         \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE
-        //     ),
-        //     false
-        // );
+        $items = $this->_order->getAllItems();
 
-        $parcelAttributes = array();
+        $parcelAttributes = [];
 
         foreach ($items as $item) {
+            if ($item->getHasChildren()) {
+                continue;
+            }
+
             $this->addItem(
                 $item->getSku(),
                 $item->getName(),
                 $item->getQtyOrdered(),
-                $item->getRowWeight()
+                $item->getWeight()
             );
         }
 
@@ -218,11 +240,11 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
      */
     public function setUserAttributes($email, $firstname, $lastname)
     {
-        $userAttributes = array(
+        $userAttributes = [
             'email' => $email,
             'first_name' => $firstname,
             'last_name' => $lastname,
-        );
+        ];
 
         return $this->setData(self::USER_ATTRIBUTES, $userAttributes);
     }
@@ -302,8 +324,8 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
         // if the order is a premium delivery,
         // get the special delivery attributes
         if ($shippingMethod == 'premium') {
-            $deliveryDate = $this->_getOrderDeliveryDate($this->order);
-            $deliveryWindow = $this->_getOrderDeliveryWindow($this->order);
+            $deliveryDate = $this->_getOrderDeliveryDate($this->_order);
+            $deliveryWindow = $this->_getOrderDeliveryWindow($this->_order);
         }
 
         // set the courier details based on the shipping method
@@ -329,10 +351,10 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
 
         // If the shipping method is a shippit method,
         // processing using the selected shipping options
-        if (strpos($shippingMethod, $this->carrierCode) !== FALSE) {
-            $shippingOptions = str_replace($this->carrierCode . '_', '', $shippingMethod);
+        if (strpos($shippingMethod, $this->_carrierCode) !== FALSE) {
+            $shippingOptions = str_replace($this->_carrierCode . '_', '', $shippingMethod);
             $shippingOptions = explode('_', $shippingOptions);
-            $courierData = array();
+            $courierData = [];
             
             if (isset($shippingOptions[0])) {
                 if ($shippingOptions[0] == 'Bonds') {
@@ -357,10 +379,10 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
 
         // If the shipping method is a shippit method,
         // processing using the selected shipping options
-        if (strpos($shippingMethod, $this->carrierCode) !== FALSE) {
-            $shippingOptions = str_replace($this->carrierCode . '_', '', $shippingMethod);
+        if (strpos($shippingMethod, $this->_carrierCode) !== FALSE) {
+            $shippingOptions = str_replace($this->_carrierCode . '_', '', $shippingMethod);
             $shippingOptions = explode('_', $shippingOptions);
-            $courierData = array();
+            $courierData = [];
             
             if (isset($shippingOptions[0])) {
                 if ($shippingOptions[0] == 'Bonds') {
@@ -503,7 +525,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
     public function setDeliveryState($deliveryState)
     {
         if (empty($deliveryState)) {
-            $deliveryState = $this->helper->getStateFromPostcode($this->getDeliveryPostcode());
+            $deliveryState = $this->_helper->getStateFromPostcode($this->getDeliveryPostcode());
         }
 
         return $this->setData(self::DELIVERY_STATE, $deliveryState);
@@ -538,15 +560,15 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
         $parcelAttributes = $this->getParcelAttributes();
 
         if (empty($parcelAttributes)) {
-            $parcelAttributes = array();
+            $parcelAttributes = [];
         }
 
-        $newParcel = array(
+        $newParcel = [
             'sku' => $sku,
             'title' => $title,
             'qty' => $qty,
             'weight' => $weight
-        );
+        ];
 
         $parcelAttributes[] = $newParcel;
 

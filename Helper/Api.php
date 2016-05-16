@@ -1,17 +1,17 @@
 <?php
 /**
- *  Shippit Pty Ltd
+ * Shippit Pty Ltd
  *
- *  NOTICE OF LICENSE
+ * NOTICE OF LICENSE
  *
- *  This source file is subject to the terms
- *  that is available through the world-wide-web at this URL:
- *  http://www.shippit.com/terms
+ * This source file is subject to the terms
+ * that is available through the world-wide-web at this URL:
+ * http://www.shippit.com/terms
  *
- *  @category   Shippit
- *  @copyright  Copyright (c) 2016 by Shippit Pty Ltd (http://www.shippit.com)
- *  @author     Matthew Muscat <matthew@mamis.com.au>
- *  @license    http://www.shippit.com/terms
+ * @category   Shippit
+ * @copyright  Copyright (c) 2016 by Shippit Pty Ltd (http://www.shippit.com)
+ * @author     Matthew Muscat <matthew@mamis.com.au>
+ * @license    http://www.shippit.com/terms
  */
 
 namespace Shippit\Shipping\Helper;
@@ -25,10 +25,9 @@ class Api extends \Magento\Framework\App\Helper\AbstractHelper
     const API_TIMEOUT = 5;
     const API_USER_AGENT = 'Shippit_Shipping for Magento2';
 
-    protected $api;
-    protected $logger;
-    protected $helper;
-    protected $apiUrl;
+    protected $_api;
+    protected $_logger;
+    protected $_helper;
 
     /**
      * @param \Shippit\Shipping\Helper\Data $helper
@@ -37,16 +36,16 @@ class Api extends \Magento\Framework\App\Helper\AbstractHelper
         \Shippit\Shipping\Helper\Data $helper,
         \Shippit\Shipping\Logger\Logger $logger
     ) {
-        $this->helper = $helper;
-        $this->logger = $logger;
+        $this->_helper = $helper;
+        $this->_logger = $logger;
 
         // We use Zend_Http_Client instead of Varien_Http_Client,
         // as Varien_Http_Client does not handle PUT requests correctly
-        $this->api = new \Zend_Http_Client;
-        $this->api->setConfig(
+        $this->_api = new \Zend_Http_Client;
+        $this->_api->setConfig(
                 array(
                     'timeout' => self::API_TIMEOUT,
-                    'useragent' => self::API_USER_AGENT . ' v' . $this->helper->getModuleVersion(),
+                    'useragent' => self::API_USER_AGENT . ' v' . $this->_helper->getModuleVersion(),
                 )
             )
             ->setHeaders('Content-Type', 'application/json');
@@ -54,7 +53,7 @@ class Api extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function getApiEndpoint()
     {
-        $environment = $this->helper->getEnvironment();
+        $environment = $this->_helper->getEnvironment();
 
         if ($environment == ShippitEnvironment::LIVE) {
             return self::API_ENDPOINT_PRODUCTION;
@@ -67,7 +66,7 @@ class Api extends \Magento\Framework\App\Helper\AbstractHelper
     public function getApiUri($path, $authToken = null)
     {
         if (is_null($authToken)) {
-            $authToken = $this->helper->getApiKey();
+            $authToken = $this->_helper->getApiKey();
         }
 
         return $this->getApiEndpoint() . '/' . $path . '?auth_token=' . $authToken;
@@ -76,17 +75,10 @@ class Api extends \Magento\Framework\App\Helper\AbstractHelper
     public function call($uri, $requestData, $method = \Zend_Http_Client::POST, $exceptionOnResponseError = true)
     {
         $uri = $this->getApiUri($uri);
-
         $jsonRequestData = json_encode($requestData);
+        $this->log($uri, $requestData);
 
-        if ($this->helper->isDebugActive()) {
-            $this->logger->notice('-- SHIPPIT - API REQUEST: --');
-
-            $this->logger->notice($uri);
-            $this->logger->notice($jsonRequestData);
-        }
-
-        $apiRequest = $this->api
+        $apiRequest = $this->_api
             ->setMethod($method)
             ->setUri($uri);
 
@@ -97,9 +89,11 @@ class Api extends \Magento\Framework\App\Helper\AbstractHelper
         try {
             $apiResponse = $apiRequest->request($method);
         }
-        catch (Exception $e) {
+        catch (\Exception $e) {
+            $this->log($uri, $requestData, $apiResponse, false, 'API Request Error');
+
             throw new \Magento\Framework\Exception\LocalizedException(
-                __('Shippit_Shippit - An API Communication Error Occurred')
+                __('Shippit_Shipping - An API Communication Error Occurred')
             );
         }
 
@@ -107,19 +101,40 @@ class Api extends \Magento\Framework\App\Helper\AbstractHelper
             $message = 'API Response Error' . "\n";
             $message .= 'Response: ' . $apiResponse->getStatus() . ' - ' . $apiResponse->getMessage() . "\n";
             
+            $this->log($uri, $requestData, $apiResponse, false, $message);
+
             throw new \Magento\Framework\Exception\LocalizedException(
-                __('Shippit_Shippit - '. $message)
+                __('Shippit_Shipping - '. $message)
             );
         }
 
+        $this->log($uri, $requestData, $apiResponse);
         $apiResponseBody = json_decode($apiResponse->getBody());
 
-        if ($this->helper->isDebugActive()) {
-            $this->logger->notice('-- SHIPPIT - API RESPONSE --');
-            $this->logger->notice(json_encode($apiResponse));
+        return $apiResponseBody;
+    }
+
+    protected function log($uri, $requestData, $apiResponse = null, $success = true, $message = 'Shippit API Request')
+    {
+        // add the request meta data
+        $requestMetaData = array(
+            'api_request' => array(
+                'request_uri' => $uri,
+                'request_body' => $requestData,
+            )
+        );
+
+        if (!is_null($apiResponse)) {
+            $requestMetaData['api_request']['response_code'] = $apiResponse->getStatus();
+            $requestMetaData['api_request']['response_body'] = json_decode($apiResponse->getBody());
         }
 
-        return $apiResponseBody;
+        if ($success) {
+            $this->_logger->addNotice($message, $requestMetaData);
+        }
+        else {
+            $this->_logger->addError($message, $requestMetaData);
+        }
     }
 
     public function getQuote($requestData)
