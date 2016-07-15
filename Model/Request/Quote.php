@@ -149,7 +149,7 @@ class Quote extends \Magento\Framework\Model\AbstractModel implements QuoteInter
     public function setDropoffState($dropoffState)
     {
         if (empty($dropoffState)) {
-            $dropoffState = $this->_helper->getRegionCodeFromPostcode($this->getDestPostcode());
+            $dropoffState = $this->_helper->getStateFromPostcode($this->getDestPostcode());
         }
 
         return $this->setData(self::DROPOFF_STATE, $dropoffState);

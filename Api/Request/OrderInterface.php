@@ -34,6 +34,7 @@ interface OrderInterface
     const DELIVERY_SUBURB           = 'delivery_suburb';
     const DELIVERY_POSTCODE         = 'delivery_postcode';
     const DELIVERY_STATE            = 'delivery_state';
+    const DELIVERY_COUNTRY          = 'delviery_country_code';
     const PARCEL_ATTRIBUTES         = 'parcel_attributes';
 
     /**
@@ -48,10 +49,11 @@ interface OrderInterface
      * @param string  $sku      The product sku
      * @param string  $title    The product name
      * @param integer $qty      The product qty
+     * @param float   $price    The product price
      * @param integer $weight   The product weight
      * @param string  $location The product location
      */
-    public function addItem($sku, $title, $qty, $weight = 0, $location = null);
+    public function addItem($sku, $title, $qty, $price, $weight = 0, $location = null);
 
     /**
      * Get the Retailer Invoice Referance
@@ -240,6 +242,21 @@ interface OrderInterface
      * @return string
      */
     public function setDeliveryState($deliveryState);
+
+    /**
+     * Get the Delivery Country
+     *
+     * @return string|null
+     */
+    public function getDeliveryCountry();
+
+    /**
+     * Set the Delivery Country
+     *
+     * @param string $deliveryCountry   Delivery Country
+     * @return string
+     */
+    public function setDeliveryCountry($deliveryCountry);
 
     /**
      * Get the Parcel Attributes

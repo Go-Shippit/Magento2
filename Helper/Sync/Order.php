@@ -59,10 +59,61 @@ class Order extends \Shippit\Shipping\Helper\Data
         return self::getValue('mode');
     }
 
-    public function isSendAllOrdersActive()
+    public function getSendAllOrders()
     {
-        return true;
-        // @TODO: implement once live quoting is active
-        // return self::getValue('send_all_orders_active');
+        return self::getValue('send_all_orders');
+    }
+
+    public function getShippingMethodMapping()
+    {
+        $values = unserialize( self::getValue('shipping_method_mapping'));
+        $mappings = array();
+
+        if (!empty($values)) {
+            foreach ($values as $value) {
+                $mappings[$value['shipping_method']] = $value['shippit_service_class'];
+            }
+        }
+
+        return $mappings;
+    }
+
+    // Helper Methods
+    public function getShippitShippingMethod($shippingMethod)
+    {
+        // If the shipping method is a shippit method,
+        // processing using the selected shipping options
+        if (strpos($shippingMethod, self::CARRIER_CODE) !== FALSE) {
+            $shippingOptions = str_replace(self::CARRIER_CODE . '_', '', $shippingMethod);
+            $shippingOptions = explode('_', $shippingOptions);
+            $courierData = array();
+            
+            if (isset($shippingOptions[0])) {
+                $method = strtolower($shippingOptions[0]);
+
+                // allows for legacy capability where
+                // "priority" was referred to as "premium"
+                if ($method == 'priority' || $method = 'premium') {
+                    return 'priority';
+                }
+                elseif ($method == 'express') {
+                    return 'express';
+                }
+                elseif ($method == 'standard') {
+                    return 'standard';
+                }
+            }
+        }
+        
+        // Use the mapping values and attempt to get a value
+        $shippingMethodMapping = $this->getShippingMethodMapping();
+
+        if (isset($shippingMethodMapping[$shippingMethod])
+            && !empty($shippingMethodMapping[$shippingMethod])) {
+            return $shippingMethodMapping[$shippingMethod];
+        }
+
+        // All options have failed, return false
+        return false;
     }
 }

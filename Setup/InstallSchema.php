@@ -42,14 +42,21 @@ class InstallSchema implements InstallSchemaInterface
                 'sync_order_id',
                 \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
                 null,
-                ['identity' => true, 'nullable' => false, 'primary' => true],
+                [
+                    'identity' => true,
+                    'nullable' => false,
+                    'primary' => true
+                ],
                 'Sync Order ID'
             )
             ->addColumn(
                 'order_id',
                 \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
                 null,
-                ['unsigned' => true, 'nullable' => false, 'default' => '0'],
+                [
+                    'unsigned' => true,
+                    'nullable' => false
+                ],
                 'Order Entity ID'
             )
             ->addColumn(
@@ -63,7 +70,11 @@ class InstallSchema implements InstallSchemaInterface
                 'attempt_count',
                 \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
                 null,
-                ['unsigned' => true, 'nullable' => false, 'default' => '0'],
+                [
+                    'unsigned' => true,
+                    'nullable' => false,
+                    'default' => '0'
+                ],
                 'Sync Attempt Count'
             )
             ->addColumn(
@@ -97,15 +108,26 @@ class InstallSchema implements InstallSchemaInterface
                 ['type' => \Magento\Framework\DB\Adapter\AdapterInterface::INDEX_TYPE_UNIQUE]
             )
             ->addIndex(
-                $installer->getIdxName('shippit_sync_order', ['status']),
+                $installer->getIdxName(
+                    'shippit_sync_order',
+                    ['status']
+                ),
                 ['status']
             )
             ->addIndex(
-                $installer->getIdxName('shippit_sync_order', ['tracking_number']),
+                $installer->getIdxName(
+                    'shippit_sync_order',
+                    ['tracking_number']
+                ),
                 ['tracking_number']
             )
             ->addForeignKey(
-                $installer->getFkName('shippit_sync_order', 'order_id', 'sales_order', 'entity_id'),
+                $installer->getFkName(
+                    'shippit_sync_order',
+                    'order_id',
+                    'sales_order',
+                    'entity_id'
+                ),
                 'order_id',
                 $installer->getTable('sales_order'),
                 'entity_id',

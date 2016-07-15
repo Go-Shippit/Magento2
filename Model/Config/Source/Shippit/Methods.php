@@ -37,8 +37,8 @@ class Methods implements \Magento\Framework\Option\ArrayInterface
                 'value' => 'express'
             ],
             [
-                'label' => 'Premium',
-                'value' => 'premium'
+                'label' => 'Priority',
+                'value' => 'priority'
             ]
         ];
     }
@@ -53,7 +53,7 @@ class Methods implements \Magento\Framework\Option\ArrayInterface
         return [
             'standard' => 'Standard',
             'express' => 'Express',
-            'premium' => 'Premium'
+            'priority' => 'Priority'
         ];
     }
 }

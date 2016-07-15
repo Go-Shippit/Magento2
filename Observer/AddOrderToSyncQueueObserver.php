@@ -19,6 +19,7 @@ namespace Shippit\Shipping\Observer;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Shippit\Shipping\Model\Config\Source\Shippit\Sync\Order\Mode;
+use Shippit\Shipping\Model\Config\Source\Shippit\Sync\Order\SendAllOrders;
 
 use Magento\Sales\Model\Order;
 use Shippit\Shipping\Model\Sync\Order as SyncOrder;
@@ -58,17 +59,16 @@ class addOrderToSyncQueueObserver implements ObserverInterface
             return $this;
         }
 
+        $shippingMethod = $order->getShippingMethod();
+        $shippitShippingMethod = $this->_helper->getShippitShippingMethod($shippingMethod);
+
         $shippingCountry = $order->getShippingAddress()->getCountryId();
 
-        // Ensure the order is destined for Australia
-        if ($shippingCountry != 'AU') {
-            return $this;
-        }
-
-        $shippingMethod = $order->getShippingMethod();
-
-        // If shipping destination is AU
-        if ($this->_helper->isSendAllOrdersActive()) {
+        // If send all orders,
+        // or shippit shipping class present
+        if ($this->_helper->getSendAllOrders() == SendAllOrders::ALL
+            || ($this->_helper->getSendAllOrders() == SendAllOrders::ALL_AU && $shippingCountry == 'AU')
+            || $shippitShippingMethod !== FALSE) {
             try {
                 // create an order sync item and save to the DB
                 $syncOrder = $this->_syncOrderInterface

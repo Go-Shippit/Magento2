@@ -106,7 +106,36 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
             ->setDeliveryAddress(implode(' ', $shippingAddress->getStreet()))
             ->setDeliverySuburb($shippingAddress->getCity())
             ->setDeliveryPostcode($shippingAddress->getPostcode())
-            ->setDeliveryState('VIC');//$shippingAddress->getRegionCode());
+            ->setDeliveryState($shippingAddress->getRegionCode())
+            ->setDeliveryCountry($shippingAddress->getCountry());
+
+        $this->setOrderAfter($order);
+
+        return $this;
+    }
+
+    public function setOrderAfter($order)
+    {
+        $deliveryState = $this->getDeliveryState();
+
+        // If the delivery state is empty
+        // Attempt to retrieve from the postcode lookup for AU Addresses
+        if (empty($deliveryState) && $this->getDeliveryCountry() == 'AU') {
+            $postcodeState = $this->_helper->getStateFromPostcode($this->getDeliveryPostcode());
+        
+            if ($postcodeState) {
+                $this->setData(self::DELIVERY_STATE, $postcodeState);
+            }
+        }
+
+        $deliveryState = $this->getDeliveryState();
+        $deliverySuburb = $this->getDeliverySuburb();
+        
+        // If the delivery state is empty
+        // Copy the suburb field to the state field
+        if (empty($deliveryState) && !empty($deliverySuburb)) {
+            $this->setData(self::DELIVERY_STATE, $deliverySuburb);
+        }
 
         return $this;
     }
@@ -129,7 +158,9 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
                 $item->getSku(),
                 $item->getName(),
                 $item->getQtyOrdered(),
-                $item->getWeight()
+                $item->getPrice(),
+                $item->getWeight(),
+                $item->getLocation()
             );
         }
 
@@ -530,6 +561,28 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
 
         return $this->setData(self::DELIVERY_STATE, $deliveryState);
     }
+
+    /**
+     * Get the Delivery Country
+     *
+     * @return string|null
+     */
+    public function getDeliveryCountry()
+    {
+        return $this->getData(self::DELIVERY_COUNTRY);
+    }
+
+    /**
+     * Set the Delivery Country
+     *
+     * @param string $deliveryCountry   Delivery Country
+     * @return string
+     */
+    public function setDeliveryCountry($deliveryCountry)
+    {
+        return $this->setData(self::DELIVERY_COUNTRY, $deliveryCountry);
+    }
+
     /**
      * Get the Parcel Attributes
      *
@@ -555,7 +608,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
      * Add a parcel with attributes
      *
      */
-    public function addItem($sku, $title, $qty, $weight = 0, $location = null)
+    public function addItem($sku, $title, $qty, $price, $weight = 0, $location = null)
     {
         $parcelAttributes = $this->getParcelAttributes();
 
@@ -567,7 +620,9 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
             'sku' => $sku,
             'title' => $title,
             'qty' => $qty,
-            'weight' => $weight
+            'price' => $price,
+            'weight' => $weight,
+            'location' => $location
         ];
 
         $parcelAttributes[] = $newParcel;

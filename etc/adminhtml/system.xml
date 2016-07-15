@@ -72,10 +72,28 @@
                     <source_model>Shippit\Shipping\Model\Config\Source\Shippit\Sync\Order\Mode</source_model>
                 </field>
 
-                <!-- <field id="send_all_orders_active" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="send_all_orders" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Send All Orders to Shippit</label>
+                    <source_model>Shippit\Shipping\Model\Config\Source\Shippit\Sync\Order\SendAllOrders</source_model>
+                </field>
+
+                <field id="product_location_active" translate="label" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Send Product Location to Shippit</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field> -->
+                </field>
+
+                <field id="product_location_attribute_code" translate="label comment" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Product Location Attribute Code</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>The Product Attribute to be used for location information on Shippit Pick Slips</comment>
+                </field>
+
+                <field id="shipping_method_mapping" translate="label comment" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Shipping Method Mapping</label>
+                    <frontend_model>Shippit\Shipping\Block\Adminhtml\System\Config\Form\Field\Sync\Order\ShippingMethodMapping</frontend_model>
+                    <backend_model>Magento\Config\Model\Config\Backend\Serialized\ArraySerialized</backend_model>
+                    <comment>A mapping of the Magento Shipping Methods to Shippit Services classes</comment>
+                </field>
             </group>
 
             <group id="sync_shipping" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">

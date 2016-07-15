@@ -17,6 +17,7 @@
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <preference for="Shippit\Shipping\Api\Data\SyncOrderInterface" type="Shippit\Shipping\Model\Sync\Order" />
+    <preference for="Shippit\Shipping\Api\Data\SyncOrderItemInterface" type="Shippit\Shipping\Model\Sync\Order\Item" />
     <preference for="Shippit\Shipping\Api\Request\OrderInterface" type="Shippit\Shipping\Model\Request\Order" />
     <preference for="Shippit\Shipping\Api\Request\QuoteInterface" type="Shippit\Shipping\Model\Request\Quote" />
     <preference for="Shippit\Shipping\Api\Request\ShipmentInterface" type="Shippit\Shipping\Model\Request\Shipment" />

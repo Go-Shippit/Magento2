@@ -89,7 +89,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param  string $postcode The postcode
      * @return mixed            The region code, or false if unable to determine
      */
-    public function getRegionCodeFromPostcode($postcode)
+    public function getStateFromPostcode($postcode)
     {
         $postcode = (int) $postcode;
 
