@@ -17,7 +17,7 @@
 namespace Shippit\Shipping\Helper;
 
 use Shippit\Shipping\Model\Config\Source\Shippit\Environment as ShippitEnvironment;
-use LocalizedException;
+use Magento\Framework\Exception\LocalizedException;
 
 class Api extends \Magento\Framework\App\Helper\AbstractHelper
 {
@@ -29,22 +29,18 @@ class Api extends \Magento\Framework\App\Helper\AbstractHelper
     protected $_api;
     protected $_helper;
     protected $_logger;
-    protected $_client;
 
     /**
      * @param \Shippit\Shipping\Helper\Data $helper
      */
     public function __construct(
         \Shippit\Shipping\Helper\Data $helper,
-        \Shippit\Shipping\Logger\Logger $logger,
-        \Zend_Http_Client $client
+        \Shippit\Shipping\Logger\Logger $logger
     ) {
         $this->_helper = $helper;
         $this->_logger = $logger;
 
-        // We use Zend_Http_Client instead of Varien_Http_Client,
-        // as Varien_Http_Client does not handle PUT requests correctly
-        $this->_api = $client;
+        $this->_api = new \Zend_Http_Client;
         $this->_api->setConfig(
                 [
                     'timeout' => self::API_TIMEOUT,

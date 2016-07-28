@@ -150,7 +150,7 @@ class Order extends \Magento\Framework\Model\AbstractModel
             )
             ->addFieldToFilter(
                 'main_table.attempt_count',
-                ['lt' => SyncOrder::SYNC_MAX_ATTEMPTS]
+                ['lteq' => SyncOrder::SYNC_MAX_ATTEMPTS]
             )
             ->addFieldToFilter(
                 'order.state',
@@ -205,8 +205,8 @@ class Order extends \Magento\Framework\Model\AbstractModel
             $this->_logger->addError('API - Order Sync Request Failed - ' . $e->getMessage());
 
             // Fail the sync item if it's breached the max attempts
-            if ($syncOrder->getAttemptCount() >= SyncOrder::SYNC_MAX_ATTEMPTS) {
-                $syncItem->setStatus(SyncOrder::STATUS_FAILED);
+            if ($syncOrder->getAttemptCount() > SyncOrder::SYNC_MAX_ATTEMPTS) {
+                $syncOrder->setStatus(SyncOrder::STATUS_FAILED);
             }
 
             // save the sync item attempt count
