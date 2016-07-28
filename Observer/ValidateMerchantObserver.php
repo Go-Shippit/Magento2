@@ -105,10 +105,10 @@ class ValidateMerchantObserver implements ObserverInterface
             //     ->setScope(1)
             //     ->getUrl(
             //         'shippit/order/update',
-            //         array(
+            //         [
             //             'api_key' => $apiKey,
             //             '_secure' => true,
-            //         )
+            //         ]
             //     );
             
             $webhookUrl = $this->_storeManager->getStore()

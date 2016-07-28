@@ -24,14 +24,17 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_SETTINGS = 'shippit/general/';
 
     protected $_scopeConfig;
+    protected $_moduleList;
 
     /**
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      */
     public function __construct(
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        \Magento\Framework\Module\ModuleList $moduleList
     ) {
         $this->_scopeConfig = $scopeConfig;
+        $this->_moduleList = $moduleList;
     }
 
     /**
@@ -72,9 +75,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function getModuleVersion()
     {
-        // $moduleResource = new \Magento\Framework\Module\ModuleResource;
-        // $moduleResource->getDataVersion('shippit_shipping');
-        $version = '1.0.0';
+        $version = $this->_moduleList
+            ->getOne('Shippit_Shipping')['setup_version'];
 
         return $version;
     }

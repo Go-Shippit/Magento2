@@ -29,6 +29,16 @@ class Index extends \Magento\Backend\App\Action
     protected $resultPageFactory;
 
     /**
+     * Is the user allowed to view the order syncs
+     *
+     * @return bool
+     */
+    protected function _isAllowed()
+    {
+        return $this->_authorization->isAllowed(self::ADMIN_ACTION);
+    }
+
+    /**
      * @param Context $context
      * @param PageFactory $resultPageFactory
      */
@@ -54,15 +64,5 @@ class Index extends \Magento\Backend\App\Action
         $resultPage->getConfig()->getTitle()->prepend(__('Shippit Order Sync'));
 
         return $resultPage;
-    }
-
-    /**
-     * Is the user allowed to view the order syncs
-     *
-     * @return bool
-     */
-    protected function _isAllowed()
-    {
-        return $this->_authorization->isAllowed(self::ADMIN_ACTION);
     }
 }

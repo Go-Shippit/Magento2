@@ -21,7 +21,7 @@ use Shippit\Shipping\Model\Config\Source\Shippit\Environment as ShippitEnvironme
 class Api extends \Magento\Framework\App\Helper\AbstractHelper
 {
     const API_ENDPOINT_PRODUCTION = 'https://www.shippit.com/api/3';
-    const API_ENDPOINT_STAGING = 'http://shippit-staging.herokuapp.com/api/3';
+    const API_ENDPOINT_STAGING = 'https://shippit-staging.herokuapp.com/api/3';
     const API_TIMEOUT = 5;
     const API_USER_AGENT = 'Shippit_Shipping for Magento2';
 
@@ -43,10 +43,10 @@ class Api extends \Magento\Framework\App\Helper\AbstractHelper
         // as Varien_Http_Client does not handle PUT requests correctly
         $this->_api = new \Zend_Http_Client;
         $this->_api->setConfig(
-                array(
+                [
                     'timeout' => self::API_TIMEOUT,
                     'useragent' => self::API_USER_AGENT . ' v' . $this->_helper->getModuleVersion(),
-                )
+                ]
             )
             ->setHeaders('Content-Type', 'application/json');
     }
@@ -117,12 +117,12 @@ class Api extends \Magento\Framework\App\Helper\AbstractHelper
     protected function log($uri, $requestData, $apiResponse = null, $success = true, $message = 'Shippit API Request')
     {
         // add the request meta data
-        $requestMetaData = array(
-            'api_request' => array(
+        $requestMetaData = [
+            'api_request' => [
                 'request_uri' => $uri,
                 'request_body' => $requestData,
-            )
-        );
+            ]
+        ];
 
         if (!is_null($apiResponse)) {
             $requestMetaData['api_request']['response_code'] = $apiResponse->getStatus();
@@ -139,9 +139,9 @@ class Api extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function getQuote($requestData)
     {
-        $requestData = array(
+        $requestData = [
             'quote' => $requestData->toArray()
-        );
+        ];
 
         return $this->call('quotes', $requestData)
             ->response;
@@ -149,9 +149,9 @@ class Api extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function sendOrder($requestData)
     {
-        $requestData = array(
+        $requestData = [
             'order' => $requestData->toArray()
-        );
+        ];
 
         return $this->call('orders', $requestData)
             ->response;
@@ -164,9 +164,9 @@ class Api extends \Magento\Framework\App\Helper\AbstractHelper
 
     public function putMerchant($requestData, $exceptionOnResponseError = false)
     {
-        $requestData = array(
+        $requestData = [
             'merchant' => $requestData->toArray()
-        );
+        ];
 
         $url = $this->getApiUri('merchant');
 

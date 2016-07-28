@@ -57,10 +57,9 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     ) {
         parent::__construct($context, $backendHelper, $data);
 
-        // @TODO: Sort order for grid
         $this->setId('shippitSyncOrderGrid');
-        $this->setDefaultSort('attribute_code');
-        $this->setDefaultDir('ASC');
+        $this->setDefaultSort('increment_id');
+        $this->setDefaultDir('desc');
 
         $this->orderConfig = $orderConfig;
         $this->syncOrderCollection = $syncOrderCollection;
@@ -264,6 +263,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
             $this->getStatusSeverity($value),
             $value
         );
+        
         return $cell;
     }
 

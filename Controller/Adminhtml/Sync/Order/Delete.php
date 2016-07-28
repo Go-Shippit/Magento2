@@ -37,6 +37,8 @@ class Delete extends \Magento\Backend\App\Action
      */
     public function execute()
     {
+        die('Shippit\Shipping\Controller\Adminhtml\Sync\Order\Delete');
+        
         $id = $this->getRequest()->getParam('id');
 
         /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */

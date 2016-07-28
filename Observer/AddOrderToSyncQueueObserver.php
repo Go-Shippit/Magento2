@@ -24,24 +24,27 @@ use Shippit\Shipping\Model\Config\Source\Shippit\Sync\Order\SendAllOrders;
 use Magento\Sales\Model\Order;
 use Shippit\Shipping\Model\Sync\Order as SyncOrder;
 
-class addOrderToSyncQueueObserver implements ObserverInterface
+class AddOrderToSyncQueueObserver implements ObserverInterface
 {
     protected $_helper;
-    protected $_syncOrderInterface;
-    protected $_orderInterface;
+    protected $_syncOrder;
+    protected $_requestSyncOrder;
+    protected $_apiOrder;
     protected $_logger;
 
     protected $_hasAttemptedSync = false;
  
     public function __construct (
         \Shippit\Shipping\Helper\Sync\Order $helper,
-        \Shippit\Shipping\Api\Data\SyncOrderInterface $syncOrderInterface,
-        \Shippit\Shipping\Api\Request\OrderInterface $orderInterface,
+        \Shippit\Shipping\Api\Data\SyncOrderInterface $syncOrder,
+        \Shippit\Shipping\Api\Request\SyncOrderInterface $requestSyncOrder,
+        \Shippit\Shipping\Model\Api\Order $apiOrder,
         \Shippit\Shipping\Logger\Logger $logger
     ) {
         $this->_helper = $helper;
-        $this->_syncOrderInterface = $syncOrderInterface;
-        $this->_orderInterface = $orderInterface;
+        $this->_syncOrder = $syncOrder;
+        $this->_requestSyncOrder = $requestSyncOrder;
+        $this->_apiOrder = $apiOrder;
         $this->_logger = $logger;
     }
  
@@ -70,9 +73,14 @@ class addOrderToSyncQueueObserver implements ObserverInterface
             || ($this->_helper->getSendAllOrders() == SendAllOrders::ALL_AU && $shippingCountry == 'AU')
             || $shippitShippingMethod !== FALSE) {
             try {
+                $request = $this->_requestSyncOrder
+                    ->setOrder($order)
+                    ->setItems()
+                    ->setShippingMethod($shippitShippingMethod);
+
                 // create an order sync item and save to the DB
-                $syncOrder = $this->_syncOrderInterface
-                    ->addOrder($order)
+                $syncOrder = $this->_syncOrder
+                    ->addSyncOrderRequest($request)
                     ->save();
 
                 // If the sync mode is realtime,
@@ -107,9 +115,9 @@ class addOrderToSyncQueueObserver implements ObserverInterface
             $this->_hasAttemptedSync = true;
             
             // attempt the sync
-            $syncOrderResult = $this->_orderInterface->sync($syncOrder);
+            $syncResult = $this->_apiOrder->sync($syncOrder);
 
-            return $syncOrderResult;
+            return $syncResult;
         }
         else {
             return false;

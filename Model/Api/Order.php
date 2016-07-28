@@ -81,7 +81,12 @@ class Order extends \Magento\Framework\Model\AbstractModel
         \Magento\Framework\Message\ManagerInterface $messageManager,
         \Magento\Framework\Stdlib\DateTime\DateTime $date,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
-        \Magento\Store\Model\App\Emulation $appEmulation
+        \Magento\Store\Model\App\Emulation $appEmulation,
+        \Magento\Framework\Model\Context $context,
+        \Magento\Framework\Registry $registry,
+        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
+        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
+        array $data = []
     ) {
         $this->_helper = $helper;
         $this->_api = $api;
@@ -93,8 +98,7 @@ class Order extends \Magento\Framework\Model\AbstractModel
         $this->_storeManagerInterface = $storeManagerInterface;
         $this->_appEmulation = $appEmulation;
 
-        // @TODO: check if we can return a parent
-        // return parent::__construct();
+        parent::__construct($context, $registry, $resource, $resourceCollection, $data);
     }
 
     public function run()
@@ -133,16 +137,28 @@ class Order extends \Magento\Framework\Model\AbstractModel
             ->getCollection();
 
         return $collection->join(
-                array('order' => $collection->getTable('sales_order')),
+                ['order' => $collection->getTable('sales_order')],
                 'order.entity_id = main_table.order_id',
-                array(),
+                [],
                 null,
                 'left'
             )
-            ->addFieldToFilter('main_table.status', SyncOrder::STATUS_PENDING)
-            ->addFieldToFilter('main_table.attempt_count', array('lt' => SyncOrder::SYNC_MAX_ATTEMPTS))
-            ->addFieldToFilter('order.state', array('eq' => \Magento\Sales\Model\Order::STATE_PROCESSING))
-            ->addFieldToFilter('order.store_id', array('eq' => $storeId));
+            ->addFieldToFilter(
+                'main_table.status',
+                SyncOrder::STATUS_PENDING
+            )
+            ->addFieldToFilter(
+                'main_table.attempt_count',
+                ['lt' => SyncOrder::SYNC_MAX_ATTEMPTS]
+            )
+            ->addFieldToFilter(
+                'order.state',
+                ['eq' => \Magento\Sales\Model\Order::STATE_PROCESSING]
+            )
+            ->addFieldToFilter(
+                'order.store_id',
+                ['eq' => $storeId]
+            );
     }
     
     public function sync($syncOrder, $displayNotifications = false)
@@ -154,7 +170,8 @@ class Order extends \Magento\Framework\Model\AbstractModel
         try {
             // increase the attempt count by 1
             $syncOrder->setAttemptCount($syncOrder->getAttemptCount() + 1);
-
+            $order = $syncOrder->getOrder();
+            
             // Build the order request
             $orderRequest = $this->_requestOrderFactory->create()
                 ->processSyncOrder($syncOrder);
@@ -163,7 +180,6 @@ class Order extends \Magento\Framework\Model\AbstractModel
 
             // Add the order tracking details to
             // the order comments and save
-            $order = $syncOrder->getOrder();
             $comment = __('Order Synced with Shippit - ' . $apiResponse->tracking_number);
             $order->addStatusHistoryComment($comment)
                 ->setIsVisibleOnFront(false)
@@ -183,7 +199,7 @@ class Order extends \Magento\Framework\Model\AbstractModel
             $this->_logger->addError('API - Order Sync Request Failed - ' . $e->getMessage());
 
             // Fail the sync item if it's breached the max attempts
-            if ($syncOrder->getAttemptCount() > SyncOrder::SYNC_MAX_ATTEMPTS) {
+            if ($syncOrder->getAttemptCount() >= SyncOrder::SYNC_MAX_ATTEMPTS) {
                 $syncItem->setStatus(SyncOrder::STATUS_FAILED);
             }
 

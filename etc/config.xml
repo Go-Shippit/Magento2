@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
 <!--
-/**
  * Shippit Pty Ltd
  *
  * NOTICE OF LICENSE
@@ -13,7 +12,6 @@
  * @copyright  Copyright (c) 2016 by Shippit Pty Ltd (http://www.shippit.com)
  * @author     Matthew Muscat <matthew@mamis.com.au>
  * @license    http://www.shippit.com/terms
- */
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
     <default>
@@ -41,7 +39,6 @@
 
             <sync_shipping>
                 <active>0</active>
-                <!-- <update_template_active>0</update_template_active> -->
             </sync_shipping>
         </shippit>
 
@@ -60,10 +57,9 @@
                 <enabled_product_attribute_value/>
                 <sallowspecific/>
                 <specificcountry/>
-                <showmethod/>
-                <sort_order>10</sort_order>
-                <type>I</type>
+                <showmethod>0</showmethod>
                 <specificerrmsg>This shipping method is not available. To use this shipping method, please contact us.</specificerrmsg>
+                <sort_order>10</sort_order>
             </shippit>
         </carriers>
     </default>

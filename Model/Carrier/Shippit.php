@@ -18,7 +18,6 @@ namespace Shippit\Shipping\Model\Carrier;
  
 use Magento\Quote\Model\Quote\Address\RateRequest;
 use Magento\Shipping\Model\Rate\Result;
-// use Magento\Catalog\Model\Product\Type;
  
 class Shippit extends \Magento\Shipping\Model\Carrier\AbstractCarrier implements
     \Magento\Shipping\Model\Carrier\CarrierInterface
@@ -39,6 +38,8 @@ class Shippit extends \Magento\Shipping\Model\Carrier\AbstractCarrier implements
 
     protected $_rateResultFactory;
     protected $_rateMethodFactory;
+    protected $_trackFactory;
+    protected $_trackStatusFactory;
  
     /**
      * @param \Magento\Framework\App\Config\ScopeConfigInterface          $scopeConfig
@@ -46,6 +47,8 @@ class Shippit extends \Magento\Shipping\Model\Carrier\AbstractCarrier implements
      * @param \Shippit\Shipping\Logger\Logger                             $logger
      * @param \Magento\Shipping\Model\Rate\ResultFactory                  $rateResultFactory
      * @param \Magento\Quote\Model\Quote\Address\RateResult\MethodFactory $rateMethodFactory
+     * @param \Magento\Shipping\Model\Tracking\ResultFactory $trackFactory
+     * @param \Magento\Shipping\Model\Tracking\Result\StatusFactory $trackStatusFactory,
      * @param \Shippit\Shipping\Helper\Data                               $helper
      * @param \Shippit\Shipping\Helper\Api                                $api
      * @param \Shippit\Shipping\Model\Config\Source\Shippit\Methods       $methods
@@ -58,6 +61,8 @@ class Shippit extends \Magento\Shipping\Model\Carrier\AbstractCarrier implements
         \Shippit\Shipping\Logger\Logger $logger,
         \Magento\Shipping\Model\Rate\ResultFactory $rateResultFactory,
         \Magento\Quote\Model\Quote\Address\RateResult\MethodFactory $rateMethodFactory,
+        \Magento\Shipping\Model\Tracking\ResultFactory $trackFactory,
+        \Magento\Shipping\Model\Tracking\Result\StatusFactory $trackStatusFactory,
         \Shippit\Shipping\Helper\Carrier $helper,
         \Shippit\Shipping\Helper\Api $api,
         \Shippit\Shipping\Model\Config\Source\Shippit\Methods $methods,
@@ -66,6 +71,8 @@ class Shippit extends \Magento\Shipping\Model\Carrier\AbstractCarrier implements
     ) {
         $this->_rateResultFactory = $rateResultFactory;
         $this->_rateMethodFactory = $rateMethodFactory;
+        $this->_trackFactory = $trackFactory;
+        $this->_trackStatusFactory = $trackStatusFactory;
 
         $this->_helper = $helper;
         $this->_api = $api;
@@ -135,19 +142,6 @@ class Shippit extends \Magento\Shipping\Model\Carrier\AbstractCarrier implements
         $this->_processShippingQuotes($rateResult, $shippingQuotes);
 
         return $rateResult;
-    }
-
-    /**
-     * Do request to shipment
-     * Implementation must be in overridden method
-     *
-     * @param \Magento\Framework\DataObject $request
-     * @return \Magento\Framework\DataObject
-     * @api
-     */
-    public function requestToShipment($request)
-    {
-        // @todo - implement request to shipment
     }
 
     public function getCarrierCode()
@@ -256,20 +250,31 @@ class Shippit extends \Magento\Shipping\Model\Carrier\AbstractCarrier implements
     }
 
     /**
-     * @TODO: convert to magento2 method
+     * Get tracking
      *
-     * Get the tracking details for the shipping method
-     * @param  string $tracking The tracking reference
-     * @return [type]           [description]
+     * @param string|string[] $trackings
+     * @return Result
      */
-    public function getTrackingInfo($tracking)
+    public function getTracking($trackings)
     {
-        // $track = Mage::getModel('shipping/tracking_result_status');
-        // $track->setUrl('https://www.shippit.com/track/' . $tracking)
-        //     ->setTracking($tracking)
-        //     ->setCarrierTitle($this->getConfigData('name'));
+        if (!is_array($trackings)) {
+            $trackings = [$trackings];
+        }
 
-        // return $track;
+        $result = $this->_trackFactory->create();
+
+        foreach ($trackings as $tracking) {
+            $trackStatus = $this->_trackStatusFactory->create();
+            
+            $trackStatus->setCarrier($this->_code)
+                ->setCarrierTitle($this->getConfigData('title'))
+                ->setUrl('https://www.shippit.com/track/' . $tracking)
+                ->setTracking($tracking);
+
+            $result->append($trackStatus);
+        }
+
+        return $result;
     }
 
     /**

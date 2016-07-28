@@ -34,7 +34,7 @@ class Shipment extends \Magento\Framework\Model\AbstractModel implements Shipmen
     protected $_orderItemInterface;
 
     /**
-     * @var \Shippit\Shipping\Helper\Order\Items
+     * @var \Shippit\Shipping\Helper\Sync\Order\Items
      */
     protected $_helper;
 
@@ -45,7 +45,7 @@ class Shipment extends \Magento\Framework\Model\AbstractModel implements Shipmen
      * @param \Magento\Framework\Registry $registry
      * @param \Magento\Sales\Api\Data\OrderInterface $orderInterface
      * @param \Magento\Sales\Api\Data\OrderItemInterface $orderItemInterface
-     * @param \Shippit\Shipping\Helper\Order\Items $helper
+     * @param \Shippit\Shipping\Helper\Sync\Order\Items $helper
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource $resource
      * @param \Magento\Framework\Data\Collection\AbstractDb $resourceCollection
      * @param array $data
@@ -55,7 +55,7 @@ class Shipment extends \Magento\Framework\Model\AbstractModel implements Shipmen
         \Magento\Framework\Registry $registry,
         \Magento\Sales\Api\Data\OrderInterface $orderInterface,
         \Magento\Sales\Api\Data\OrderItemInterface $orderItemInterface,
-        \Shippit\Shipping\Helper\Order\Items $helper,
+        \Shippit\Shipping\Helper\Sync\Order\Items $helper,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
@@ -88,11 +88,11 @@ class Shipment extends \Magento\Framework\Model\AbstractModel implements Shipmen
     public function setOrder($order)
     {
         if (!$order->getId()) {
-            throw new Exception(self::ERROR_ORDER_MISSING);
+            throw new \Exception(self::ERROR_ORDER_MISSING);
         }
 
         if (!$order->canShip()) {
-            throw new Exception(self::ERROR_ORDER_STATUS);
+            throw new \Exception(self::ERROR_ORDER_STATUS);
         }
 
         return $this->setData(self::ORDER, $order);

@@ -16,8 +16,6 @@
 
 namespace Shippit\Shipping\Helper\Sync;
 
-use \Magento\Framework\App\Config\ScopeConfigInterface;
-
 class Order extends \Shippit\Shipping\Helper\Data
 {
     const XML_PATH_SETTINGS = 'shippit/sync_order/';
@@ -64,10 +62,20 @@ class Order extends \Shippit\Shipping\Helper\Data
         return self::getValue('send_all_orders');
     }
 
+    public function isProductLocationActive()
+    {
+        return self::getValue('product_location_active');
+    }
+
+    public function getProductLocationAttributeCode()
+    {
+        return self::getValue('product_location_attribute_code');
+    }
+
     public function getShippingMethodMapping()
     {
         $values = unserialize( self::getValue('shipping_method_mapping'));
-        $mappings = array();
+        $mappings = [];
 
         if (!empty($values)) {
             foreach ($values as $value) {
@@ -86,14 +94,14 @@ class Order extends \Shippit\Shipping\Helper\Data
         if (strpos($shippingMethod, self::CARRIER_CODE) !== FALSE) {
             $shippingOptions = str_replace(self::CARRIER_CODE . '_', '', $shippingMethod);
             $shippingOptions = explode('_', $shippingOptions);
-            $courierData = array();
+            $courierData = [];
             
             if (isset($shippingOptions[0])) {
                 $method = strtolower($shippingOptions[0]);
 
                 // allows for legacy capability where
                 // "priority" was referred to as "premium"
-                if ($method == 'priority' || $method = 'premium') {
+                if ($method == 'priority' || $method == 'premium') {
                     return 'priority';
                 }
                 elseif ($method == 'express') {

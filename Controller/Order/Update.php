@@ -85,11 +85,6 @@ class Update extends \Magento\Framework\App\Action\Action
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
         \Magento\Framework\View\Result\PageFactory $resultPageFactory
-        // \Magento\Framework\Json\Helper\Data $jsonHelper,
-        // \Magento\Framework\DB\TransactionFactory $transactionFactory,
-        // \Magento\Sales\Api\Data\OrderInterface $orderInterface,
-        // \Magento\Sales\Api\Data\ShipmentTrackInterface $shipmentTrackInterface,
-        // \Shippit\Shipping\Helper\Sync\Shipping $helper
     ) {
         $this->_resultPageFactory = $resultPageFactory;
 
@@ -105,8 +100,9 @@ class Update extends \Magento\Framework\App\Action\Action
         $this->_requestShipmentInterface = $this->_objectManager->create('Shippit\Shipping\Api\Request\ShipmentInterface');
         $this->_logger = $this->_objectManager->create('Shippit\Shipping\Logger\Logger');
     }
+
     /**
-     * Blog Index, shows a list of recent blog posts.
+     * Attempt the shipment update
      *
      * @return \Magento\Framework\View\Result\PageFactory
      */
@@ -118,13 +114,14 @@ class Update extends \Magento\Framework\App\Action\Action
             return $this->getResponse()->setBody($response);
         }
 
-        $request = $this->_jsonHelper->jsonDecode(file_get_contents('php://input'));
+        $request = $this->_jsonHelper
+            ->jsonDecode(file_get_contents('php://input'));
 
-        $metaData = array(
-            'api_request' => array(
+        $metaData = [
+            'api_request' => [
                 'request_body' => $request
-            )
-        );
+            ]
+        ];
 
         $this->_logger->addDebug('Shipment Sync Request Recieved', $metaData);
 

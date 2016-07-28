@@ -16,8 +16,6 @@
 
 namespace Shippit\Shipping\Helper\Sync;
 
-use \Magento\Framework\App\Config\ScopeConfigInterface;
-
 class Shipping extends \Shippit\Shipping\Helper\Data
 {
     const XML_PATH_SETTINGS = 'shippit/sync_shipping/';

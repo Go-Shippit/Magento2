@@ -34,7 +34,7 @@ interface OrderInterface
     const DELIVERY_SUBURB           = 'delivery_suburb';
     const DELIVERY_POSTCODE         = 'delivery_postcode';
     const DELIVERY_STATE            = 'delivery_state';
-    const DELIVERY_COUNTRY          = 'delviery_country_code';
+    const DELIVERY_COUNTRY          = 'delivery_country_code';
     const PARCEL_ATTRIBUTES         = 'parcel_attributes';
 
     /**

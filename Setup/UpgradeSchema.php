@@ -41,6 +41,11 @@ class UpgradeSchema implements UpgradeSchemaInterface
             $this->upgrade_103($installer);
         }
 
+        if (version_compare($context->getVersion(), '1.0.4') < 0) {
+            //code to upgrade to 1.0.4
+            $this->upgrade_104($installer);
+        }
+
         $installer->endSetup();
     }
 
@@ -238,5 +243,52 @@ class UpgradeSchema implements UpgradeSchemaInterface
             ->setComment('Shippit - Sync Order Items');
 
         $installer->getConnection()->createTable($orderItemTable);
+    }
+
+    // Upgrade to v 1.0.4
+    public function upgrade_104($installer)
+    {
+        // Update Order Schema
+        // add api key to the order schema
+        $installer->getConnection()
+            ->addColumn(
+                $installer->getTable('shippit_sync_order'),
+                'api_key',
+                [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                    'length' => 255,
+                    'nullable' => true,
+                    'default' => null,
+                    'comment' => 'API Key',
+                    'after' => 'sync_order_id'
+                ]
+            );
+
+        // change defaults to status and attempt count values
+        $installer->getConnection()
+            ->changeColumn(
+                $installer->getTable('shippit_sync_order'),
+                'attempt_count',
+                'attempt_count',
+                [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
+                    'unsigned' => true,
+                    'comment' => 'Attempt Count',
+                    'default' => '0'
+                ]
+            );
+
+        $installer->getConnection()
+            ->changeColumn(
+                $installer->getTable('shippit_sync_order'),
+                'status',
+                'status',
+                [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
+                    'unsigned' => true,
+                    'comment' => 'Status',
+                    'default' => '0'
+                ]
+            );
     }
 }

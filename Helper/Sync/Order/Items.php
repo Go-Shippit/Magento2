@@ -14,11 +14,9 @@
  * @license    http://www.shippit.com/terms
  */
 
-namespace Shippit\Shipping\Helper\Order;
+namespace Shippit\Shipping\Helper\Sync\Order;
 
-use \Magento\Framework\App\Config\ScopeConfigInterface;
-
-class Items extends \Shippit\Shipping\Helper\Data
+class Items extends \Shippit\Shipping\Helper\Sync\Order
 {
     protected $_locationAttributeCode = null;
 
@@ -66,24 +64,10 @@ class Items extends \Shippit\Shipping\Helper\Data
 
     public function getItemData($items, $itemKey, $itemValue, $itemDataKey)
     {
-        if (PHP_VERSION_ID < 50500) {
-            foreach ($items as $key => $value) {
-                if (isset($value[$itemKey]) && $value[$itemKey] == $itemValue) {
-                    if (isset($value[$itemDataKey])) {
-                        return $value[$itemDataKey];
-                    }
-                    else {
-                        return false;
-                    }
-                }
-            }
-        }
-        else {
-            $searchResult = array_search($itemValue, array_column($items, $itemKey));
+        $searchResult = array_search($itemValue, array_column($items, $itemKey));
 
-            if ($searchResult !== false) {
-                return $items[$searchResult][$itemDataKey];
-            }
+        if ($searchResult !== false) {
+            return $items[$searchResult][$itemDataKey];
         }
 
         return false;

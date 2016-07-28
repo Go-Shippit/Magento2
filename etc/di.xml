@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
 <!--
-/**
  * Shippit Pty Ltd
  *
  * NOTICE OF LICENSE
@@ -13,11 +12,13 @@
  * @copyright  Copyright (c) 2016 by Shippit Pty Ltd (http://www.shippit.com)
  * @author     Matthew Muscat <matthew@mamis.com.au>
  * @license    http://www.shippit.com/terms
- */
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <preference for="Shippit\Shipping\Api\Data\SyncOrderInterface" type="Shippit\Shipping\Model\Sync\Order" />
     <preference for="Shippit\Shipping\Api\Data\SyncOrderItemInterface" type="Shippit\Shipping\Model\Sync\Order\Item" />
+
+    <!-- Requests are used for transient models used in API calls and DB data preparation -->
+    <preference for="Shippit\Shipping\Api\Request\SyncOrderInterface" type="Shippit\Shipping\Model\Request\SyncOrder" />
     <preference for="Shippit\Shipping\Api\Request\OrderInterface" type="Shippit\Shipping\Model\Request\Order" />
     <preference for="Shippit\Shipping\Api\Request\QuoteInterface" type="Shippit\Shipping\Model\Request\Quote" />
     <preference for="Shippit\Shipping\Api\Request\ShipmentInterface" type="Shippit\Shipping\Model\Request\Shipment" />

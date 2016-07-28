@@ -37,6 +37,12 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
      */
     protected $_order;
 
+    /**
+     * THe Sync Order Object
+     * @var \Shippit\Shipping\Api\Request\SyncOrderInterface
+     */
+    protected $_syncOrder;
+
     // Shippit Service Class API Mappings
     const SHIPPING_SERVICE_STANDARD = 'CouriersPlease';
     const SHIPPING_SERVICE_EXPRESS  = 'eparcelexpress';
@@ -54,11 +60,13 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
         \Magento\Framework\Model\Context $context,
         \Magento\Framework\Registry $registry,
         \Shippit\Shipping\Helper\Data $helper,
+        \Shippit\Shipping\Api\Request\SyncOrderInterface $syncOrder,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
     ) {
         $this->_helper = $helper;
+        $this->_syncOrder = $syncOrder;
         $this->_carrierCode = $helper::CARRIER_CODE;
         
         parent::__construct($context, $registry, $resource, $resourceCollection, $data);
@@ -71,10 +79,12 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
         $order = $syncOrder->getOrder();
         // get the shipping method attached to the syncOrder object
         $shippingMethod = $syncOrder->getShippingMethod();
+        // get the order items attached to the syncOrder queue
+        $items = $syncOrder->getItemsCollection();
 
         // Build the order request
         $orderRequest = $this->setOrder($order)
-            ->addItems()
+            ->setItems($items)
             ->setShippingMethod($shippingMethod);
 
         return $this;
@@ -107,7 +117,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
             ->setDeliverySuburb($shippingAddress->getCity())
             ->setDeliveryPostcode($shippingAddress->getPostcode())
             ->setDeliveryState($shippingAddress->getRegionCode())
-            ->setDeliveryCountry($shippingAddress->getCountry());
+            ->setDeliveryCountry($shippingAddress->getCountryId());
 
         $this->setOrderAfter($order);
 
@@ -143,25 +153,30 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
     /**
      * Add items from the order to the parcel details
      */
-    public function addItems()
+    public function setItems(\Shippit\Shipping\Model\ResourceModel\Sync\Order\Item\Collection $items)
     {
-        $items = $this->_order->getAllItems();
+        if (count($items) == 0) {
+            // If we don't have specific items in the request, build
+            // the request dynamically from the order object
+            $items = $this->_syncOrder
+                ->setOrder($this->order)
+                ->setItems()
+                ->getItems();
 
-        $parcelAttributes = [];
-
-        foreach ($items as $item) {
-            if ($item->getHasChildren()) {
-                continue;
+            $this->setParcelAttributes($items);
+        }
+        else {
+            // Otherwise, use the data requested in the sync event
+            foreach ($items as $item) {
+                $this->addItem(
+                    $item->getSku(),
+                    $item->getTitle(),
+                    $item->getQty(),
+                    $item->getPrice(),
+                    $item->getWeight(),
+                    $item->getLocation()
+                );
             }
-
-            $this->addItem(
-                $item->getSku(),
-                $item->getName(),
-                $item->getQtyOrdered(),
-                $item->getPrice(),
-                $item->getWeight(),
-                $item->getLocation()
-            );
         }
 
         return $this;
@@ -621,7 +636,8 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
             'title' => $title,
             'qty' => $qty,
             'price' => $price,
-            'weight' => $weight,
+            // if a 0 weight is provided, stub the weight to 0.2kg
+            'weight' => ($weight == 0 ? 0.2 : $weight),
             'location' => $location
         ];
 

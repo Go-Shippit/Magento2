@@ -44,18 +44,13 @@ class Schedule extends \Magento\Backend\App\Action
 
         if ($id) {
             try {
-                $syncOrder = $this->_objectManager
-                    ->create('Shippit\Shipping\Api\Data\SyncOrderInterface')
-                    ->load($id);
-
-                $syncOrder->setStatus(\Shippit\Shipping\Model\Sync\Order::STATUS_PENDING)
-                    ->setAttemptCount(0)
-                    ->setTrackingNumber(null)
-                    ->setSyncedAt(null)
-                    ->save();
-
-                // display success message
-                $this->messageManager->addSuccess(__('The Order Sync has been successfully reset and will sync with Shippit again shortly.'));
+                $this->_eventManager->dispatch(
+                    'shippit_add_order',
+                    [
+                        'order' => $id,
+                        'notification' => true
+                    ]
+                );
             }
             catch (\Exception $e) {
                 // display error message

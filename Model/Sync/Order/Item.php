@@ -16,9 +16,7 @@
 
 namespace Shippit\Shipping\Model\Sync\Order;
 
-use Shippit\Shipping\Api\Data\SyncOrderInterface;
-
-class Item extends \Magento\Framework\Model\AbstractModel implements SyncOrderItemInterface
+class Item extends \Magento\Framework\Model\AbstractModel implements \Shippit\Shipping\Api\Data\SyncOrderItemInterface
 {
     /**
      * Initialize resource model
@@ -217,5 +215,13 @@ class Item extends \Magento\Framework\Model\AbstractModel implements SyncOrderIt
     public function setLocation($location)
     {
         return $this->setData(self::LOCATION, $location);
+    }
+
+    /**
+     * Add a new item to the sync order item request
+     */
+    public function addItem($item)
+    {
+        return $this->setData($item);
     }
 }

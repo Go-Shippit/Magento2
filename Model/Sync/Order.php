@@ -29,11 +29,16 @@ class Order extends \Magento\Framework\Model\AbstractModel implements SyncOrderI
     const STATUS_FAILED_TEXT = 'Failed';
 
     const SYNC_MAX_ATTEMPTS = 5;
-
+    
     /**
      * @var \Magento\Sales\Api\Data\OrderInterface
      */
     protected $_orderInterface;
+
+    /**
+     * @var \Shippit\Shipping\Api\Data\SyncOrderItemInterface
+     */
+    protected $_syncOrderItemInterface;
 
     /**
      * An instance of an order
@@ -43,9 +48,24 @@ class Order extends \Magento\Framework\Model\AbstractModel implements SyncOrderI
     protected $_order;
 
     /**
+     * An array of sync order items
+     *
+     * @var Array
+     */
+    protected $_items;
+    
+    /**
+     * A collection of sync order items
+     *
+     * @var \Shippit\Shipping\Model\ResourceModel\Sync\Order\Item\Collection
+     */
+    protected $_itemsCollection;
+
+    /**
      * @param \Magento\Framework\Model\Context $context
      * @param \Magento\Framework\Registry $registry
      * @param \Magento\Sales\Api\Data\OrderInterface $orderInterface
+     * @param \Shippit\Shipping\Api\Data\SyncOrderItemInterface $syncOrderItemInterface
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource $resource
      * @param \Magento\Framework\Data\Collection\AbstractDb $resourceCollection
      * @param array $data
@@ -54,11 +74,13 @@ class Order extends \Magento\Framework\Model\AbstractModel implements SyncOrderI
         \Magento\Framework\Model\Context $context,
         \Magento\Framework\Registry $registry,
         \Magento\Sales\Api\Data\OrderInterface $orderInterface,
+        \Shippit\Shipping\Api\Data\SyncOrderItemInterface $syncOrderItemInterface,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
     ) {
         $this->_orderInterface = $orderInterface;
+        $this->_syncOrderItemInterface = $syncOrderItemInterface;
 
         parent::__construct($context, $registry, $resource, $resourceCollection, $data);
     }
@@ -71,6 +93,14 @@ class Order extends \Magento\Framework\Model\AbstractModel implements SyncOrderI
     protected function _construct()
     {
         $this->_init('Shippit\Shipping\Model\ResourceModel\Sync\Order');
+    }
+
+    public function addSyncOrderRequest(\Shippit\Shipping\Api\Request\SyncOrderInterface $syncOrderRequest)
+    {
+        return $this->setOrderId($syncOrderRequest->getOrderId())
+            ->addItems($syncOrderRequest->getItems())
+            ->setShippingMethod($syncOrderRequest->getShippingMethod())
+            ->setApiKey($syncOrderRequest->getApiKey());
     }
     
     /**
@@ -113,6 +143,27 @@ class Order extends \Magento\Framework\Model\AbstractModel implements SyncOrderI
     public function setSyncOrderId($syncOrderId)
     {
         return $this->setData(self::SYNC_ORDER_ID, $syncOrderId);
+    }
+
+    /**
+     * Get the API Key
+     *
+     * @return string|null
+     */
+    public function getApiKey()
+    {
+        return $this->getData(self::API_KEY);
+    }
+
+    /**
+     * Set the API Key
+     *
+     * @param string $apiKey
+     * @return string|null
+     */
+    public function setApiKey($apiKey)
+    {
+        return $this->setData(self::API_KEY, $apiKey);
     }
 
     /**
@@ -242,5 +293,64 @@ class Order extends \Magento\Framework\Model\AbstractModel implements SyncOrderI
     public function setTrackingNumber($trackingNumber)
     {
         return $this->setData(self::TRACKING_NUMBER, $trackingNumber);
+    }
+
+    /**
+     * Retrieve sync order items collection
+     *
+     * @param   bool $useCache
+     * @return  \Magento\Eav\Model\Entity\Collection\AbstractCollection;
+     */
+    public function getItemsCollection($useCache = true)
+    {
+        if (is_null($this->_itemsCollection) || !$useCache) {
+            $this->_itemsCollection = $this->_syncOrderItemInterface
+                ->getCollection()
+                ->addSyncOrderFilter($this);
+        }
+
+        return $this->_itemsCollection;
+    }
+
+    /**
+     * Retrieve the sync order items
+     *
+     * @return array
+     */
+    public function getItems()
+    {
+        $this->_items = $this->getItemsCollection()->getItems();
+
+        return $this->_items;
+    }
+
+    /**
+     * Add a new item to the sync order request
+     *
+     * @param \Shippit\Shipping\Api\Data\SyncOrderItemInterface $item
+     */
+    public function addItem(\Shippit\Shipping\Api\Data\SyncOrderItemInterface $item)
+    {
+        if (!$item->getSyncItemId()) {
+            $this->getItemsCollection()->addItem($item);
+            $this->_items[] = $item;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Add new items to the sync order request
+     *
+     * @param Array $items
+     */
+    public function addItems(array $items)
+    {
+        foreach ($items as $item) {
+            $itemObject = $this->_syncOrderItemInterface->addItem($item);
+            $this->addItem($itemObject);
+        }
+
+        return $this;
     }
 }
