@@ -24,8 +24,7 @@ class Context
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
         \Magento\Backend\Model\UrlInterface $url
-    )
-    {
+    ) {
         $this->_context = $context;
         $this->_url = $url;
     }
@@ -33,8 +32,7 @@ class Context
     public function afterGetButtonList(
         \Magento\Backend\Block\Widget\Context $subject,
         $buttonList
-    )
-    {
+    ) {
         $request = $this->_context->getRequest();
         
         if ($request->getFullActionName() == 'sales_order_view') {

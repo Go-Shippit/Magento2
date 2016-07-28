@@ -303,7 +303,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements SyncOrderI
      */
     public function getItemsCollection($useCache = true)
     {
-        if (is_null($this->_itemsCollection) || !$useCache) {
+        if ($this->_itemsCollection === null || !$useCache) {
             $this->_itemsCollection = $this->_syncOrderItemInterface
                 ->getCollection()
                 ->addSyncOrderFilter($this);

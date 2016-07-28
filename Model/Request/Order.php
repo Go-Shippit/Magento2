@@ -377,16 +377,13 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
         // set the courier details based on the shipping method
         if ($shippingMethod == 'standard') {
             return $this->setCourierType(self::SHIPPING_SERVICE_STANDARD);
-        }
-        elseif ($shippingMethod == 'express') {
+        } else if ($shippingMethod == 'express') {
             return $this->setCourierType(self::SHIPPING_SERVICE_EXPRESS);
-        }
-        elseif ($shippingMethod == 'premium' && isset($deliveryDate) && isset($deliveryWindow)) {
+        } else if ($shippingMethod == 'premium' && isset($deliveryDate) && isset($deliveryWindow)) {
             return $this->setCourierType(self::SHIPPING_SERVICE_PREMIUM)
                 ->setDeliveryDate($deliveryDate)
                 ->setDeliveryWindow($deliveryWindow);
-        }
-        else {
+        } else {
             return $this->setData(self::COURIER_TYPE, self::SHIPPING_SERVICE_STANDARD);
         }
     }

@@ -136,7 +136,8 @@ class Order extends \Magento\Framework\Model\AbstractModel
         $collection = $this->_syncOrderFactory->create()
             ->getCollection();
 
-        return $collection->join(
+        return $collection
+            ->join(
                 ['order' => $collection->getTable('sales_order')],
                 'order.entity_id = main_table.order_id',
                 [],
@@ -192,7 +193,12 @@ class Order extends \Magento\Framework\Model\AbstractModel
                 ->save();
 
             if ($displayNotifications) {
-                $this->_messageManager->addSuccess(__('Order ' . $order->getIncrementId() . ' Synced with Shippit - ' . $apiResponse->tracking_number));
+                $this->_messageManager
+                    ->addSuccess(
+                        __('Order ' . $order->getIncrementId()
+                        . ' Synced with Shippit - '
+                        . $apiResponse->tracking_number)
+                    );
             }
         }
         catch (\Exception $e) {

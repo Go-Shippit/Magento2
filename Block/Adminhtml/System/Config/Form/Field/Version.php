@@ -27,8 +27,7 @@ class Version extends Field
         \Magento\Backend\Block\Template\Context $context,
         \Shippit\Shipping\Helper\Data $helper,
         array $data = []
-    )
-    {
+    ) {
         $this->_helper = $helper;
         parent::__construct($context, $data);
     }

@@ -91,7 +91,7 @@ class Order extends \Shippit\Shipping\Helper\Data
     {
         // If the shipping method is a shippit method,
         // processing using the selected shipping options
-        if (strpos($shippingMethod, self::CARRIER_CODE) !== FALSE) {
+        if (strpos($shippingMethod, self::CARRIER_CODE) !== false) {
             $shippingOptions = str_replace(self::CARRIER_CODE . '_', '', $shippingMethod);
             $shippingOptions = explode('_', $shippingOptions);
             $courierData = [];
@@ -103,11 +103,9 @@ class Order extends \Shippit\Shipping\Helper\Data
                 // "priority" was referred to as "premium"
                 if ($method == 'priority' || $method == 'premium') {
                     return 'priority';
-                }
-                elseif ($method == 'express') {
+                } else if ($method == 'express') {
                     return 'express';
-                }
-                elseif ($method == 'standard') {
+                } else if ($method == 'standard') {
                     return 'standard';
                 }
             }

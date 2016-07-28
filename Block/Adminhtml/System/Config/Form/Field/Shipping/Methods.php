@@ -37,8 +37,7 @@ class Methods extends \Magento\Framework\View\Element\Html\Select
         \Magento\Framework\View\Element\Context $context,
         \Magento\Shipping\Model\Config\Source\Allmethods $methods,
         array $data = []
-    )
-    {
+    ) {
         parent::__construct($context, $data);
 
         $this->methods = $methods;

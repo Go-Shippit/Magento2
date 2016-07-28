@@ -48,8 +48,7 @@ class Collection extends AbstractCollection
 
         if ($syncOrderId) {
             $this->addFieldToFilter('sync_order_id', $syncOrderId);
-        }
-        else {
+        } else {
             $this->addFieldToFilter('sync_order_id', null);
         }
 

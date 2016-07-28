@@ -129,12 +129,12 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     }
 
     /**
-    * Prepare grid columns
-    *
-    * @return $this
-    */
-   protected function _prepareColumns()
-   {
+     * Prepare grid columns
+     *
+     * @return $this
+     */
+    protected function _prepareColumns()
+    {
         $this->addColumn(
             'increment_id',
             [
@@ -263,7 +263,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
             $this->getStatusSeverity($value),
             $value
         );
-        
+
         return $cell;
     }
 

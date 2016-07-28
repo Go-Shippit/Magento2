@@ -88,14 +88,11 @@ class AddOrderToSyncQueueObserver implements ObserverInterface
                 if ($this->_helper->getMode() == Mode::REALTIME) {
                     $this->_syncOrder($syncOrder);
                 }
-            }
-            catch (\Magento\Framework\Exception\LocalizedException $e) {
+            } catch (\Magento\Framework\Exception\LocalizedException $e) {
                 $this->_logger->addError($e->getMessage());
-            }
-            catch (\RuntimeException $e) {
+            } catch (\RuntimeException $e) {
                 $this->_logger->addError($e->getMessage());
-            }
-            catch (\Exception $e) {
+            } catch (\Exception $e) {
                 $this->_logger->addError($e->getMessage());
             }
         }
@@ -118,8 +115,7 @@ class AddOrderToSyncQueueObserver implements ObserverInterface
             $syncResult = $this->_apiOrder->sync($syncOrder);
 
             return $syncResult;
-        }
-        else {
+        } else {
             return false;
         }
     }

@@ -17,6 +17,7 @@
 namespace Shippit\Shipping\Model\Request;
 
 use Shippit\Shipping\Api\Request\ShipmentInterface;
+use \Magento\Framework\Exception\LocalizedException;
 
 // Read the Shippit webhook request and provides
 // a summary of the available item actions in Magento
@@ -88,11 +89,11 @@ class Shipment extends \Magento\Framework\Model\AbstractModel implements Shipmen
     public function setOrder($order)
     {
         if (!$order->getId()) {
-            throw new \Exception(self::ERROR_ORDER_MISSING);
+            throw new LocalizedException(self::ERROR_ORDER_MISSING);
         }
 
         if (!$order->canShip()) {
-            throw new \Exception(self::ERROR_ORDER_STATUS);
+            throw new LocalizedException(self::ERROR_ORDER_STATUS);
         }
 
         return $this->setData(self::ORDER, $order);

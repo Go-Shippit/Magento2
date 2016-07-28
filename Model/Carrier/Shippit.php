@@ -163,12 +163,10 @@ class Shippit extends \Magento\Shipping\Model\Carrier\AbstractCarrier implements
                 if ($shippingQuote->courier_type == 'Bonds'
                     && $isPremiumAvailable) {
                     $this->_addPremiumQuote($rateResult, $shippingQuote);
-                }
-                elseif ($shippingQuote->courier_type == 'eparcelexpress'
+                } else if ($shippingQuote->courier_type == 'eparcelexpress'
                     && $isExpressAvailable) {
                     $this->_addExpressQuote($rateResult, $shippingQuote);
-                }
-                elseif ($isStandardAvailable) {
+                } else if ($isStandardAvailable) {
                     $this->_addStandardQuote($rateResult, $shippingQuote);
                 }
             }
@@ -213,7 +211,7 @@ class Shippit extends \Magento\Shipping\Model\Carrier\AbstractCarrier implements
         $timeslotCount = 0;
 
         foreach ($shippingQuote->quotes as $shippingQuoteQuote) {
-            if (!empty($maxTimeslots)&& $maxTimeslots <= $timeslotCount) {
+            if (!empty($maxTimeslots) && $maxTimeslots <= $timeslotCount) {
                 break;
             }
 
@@ -315,8 +313,7 @@ class Shippit extends \Magento\Shipping\Model\Carrier\AbstractCarrier implements
     {
         if ($countryId == 'AU') {
             return true;
-        }
-        else {
+        } else {
             return parent::isZipCodeRequired($countryId);
         }
     }
@@ -392,7 +389,11 @@ class Shippit extends \Magento\Shipping\Model\Carrier\AbstractCarrier implements
             if (strpos($attributeValue, '*') !== FALSE) {
                 $attributeValue = str_replace('*', '%', $attributeValue);
 
-                $attributeProductCount = $attributeProductCount->addAttributeToFilter($attributeCode, ['like' => $attributeValue])
+                $attributeProductCount = $attributeProductCount
+                    ->addAttributeToFilter(
+                        $attributeCode,
+                        ['like' => $attributeValue]
+                    )
                     ->getSize();
             }
             // Otherwise, use the exact match

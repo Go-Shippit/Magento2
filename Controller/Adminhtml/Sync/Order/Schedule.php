@@ -51,8 +51,7 @@ class Schedule extends \Magento\Backend\App\Action
                         'notification' => true
                     ]
                 );
-            }
-            catch (\Exception $e) {
+            } catch (\Exception $e) {
                 // display error message
                 $this->messageManager->addError($e->getMessage());
             }

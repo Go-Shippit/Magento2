@@ -99,37 +99,29 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             || $postcode >= 2619 && $postcode <= 2899
             || $postcode >= 2921 && $postcode <= 2999) {
             return 'NSW';
-        }
-        elseif ($postcode >= 200 && $postcode <= 299
+        } else if ($postcode >= 200 && $postcode <= 299
             || $postcode >= 2600 && $postcode <= 2618
             || $postcode >= 2900 && $postcode <= 2920) {
             return 'ACT';
-        }
-        elseif ($postcode >= 3000 && $postcode <= 3999
+        } else if ($postcode >= 3000 && $postcode <= 3999
             || $postcode >= 8000 && $postcode <= 8999) {
             return 'VIC';
-        }
-        elseif ($postcode >= 4000 && $postcode <= 4999
+        } else if ($postcode >= 4000 && $postcode <= 4999
             || $postcode >= 9000 && $postcode <= 9999) {
             return 'QLD';
-        }
-        elseif ($postcode >= 5000 && $postcode <= 5799
+        } else if ($postcode >= 5000 && $postcode <= 5799
             || $postcode >= 5800 && $postcode <= 5999) {
             return 'SA';
-        }
-        elseif ($postcode >= 6000 && $postcode <= 6797
+        } else if ($postcode >= 6000 && $postcode <= 6797
             || $postcode >= 6800 && $postcode <= 6999) {
             return 'WA';
-        }
-        elseif ($postcode >= 7000 && $postcode <= 7799
+        } else if ($postcode >= 7000 && $postcode <= 7799
             || $postcode >= 7800 && $postcode <= 7999) {
             return 'TAS';
-        }
-        elseif ($postcode >= 800 && $postcode <= 899
+        } else if ($postcode >= 800 && $postcode <= 899
             || $postcode >= 900 && $postcode <= 999) {
             return 'NT';
-        }
-        else {
+        } else {
             return false;
         }
     }

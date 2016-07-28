@@ -36,19 +36,13 @@ class Router implements \Magento\Framework\App\RouterInterface
      */
     public function match(\Magento\Framework\App\RequestInterface $request)
     {
-        /*
-         * We will search “examplerouter” and “exampletocms” words and make forward depend on word
-         * -examplerouter will forward to base router to match inchootest front name, test controller path and test controller class
-         * -exampletocms will set front name to cms, controller path to page and action to view
-         */
         $identifier = trim($request->getPathInfo(), '/');
         
         if (strpos($identifier, 'shippit') !== false) {
             $request->setModuleName('shippit')
                 ->setControllerName('order')
                 ->setActionName('update');
-        }
-        else {
+        } else {
             //There is no match
             return;
         }

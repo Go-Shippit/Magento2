@@ -16,6 +16,8 @@
 
 namespace Shippit\Shipping\Model\Request;
 
+use \Magento\Framework\Exception\LocalizedException;
+
 class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shippit\Shipping\Api\Request\SyncOrderInterface
 {
     /**
@@ -244,7 +246,7 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
         }
 
         if ($itemsAdded == 0) {
-            throw new \Exception(self::ERROR_NO_ITEMS_AVAILABLE_FOR_SHIPPING);
+            throw new LocalizedException(self::ERROR_NO_ITEMS_AVAILABLE_FOR_SHIPPING);
         }
 
         return $this;

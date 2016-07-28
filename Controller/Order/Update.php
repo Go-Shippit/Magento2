@@ -133,8 +133,7 @@ class Update extends \Magento\Framework\App\Action\Action
 
         if (isset($request['products'])) {
             $products = $request['products'];
-        }
-        else {
+        } else {
             $products = [];
         }
 
@@ -197,8 +196,7 @@ class Update extends \Magento\Framework\App\Action\Action
             );
 
             return $this->getResponse()->setBody($response);
-        }
-        catch (\Exception $e)
+        } catch (\Exception $e)
         {
             $response = $this->_prepareResponse(false, $e->getMessage());
             $this->_logger->addError($e);
@@ -223,8 +221,7 @@ class Update extends \Magento\Framework\App\Action\Action
 
         if ($success) {
             $this->_logger->addDebug($message, $metaData);
-        }
-        else {
+        } else {
             $this->_logger->addNotice($message, $metaData);
         }
 
@@ -275,8 +272,7 @@ class Update extends \Magento\Framework\App\Action\Action
                     ->save();
 
                 $this->_shipmentSender->send($shipment);
-            }
-            catch (\Exception $e) {
+            } catch (\Exception $e) {
                 return $this->_prepareResponse(false, self::ERROR_SHIPMENT_FAILED . ' ' .$e->getMessage());
             }
 

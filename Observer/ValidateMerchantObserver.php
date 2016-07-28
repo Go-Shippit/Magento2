@@ -35,6 +35,7 @@ class ValidateMerchantObserver implements ObserverInterface
     protected $_logger;
     protected $_urlInterface;
     protected $_messageManager;
+    protected $_dataObjectFactory;
     protected $_storeManager;
 
     protected $_hasAttemptedSync = false;
@@ -45,6 +46,7 @@ class ValidateMerchantObserver implements ObserverInterface
         \Shippit\Shipping\Helper\Api $api,
         \Magento\Framework\UrlInterface $urlInterface,
         \Magento\Framework\Message\ManagerInterface $messageManager,
+        \Magento\Framework\DataObjectFactory $dataObjectFactory,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Shippit\Shipping\Logger\Logger $logger
     ) {
@@ -53,6 +55,7 @@ class ValidateMerchantObserver implements ObserverInterface
         $this->_api = $api;
         $this->_urlInterface = $urlInterface;
         $this->_messageManager = $messageManager;
+        $this->_dataObjectFactory = $dataObjectFactory;
         $this->_storeManager = $storeManager;
         $this->_logger = $logger;
     }
@@ -115,19 +118,17 @@ class ValidateMerchantObserver implements ObserverInterface
                 ->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_LINK)
                 . 'shippit/order/update/api_key/' . $apiKey;
             
-            $requestData = new \Magento\Framework\DataObject;
+            $requestData = $this->_dataObjectFactory->create();
             $requestData->setWebhookUrl($webhookUrl);
             $merchant = $this->_api->putMerchant($requestData, true);
 
             if (property_exists($merchant, 'error')) {
                 $this->_messageManager->addError(self::ERROR_WEBHOOK_REGISTRATION_ERROR . ' ' . $merchant->error);
-            }
-            else {
+            } else {
                 $this->_logger->addNotice(self::NOTICE_WEBHOOK_REGISTRATION_SUCCESS . ' ' . $webhookUrl);
                 $this->_messageManager->addSuccess(self::NOTICE_WEBHOOK_REGISTRATION_SUCCESS . ' ' . $webhookUrl);
             }
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             $this->_logger->addError(self::ERROR_WEBHOOK_REGISTRATION_UNKNOWN . ' ' . $e->getMessage());
             $this->_messageManager->addError(self::ERROR_WEBHOOK_REGISTRATION_UNKNOWN . ' ' . $e->getMessage());
         }

@@ -57,8 +57,7 @@ class Sync extends \Magento\Backend\App\Action
                 $request = $this->_objectManager
                     ->create('Shippit\Shipping\Model\Api\Order')
                     ->sync($syncOrder, true);
-            }
-            catch (\Exception $e) {
+            } catch (\Exception $e) {
                 // display error message
                 $this->messageManager->addError($e->getMessage());
             }

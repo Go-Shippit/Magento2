@@ -68,8 +68,7 @@ class Sync extends \Magento\Backend\App\Action
                     'display_notifications' => true
                 ]
             );
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             // display error message
             $this->messageManager->addError($e->getMessage());
         }
