@@ -27,8 +27,8 @@ class Shippit extends \Magento\Framework\Model\AbstractModel implements \Shippit
  
     public function __construct (
         \Shippit\Shipping\Helper\Sync\Order $helper,
-        \Shippit\Shipping\Api\Data\SyncOrderInterface $syncOrder,
-        \Shippit\Shipping\Api\Request\SyncOrderInterface $requestSyncOrder,
+        \Shippit\Shipping\Api\Data\SyncOrderInterfaceFactory $syncOrder,
+        \Shippit\Shipping\Api\Request\SyncOrderInterfaceFactory $requestSyncOrder,
         \Shippit\Shipping\Model\Api\Order $apiOrder,
         \Magento\Sales\Api\Data\OrderInterface $order
     ) {
@@ -71,6 +71,7 @@ class Shippit extends \Magento\Framework\Model\AbstractModel implements \Shippit
         }
 
         $request = $this->_requestSyncOrder
+            ->create()
             ->setOrder($order)
             ->setItems($items)
             ->setApiKey($apiKey)
@@ -78,9 +79,10 @@ class Shippit extends \Magento\Framework\Model\AbstractModel implements \Shippit
 
         // Create a new sync order record
         $syncOrder = $this->_syncOrder
+            ->create()
             ->addSyncOrderRequest($request)
             ->save();
-            
+        
         // sync immediately if sync mode is realtime,
         if ($syncMode == \Shippit\Shipping\Model\Config\Source\Shippit\Sync\Order\Mode::REALTIME) {
             // return the result of the sync

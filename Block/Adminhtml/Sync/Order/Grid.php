@@ -58,7 +58,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
         parent::__construct($context, $backendHelper, $data);
 
         $this->setId('shippitSyncOrderGrid');
-        $this->setDefaultSort('increment_id');
+        $this->setDefaultSort('sync_order_id');
         $this->setDefaultDir('desc');
 
         $this->orderConfig = $orderConfig;
@@ -135,6 +135,16 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
      */
     protected function _prepareColumns()
     {
+        $this->addColumn(
+            'sync_order_id',
+            [
+                'header' => __('Sync #'),
+                'index' => 'sync_order_id',
+                'column_css_class' => 'no-display',
+                'header_css_class' => 'no-display',
+            ]
+        );
+
         $this->addColumn(
             'increment_id',
             [

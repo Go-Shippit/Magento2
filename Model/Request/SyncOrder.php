@@ -20,6 +20,8 @@ use \Magento\Framework\Exception\LocalizedException;
 
 class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shippit\Shipping\Api\Request\SyncOrderInterface
 {
+    const ERROR_NO_ITEMS_AVAILABLE_FOR_SHIPPING = 'No items could be added to the sync order request, please ensure the items are available for shipping';
+    
     /**
      * @var \Shippit\Shipping\Helper\Sync\Order
      */
