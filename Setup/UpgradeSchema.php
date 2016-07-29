@@ -36,21 +36,21 @@ class UpgradeSchema implements UpgradeSchemaInterface
 
         $installer->startSetup();
 
-        if (version_compare($context->getVersion(), '1.0.3') < 0) {
-            //code to upgrade to 1.0.3
-            $this->upgrade_103($installer);
-        }
-
         if (version_compare($context->getVersion(), '1.0.4') < 0) {
             //code to upgrade to 1.0.4
             $this->upgrade_104($installer);
         }
 
+        if (version_compare($context->getVersion(), '1.0.5') < 0) {
+            //code to upgrade to 1.0.5
+            $this->upgrade_105($installer);
+        }
+
         $installer->endSetup();
     }
 
-    // Upgrade to v 1.0.3
-    public function upgrade_103($installer)
+    // Upgrade to v 1.0.4
+    public function upgrade_104($installer)
     {
         // Update Order Schema
         // ensure sync_order_id is correctly typed/lengthed
@@ -245,8 +245,8 @@ class UpgradeSchema implements UpgradeSchemaInterface
         $installer->getConnection()->createTable($orderItemTable);
     }
 
-    // Upgrade to v 1.0.4
-    public function upgrade_104($installer)
+    // Upgrade to v 1.0.5
+    public function upgrade_105($installer)
     {
         // Update Order Schema
         // add api key to the order schema

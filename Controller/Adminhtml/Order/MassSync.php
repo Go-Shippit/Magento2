@@ -18,7 +18,7 @@ namespace Shippit\Shipping\Controller\Adminhtml\Order;
 
 class MassSync extends \Magento\Backend\App\Action
 {
-    const ADMIN_ACTION = 'Shippit_Shipping::order_masssync';
+    const ADMIN_ACTION = 'Shippit_Shipping::order_sync';
 
     /**
      * {@inheritdoc}

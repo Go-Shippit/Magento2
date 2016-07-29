@@ -89,11 +89,15 @@ class Shipment extends \Magento\Framework\Model\AbstractModel implements Shipmen
     public function setOrder($order)
     {
         if (!$order->getId()) {
-            throw new LocalizedException(self::ERROR_ORDER_MISSING);
+            throw new LocalizedException(
+                __(self::ERROR_ORDER_MISSING)
+            );
         }
 
         if (!$order->canShip()) {
-            throw new LocalizedException(self::ERROR_ORDER_STATUS);
+            throw new LocalizedException(
+                __(self::ERROR_ORDER_STATUS)
+            );
         }
 
         return $this->setData(self::ORDER, $order);

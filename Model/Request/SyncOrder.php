@@ -248,7 +248,9 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
         }
 
         if ($itemsAdded == 0) {
-            throw new LocalizedException(self::ERROR_NO_ITEMS_AVAILABLE_FOR_SHIPPING);
+            throw new LocalizedException(
+                __(self::ERROR_NO_ITEMS_AVAILABLE_FOR_SHIPPING)
+            );
         }
 
         return $this;
