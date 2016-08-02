@@ -113,6 +113,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
             ->setUserAttributes($billingAddress->getEmail(), $billingAddress->getFirstname(), $billingAddress->getLastname())
             ->setReceiverName($shippingAddress->getName())
             ->setReceiverContactNumber($shippingAddress->getTelephone())
+            ->setDeliveryCompany($shippingAddress->getCompany())
             ->setDeliveryAddress(implode(' ', $shippingAddress->getStreet()))
             ->setDeliverySuburb($shippingAddress->getCity())
             ->setDeliveryPostcode($shippingAddress->getPostcode())
@@ -191,6 +192,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
             ->setCourierType(null)
             ->setReceiverName(null)
             ->setReceiverContactNumber(null)
+            ->setDeliveryCompany(null)
             ->setDeliveryAddress(null)
             ->setDeliverySuburb(null)
             ->setDeliveryPostcode(null)
@@ -484,6 +486,27 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
     public function setReceiverContactNumber($receiverContactNumber)
     {
         return $this->setData(self::RECEIVER_CONTACT_NUMBER, $receiverContactNumber);
+    }
+
+    /**
+     * Get the Delivery Company
+     *
+     * @return string|null
+     */
+    public function getDeliveryCompany()
+    {
+        return $this->getData(self::DELIVERY_COMPANY);
+    }
+
+    /**
+     * Set the Delivery Company
+     *
+     * @param string $deliveryCompany   Delivery Company
+     * @return string
+     */
+    public function setDeliveryCompany($deliveryCompany)
+    {
+        return $this->setData(self::DELIVERY_COMPANY, $deliveryCompany);
     }
 
     /**
