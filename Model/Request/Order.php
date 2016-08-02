@@ -113,6 +113,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
             ->setUserAttributes($billingAddress->getEmail(), $billingAddress->getFirstname(), $billingAddress->getLastname())
             ->setReceiverName($shippingAddress->getName())
             ->setReceiverContactNumber($shippingAddress->getTelephone())
+            ->setDeliveryCompany($shippingAddress->getCompany())
             ->setDeliveryAddress(implode(' ', $shippingAddress->getStreet()))
             ->setDeliverySuburb($shippingAddress->getCity())
             ->setDeliveryPostcode($shippingAddress->getPostcode())
@@ -184,18 +185,22 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
 
     public function reset()
     {
-        $this->setRetailerInvoice(null)
-            ->setAuthorityToLeave(null)
-            ->setDeliveryInstructions(null)
-            ->setUserAttributes(null)
-            ->setCourierType(null)
-            ->setReceiverName(null)
-            ->setReceiverContactNumber(null)
-            ->setDeliveryAddress(null)
-            ->setDeliverySuburb(null)
-            ->setDeliveryPostcode(null)
-            ->setDeliveryState(null)
-            ->setParcelAttributes(null);
+        // reset the request data
+        $this->setData(self::RETAILER_INVOICE, null)
+            ->setData(self::AUTHORITY_TO_LEAVE, null)
+            ->setData(self::DELIVERY_INSTRUCTIONS, null)
+            ->setData(self::USER_ATTRIBUTES, null)
+            ->setData(self::COURIER_TYPE, null)
+            ->setData(self::DELIVERY_DATE, null)
+            ->setData(self::DELIVERY_WINDOW, null)
+            ->setData(self::RECEIVER_NAME, null)
+            ->setData(self::RECEIVER_CONTACT_NUMBER, null)
+            ->setData(self::DELIVERY_COMPANY, null)
+            ->setData(self::DELIVERY_ADDRESS, null)
+            ->setData(self::DELIVERY_SUBURB, null)
+            ->setData(self::DELIVERY_POSTCODE, null)
+            ->setData(self::DELIVERY_STATE, null)
+            ->setData(self::PARCEL_ATTRIBUTES, null);
     }
 
     /**
@@ -484,6 +489,27 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
     public function setReceiverContactNumber($receiverContactNumber)
     {
         return $this->setData(self::RECEIVER_CONTACT_NUMBER, $receiverContactNumber);
+    }
+
+    /**
+     * Get the Delivery Company
+     *
+     * @return string|null
+     */
+    public function getDeliveryCompany()
+    {
+        return $this->getData(self::DELIVERY_COMPANY);
+    }
+
+    /**
+     * Set the Delivery Company
+     *
+     * @param string $deliveryCompany   Delivery Company
+     * @return string
+     */
+    public function setDeliveryCompany($deliveryCompany)
+    {
+        return $this->setData(self::DELIVERY_COMPANY, $deliveryCompany);
     }
 
     /**

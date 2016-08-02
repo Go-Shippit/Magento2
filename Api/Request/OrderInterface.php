@@ -30,6 +30,7 @@ interface OrderInterface
     const DELIVERY_WINDOW           = 'delivery_window';
     const RECEIVER_NAME             = 'receiver_name';
     const RECEIVER_CONTACT_NUMBER   = 'receiver_contact_number';
+    const DELIVERY_COMPANY          = 'delivery_company';
     const DELIVERY_ADDRESS          = 'delivery_address';
     const DELIVERY_SUBURB           = 'delivery_suburb';
     const DELIVERY_POSTCODE         = 'delivery_postcode';
@@ -182,6 +183,21 @@ interface OrderInterface
      * @return string
      */
     public function setReceiverContactNumber($receiverContactNumber);
+
+    /**
+     * Get the Delivery Company
+     *
+     * @return string|null
+     */
+    public function getDeliveryCompany();
+
+    /**
+     * Set the Delivery Company
+     *
+     * @param string $deliveryCompany   Delivery Company
+     * @return string
+     */
+    public function setDeliveryCompany($deliveryCompany);
 
     /**
      * Get the Delivery Address
