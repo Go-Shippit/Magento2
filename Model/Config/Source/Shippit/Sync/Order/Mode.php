@@ -22,6 +22,7 @@ class Mode implements \Magento\Framework\Option\ArrayInterface
 {
     const REALTIME  = 'realtime';
     const SCHEDULED = 'cron';
+    const CUSTOM    = 'custom';
 
     /**
      * Options getter
@@ -38,6 +39,10 @@ class Mode implements \Magento\Framework\Option\ArrayInterface
             [
                 'label' => 'Scheduled',
                 'value' => self::SCHEDULED
+            ],
+            [
+                'label' => 'Custom',
+                'value' => self::CUSTOM
             ]
         ];
         
@@ -53,7 +58,8 @@ class Mode implements \Magento\Framework\Option\ArrayInterface
     {
         $optionsArray = [
             self::REALTIME => 'Realtime',
-            self::SCHEDULED => 'Scheduled'
+            self::SCHEDULED => 'Scheduled',
+            self::CUSTOM => 'Custom'
         ];
         
         return $optionsArray;

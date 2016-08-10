@@ -24,19 +24,22 @@ class Shippit extends \Magento\Framework\Model\AbstractModel implements \Shippit
     protected $_apiOrder;
     protected $_logger;
     protected $_order;
+    protected $_messageManager;
  
     public function __construct (
         \Shippit\Shipping\Helper\Sync\Order $helper,
         \Shippit\Shipping\Api\Data\SyncOrderInterfaceFactory $syncOrder,
         \Shippit\Shipping\Api\Request\SyncOrderInterfaceFactory $requestSyncOrder,
         \Shippit\Shipping\Model\Api\Order $apiOrder,
-        \Magento\Sales\Api\Data\OrderInterface $order
+        \Magento\Sales\Api\Data\OrderInterface $order,
+        \Magento\Framework\Message\ManagerInterface $messageManager
     ) {
         $this->_helper = $helper;
         $this->_syncOrder = $syncOrder;
         $this->_requestSyncOrder = $requestSyncOrder;
         $this->_apiOrder = $apiOrder;
         $this->_order = $order;
+        $this->_messageManager = $messageManager;
     }
 
     /**
@@ -68,6 +71,15 @@ class Shippit extends \Magento\Framework\Model\AbstractModel implements \Shippit
         // if the order passed is just an id, get the order object
         if (!$order instanceof $this->_order) {
             $order = $this->_order->load($order);
+        }
+
+        // if the order is a virtual order, skip it
+        if ($order->getIsVirtual()) {
+            if ($displayNotifications) {
+                $this->_messageManager->addError(__('Order ' . $order->getIncrementId() . ' was not synced with Shippit, as this is a virtual order not requiring delivery'));
+            }
+
+            return $this;
         }
 
         $request = $this->_requestSyncOrder

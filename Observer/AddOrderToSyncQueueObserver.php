@@ -55,49 +55,64 @@ class AddOrderToSyncQueueObserver implements ObserverInterface
             return $this;
         }
 
+        // If the sync mode is custom, stop processing
+        if ($this->_helper->getMode() == Mode::CUSTOM) {
+            return $this;
+        }
+
         $order = $observer->getEvent()->getOrder();
 
-        // Ensure we have an order
-        if (!$order && $order->getId()) {
+        // Ensure we have an order and it requires shipping
+        if (!$order || !$order->getId() || $order->getIsVirtual()) {
             return $this;
         }
 
         $shippingMethod = $order->getShippingMethod();
         $shippitShippingMethod = $this->_helper->getShippitShippingMethod($shippingMethod);
 
-        $shippingCountry = $order->getShippingAddress()->getCountryId();
-
         // If send all orders,
         // or shippit shipping class present
-        if ($this->_helper->getSendAllOrders() == SendAllOrders::ALL
-            || ($this->_helper->getSendAllOrders() == SendAllOrders::ALL_AU && $shippingCountry == 'AU')
-            || $shippitShippingMethod !== FALSE) {
-            try {
-                $request = $this->_requestSyncOrder
-                    ->setOrder($order)
-                    ->setItems()
-                    ->setShippingMethod($shippitShippingMethod);
+        if ($this->_helper->getSendAllOrders() == SendAllOrders::ALL) {
+            $this->_addOrder($order, $shippitShippingMethod);
+        } elseif ($this->_helper->getSendAllOrders() == SendAllOrders::ALL_AU) {
+            $shippingCountry = $order->getShippingAddress()->getCountryId();
 
-                // create an order sync item and save to the DB
-                $syncOrder = $this->_syncOrder
-                    ->addSyncOrderRequest($request)
-                    ->save();
-
-                // If the sync mode is realtime,
-                // attempt realtime sync now
-                if ($this->_helper->getMode() == Mode::REALTIME) {
-                    $this->_syncOrder($syncOrder);
-                }
-            } catch (\Magento\Framework\Exception\LocalizedException $e) {
-                $this->_logger->addError($e->getMessage());
-            } catch (\RuntimeException $e) {
-                $this->_logger->addError($e->getMessage());
-            } catch (\Exception $e) {
-                $this->_logger->addError($e->getMessage());
+            if ($shippingCountry == 'AU') {
+                $this->_addOrder($order, $shippitShippingMethod);
             }
+        } elseif ($shippitShippingMethod !== FALSE) {
+            $this->_addOrder($order, $shippitShippingMethod);
         }
 
         return $this;
+    }
+
+    private function _addOrder($order, $shippitShippingMethod)
+    {
+        try {
+            $request = $this->_requestSyncOrder
+                ->setOrder($order)
+                ->setItems()
+                ->setShippingMethod($shippitShippingMethod);
+
+            // create an order sync item and save to the DB
+            $syncOrder = $this->_syncOrder
+                ->addSyncOrderRequest($request)
+                ->save();
+
+            // If the sync mode is realtime,
+            // attempt realtime sync now
+            if ($this->_helper->getMode() == Mode::REALTIME
+                || $shippitShippingMethod == 'priority') {
+                $this->_syncOrder($syncOrder);
+            }
+        } catch (\Magento\Framework\Exception\LocalizedException $e) {
+            $this->_logger->addError($e->getMessage());
+        } catch (\RuntimeException $e) {
+            $this->_logger->addError($e->getMessage());
+        } catch (\Exception $e) {
+            $this->_logger->addError($e->getMessage());
+        }
     }
 
     private function _syncOrder($syncOrder)
