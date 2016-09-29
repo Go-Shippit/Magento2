@@ -111,7 +111,7 @@ class Shippit extends AbstractCarrierOnline implements
         );
     }
  
-     protected function _doShipmentRequest(\Magento\Framework\DataObject $request)
+    protected function _doShipmentRequest(\Magento\Framework\DataObject $request)
     {
         $result = new \Magento\Framework\DataObject();
         
