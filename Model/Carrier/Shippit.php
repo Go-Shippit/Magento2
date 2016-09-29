@@ -17,9 +17,10 @@
 namespace Shippit\Shipping\Model\Carrier;
  
 use Magento\Quote\Model\Quote\Address\RateRequest;
+use Magento\Shipping\Model\Carrier\AbstractCarrierOnline;
 use Magento\Shipping\Model\Rate\Result;
  
-class Shippit extends \Magento\Shipping\Model\Carrier\AbstractCarrier implements
+class Shippit extends AbstractCarrierOnline implements
     \Magento\Shipping\Model\Carrier\CarrierInterface
 {
     const NOTICE_MODULE_DISABLED = 'Skipping Live Quote - The Module is not enabled';
@@ -59,10 +60,21 @@ class Shippit extends \Magento\Shipping\Model\Carrier\AbstractCarrier implements
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Quote\Model\Quote\Address\RateResult\ErrorFactory $rateErrorFactory,
         \Shippit\Shipping\Logger\Logger $logger,
+        \Magento\Framework\Xml\Security $xmlSecurity,
+        \Magento\Shipping\Model\Simplexml\ElementFactory $xmlElFactory,
+        \Magento\Quote\Model\Quote\Address\RateResult\MethodFactory $rateMethodFactory,
+        \Magento\Shipping\Model\Rate\ResultFactory $rateFactory,
         \Magento\Shipping\Model\Rate\ResultFactory $rateResultFactory,
+        \Magento\Shipping\Model\Tracking\Result\ErrorFactory $trackErrorFactory,
+        \Magento\Shipping\Model\Tracking\Result\StatusFactory $trackStatusFactory,
         \Magento\Quote\Model\Quote\Address\RateResult\MethodFactory $rateMethodFactory,
         \Magento\Shipping\Model\Tracking\ResultFactory $trackFactory,
         \Magento\Shipping\Model\Tracking\Result\StatusFactory $trackStatusFactory,
+        \Magento\Directory\Model\RegionFactory $regionFactory,
+        \Magento\Directory\Model\CountryFactory $countryFactory,
+        \Magento\Directory\Model\CurrencyFactory $currencyFactory,
+        \Magento\Directory\Helper\Data $directoryData,
+        \Magento\CatalogInventory\Api\StockRegistryInterface $stockRegistry,
         \Shippit\Shipping\Helper\Carrier $helper,
         \Shippit\Shipping\Helper\Api $api,
         \Shippit\Shipping\Model\Config\Source\Shippit\Methods $methods,
@@ -79,9 +91,33 @@ class Shippit extends \Magento\Shipping\Model\Carrier\AbstractCarrier implements
         $this->_methods = $methods;
         $this->_quote = $quote;
 
-        parent::__construct($scopeConfig, $rateErrorFactory, $logger, $data);
+        parent::__construct(
+            $scopeConfig,
+            $rateErrorFactory,
+            $logger,
+            $xmlSecurity,
+            $xmlElFactory,
+            $rateFactory,
+            $rateMethodFactory,
+            $trackFactory,
+            $trackErrorFactory,
+            $trackStatusFactory,
+            $regionFactory,
+            $countryFactory,
+            $currencyFactory,
+            $directoryData,
+            $stockRegistry,
+            $data
+        );
     }
  
+    protected function _doShipmentRequest(\Magento\Framework\DataObject $request)
+    {
+        $result = new \Magento\Framework\DataObject();
+        
+        return $result;
+    }
+
     /**
      * @param RateRequest $request
      * @return bool|Result
