@@ -36,25 +36,27 @@ class Shippit extends AbstractCarrierOnline implements
     protected $_api;
     protected $_methods;
     protected $_quote;
-
-    protected $_rateResultFactory;
-    protected $_rateMethodFactory;
-    protected $_trackFactory;
-    protected $_trackStatusFactory;
  
     /**
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface          $scopeConfig
-     * @param \Magento\Quote\Model\Quote\Address\RateResult\ErrorFactory  $rateErrorFactory
-     * @param \Shippit\Shipping\Logger\Logger                             $logger
-     * @param \Magento\Shipping\Model\Rate\ResultFactory                  $rateResultFactory
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param \Magento\Quote\Model\Quote\Address\RateResult\ErrorFactory $rateErrorFactory
+     * @param \Shippit\Shipping\Logger\Logger $logger
+     * @param \Magento\Framework\Xml\Security $xmlSecurity
+     * @param \Magento\Shipping\Model\Simplexml\ElementFactory $xmlElFactory
      * @param \Magento\Quote\Model\Quote\Address\RateResult\MethodFactory $rateMethodFactory
      * @param \Magento\Shipping\Model\Tracking\ResultFactory $trackFactory
-     * @param \Magento\Shipping\Model\Tracking\Result\StatusFactory $trackStatusFactory,
-     * @param \Shippit\Shipping\Helper\Data                               $helper
-     * @param \Shippit\Shipping\Helper\Api                                $api
-     * @param \Shippit\Shipping\Model\Config\Source\Shippit\Methods       $methods
-     * @param \Shippit\Shipping\Api\Request\QuoteInterface                $quote
-     * @param array                                                       $data
+     * @param \Magento\Shipping\Model\Tracking\Result\ErrorFactory $trackErrorFactory
+     * @param \Magento\Shipping\Model\Tracking\Result\StatusFactory $trackStatusFactory
+     * @param \Magento\Directory\Model\RegionFactory $regionFactory
+     * @param \Magento\Directory\Model\CountryFactory $countryFactory
+     * @param \Magento\Directory\Model\CurrencyFactory $currencyFactory
+     * @param \Magento\Directory\Helper\Data $directoryData
+     * @param \Magento\CatalogInventory\Api\StockRegistryInterface $stockRegistry
+     * @param \Shippit\Shipping\Helper\Carrier $helper
+     * @param \Shippit\Shipping\Helper\Api $api
+     * @param \Shippit\Shipping\Model\Config\Source\Shippit\Methods $methods
+     * @param \Shippit\Shipping\Api\Request\QuoteInterface $quote
+     * @param array $data
      */
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
@@ -62,13 +64,10 @@ class Shippit extends AbstractCarrierOnline implements
         \Shippit\Shipping\Logger\Logger $logger,
         \Magento\Framework\Xml\Security $xmlSecurity,
         \Magento\Shipping\Model\Simplexml\ElementFactory $xmlElFactory,
-        \Magento\Quote\Model\Quote\Address\RateResult\MethodFactory $rateMethodFactory,
         \Magento\Shipping\Model\Rate\ResultFactory $rateFactory,
-        \Magento\Shipping\Model\Rate\ResultFactory $rateResultFactory,
-        \Magento\Shipping\Model\Tracking\Result\ErrorFactory $trackErrorFactory,
-        \Magento\Shipping\Model\Tracking\Result\StatusFactory $trackStatusFactory,
         \Magento\Quote\Model\Quote\Address\RateResult\MethodFactory $rateMethodFactory,
         \Magento\Shipping\Model\Tracking\ResultFactory $trackFactory,
+        \Magento\Shipping\Model\Tracking\Result\ErrorFactory $trackErrorFactory,
         \Magento\Shipping\Model\Tracking\Result\StatusFactory $trackStatusFactory,
         \Magento\Directory\Model\RegionFactory $regionFactory,
         \Magento\Directory\Model\CountryFactory $countryFactory,
@@ -81,11 +80,6 @@ class Shippit extends AbstractCarrierOnline implements
         \Shippit\Shipping\Api\Request\QuoteInterface $quote,
         array $data = []
     ) {
-        $this->_rateResultFactory = $rateResultFactory;
-        $this->_rateMethodFactory = $rateMethodFactory;
-        $this->_trackFactory = $trackFactory;
-        $this->_trackStatusFactory = $trackStatusFactory;
-
         $this->_helper = $helper;
         $this->_api = $api;
         $this->_methods = $methods;
@@ -109,6 +103,30 @@ class Shippit extends AbstractCarrierOnline implements
             $stockRegistry,
             $data
         );
+    }
+
+    /**
+     * Processing additional validation to check is carrier applicable.
+     *
+     * Workaround and handling for a Magento Core Bugs (MAGETWO-42591 & MAGETWO-55117)
+     * @url https://github.com/magento/magento2/issues/1779
+     * @url https://github.com/magento/magento2/issues/3789
+     *
+     * @param \Magento\Framework\DataObject $request
+     * @return $this|bool|\Magento\Framework\DataObject
+     */
+    public function proccessAdditionalValidation(\Magento\Framework\DataObject $request)
+    {
+        $postcode = $request->getDestPostcode();
+        $state = $request->getDestRegionCode();
+        $suburb = $request->getDestCity();
+        
+        if (!empty($postcode) && !empty($state) && !empty($suburb)) {
+            return $this;
+        }
+        else {
+            return false;
+        }
     }
  
     protected function _doShipmentRequest(\Magento\Framework\DataObject $request)
@@ -151,13 +169,10 @@ class Shippit extends AbstractCarrierOnline implements
         $quoteRequest->setOrderDate('');
 
         if ($request->getShipperAddressStreet()) {
-            $quoteRequest->setDropoffSuburb($request->getShipperAddressStreet());
+            $quoteRequest->setDropoffStreet($request->getShipperAddressStreet());
         }
 
-        if ($request->getDestPostcode()) {
-            $quoteRequest->setDropoffPostcode($request->getDestPostcode());
-        }
-
+        $quoteRequest->setDropoffPostcode($request->getDestPostcode());
         $quoteRequest->setDropoffState($request->getDestRegionCode());
         $quoteRequest->setDropoffSuburb($request->getDestCity());
         $quoteRequest->setParcelAttributes($this->_getParcelAttributes($request));
@@ -173,7 +188,7 @@ class Shippit extends AbstractCarrierOnline implements
         }
         
         /** @var \Magento\Shipping\Model\Rate\Result $rateResult */
-        $rateResult = $this->_rateResultFactory->create();
+        $rateResult = $this->_rateFactory->create();
 
         $this->_processShippingQuotes($rateResult, $shippingQuotes);
 
