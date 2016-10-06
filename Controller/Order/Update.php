@@ -108,98 +108,31 @@ class Update extends \Magento\Framework\App\Action\Action
      */
     public function execute()
     {
-        if (!$this->_helper->isActive()) {
-            $response = $this->_prepareResponse(false, self::ERROR_SYNC_DISABLED);
+        if (!$this->_checkIsActive()) {
+            return;
+        }
 
-            return $this->getResponse()->setBody($response);
+        if (!$this->_checkApiKey()) {
+            return;
         }
 
         $request = $this->_jsonHelper
             ->jsonDecode(file_get_contents('php://input'));
 
-        $metaData = [
-            'api_request' => [
-                'request_body' => $request
-            ]
-        ];
+        $this->_logRequest($request);
 
-        $this->_logger->addDebug('Shipment Sync Request Recieved', $metaData);
-
-        $apiKey = $this->getRequest()->getParam('api_key');
-        
-        if (isset($request['retailer_order_number'])) {
-            $orderIncrementId = $request['retailer_order_number'];
-        } else {
-            $orderIncrementId = [];
+        if (!$this->_checkRequest($request)) {
+            return;
         }
 
-        if (isset($request['current_state'])) {
-            $orderShipmentState = $request['current_state'];
-        } else {
-            $orderShipmentState = [];
-        }
+        // attempt to retrieve request data values for the shipment
+        $order = $this->_getOrder($request);
+        $products = $this->_getProducts($request);
+        $courierName = $this->_getCourierName($request);
+        $trackingNumber = $this->_getTrackingNumber($request);
 
-        if (isset($request['courier_name'])) {
-            $courierName = $request['courier_name'];
-        } else {
-            $courierName = [];
-        }
-
-        if (isset($request['tracking_number'])) {
-            $trackingNumber = $request['tracking_number'];
-        } else {
-            $trackingNumber = [];
-        }
-
-        if (isset($request['products'])) {
-            $products = $request['products'];
-        } else {
-            $products = [];
-        }
-
-        if (empty($apiKey)) {
-            $response = $this->_prepareResponse(false, self::ERROR_API_KEY_MISSING);
-
-            return $this->getResponse()->setBody($response);
-        }
-
-        if (!$this->_checkApiKey($apiKey)) {
-            $response = $this->_prepareResponse(false, self::ERROR_API_KEY_MISMATCH);
-
-            return $this->getResponse()->setBody($response);
-        }
-
-        if (empty($request)) {
-            $response = $this->_prepareResponse(false, self::ERROR_BAD_REQUEST);
-
-            return $this->getResponse()->setBody($response);
-        }
-
-        if (empty($orderShipmentState) || $orderShipmentState != 'ready_for_pickup') {
-            $response = $this->_prepareResponse(true, self::NOTICE_SHIPMENT_STATUS);
-
-            return $this->getResponse()->setBody($response);
-        }
-
-        // attempt to get the order using the reference provided
-        $order = $this->_getOrder($orderIncrementId);
-
-        if (!$order->getId()) {
-            $response = $this->_prepareResponse(false, self::ERROR_ORDER_MISSING);
-
-            return $this->getResponse()->setBody($response);
-        }
-
-        if ($order->getForcedShipmentWithInvoice()) {
-            $response = $this->_prepareResponse(false, self::ERROR_ORDER_INVOICE);
-
-            return $this->getResponse()->setBody($response);
-        }
-
-        if (!$order->canShip()) {
-            $response = $this->_prepareResponse(false, self::ERROR_ORDER_STATUS);
-
-            return $this->getResponse()->setBody($response);
+        if (!$this->_checkOrder($order)) {
+            return;
         }
 
         try {
@@ -225,7 +158,176 @@ class Update extends \Magento\Framework\App\Action\Action
         }
     }
 
-    private function _prepareResponse($success, $message)
+    protected function _checkIsActive()
+    {
+        if (!$this->helper->isActive()) {
+            $response = $this->_prepareResponse(
+                false,
+                self::ERROR_SYNC_DISABLED
+            );
+
+            $this->getResponse()->setBody($response);
+
+            return false;
+        }
+
+        return true;
+    }
+
+    protected function _checkApiKey()
+    {
+        $apiKey = $this->getRequest()->getParam('api_key');
+        
+        if (empty($apiKey)) {
+            $response = $this->_prepareResponse(
+                false,
+                self::ERROR_API_KEY_MISSING,
+                Zend_Log::WARN
+            );
+
+            $this->getResponse()->setBody($response);
+
+            return false;
+        }
+
+        $configuredApiKey = Mage::helper('shippit')->getApiKey();
+        
+        if ($configuredApiKey != $apiKey) {
+            $response = $this->_prepareResponse(
+                false,
+                self::ERROR_API_KEY_MISMATCH,
+                Zend_Log::WARN
+            );
+            
+            $this->getResponse()->setBody($response);
+
+            return false;
+        }
+
+        return true;
+    }
+
+    protected function _logRequest($request = array())
+    {
+        $metaData = [
+            'api_request' => [
+                'request_body' => $request
+            ]
+        ];
+
+        $this->_logger->addDebug('Shipment Sync Request Recieved', $metaData);
+    }
+
+    protected function _checkRequest($request = array())
+    {
+        if (empty($request)) {
+            $response = $this->_prepareResponse(
+                false,
+                self::ERROR_BAD_REQUEST,
+                Zend_Log::WARN
+            );
+
+            $this->getResponse()->setBody($response);
+
+            return false;
+        }
+
+        if (!isset($request['current_state']) || empty($request['current_state']) || $request['current_state'] != 'ready_for_pickup') {
+            $response = $this->_prepareResponse(
+                true,
+                self::NOTICE_SHIPMENT_STATUS
+            );
+            
+            $this->getResponse()->setBody($response);
+
+            return false;
+        }
+
+        if (!isset($request['retailer_order_number']) || empty($request['retailer_order_number'])) {
+            $response = $this->_prepareResponse(
+                false,
+                self::ERROR_ORDER_MISSING
+            );
+            
+            $this->getResponse()->setBody($response);
+
+            return false;
+        }
+
+        return true;
+    }
+
+    protected function _checkOrder($order)
+    {
+        if (!$order->getId()) {
+            $response = $this->_prepareResponse(
+                false,
+                self::ERROR_ORDER_MISSING
+            );
+            
+            $this->getResponse()->setBody($response);
+
+            return false;
+        }
+
+        if ($order->getForcedShipmentWithInvoice()) {
+            $response = $this->_prepareResponse(false, self::ERROR_ORDER_INVOICE);
+
+            $this->getResponse()->setBody($response);
+
+            return false;
+        }
+
+        if (!$order->canShip()) {
+            $response = $this->_prepareResponse(
+                false,
+                self::ERROR_ORDER_STATUS
+            );
+
+            $this->getResponse()->setBody($response);
+
+            return false;
+        }
+
+        return true;
+    }
+
+    protected function _getOrder($request = array())
+    {
+        if (!isset($request['retailer_order_number'])) {
+            return false;
+        }
+     
+        $orderIncrementId = $request['retailer_order_number'];
+
+        return $this->_orderInterface->load($orderIncrementId, 'increment_id');
+    }
+
+    protected function _getProducts($request = array())
+    {
+        if (isset($request['products'])) {
+            return $request['products'];
+        }
+
+        return array();
+    }
+
+    protected function _getCourierName($request = array())
+    {
+        if (isset($request['courier_name'])) {
+            return 'Shippit - ' . $request['courier_name'];
+        }
+        else {
+            return 'Shippit';
+        }
+    }
+
+    protected function _getTrackingNumber($request = array())
+    {
+        return $request['tracking_number'];
+    }
+
+    protected function _prepareResponse($success, $message)
     {
         $response = [
             'success' => $success,
@@ -248,23 +350,7 @@ class Update extends \Magento\Framework\App\Action\Action
         return $this->_jsonHelper->jsonEncode($response);
     }
 
-    private function _checkApiKey($apiKey)
-    {
-        $configuredApiKey = $this->_helper->getApiKey();
-        
-        if ($configuredApiKey != $apiKey) {
-            return false;
-        }
-        
-        return true;
-    }
-
-    private function _getOrder($orderIncrementId)
-    {
-        return $this->_orderInterface->load($orderIncrementId, 'increment_id');
-    }
-
-    private function _createShipment($order, $items, $courierName, $trackingNumber)
+    protected function _createShipment($order, $items, $courierName, $trackingNumber)
     {
         $shipment = $this->_shipmentFactory->create(
             $order,
@@ -277,7 +363,7 @@ class Update extends \Magento\Framework\App\Action\Action
             $track = $this->_shipmentTrackInterface
                 ->setNumber($trackingNumber)
                 ->setCarrierCode(\Shippit\Shipping\Helper\Data::CARRIER_CODE)
-                ->setTitle('Shippit - ' . $courierName);
+                ->setTitle($courierName);
 
             $shipment->addTrack($track)
                 ->register()

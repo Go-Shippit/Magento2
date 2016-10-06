@@ -14,7 +14,7 @@
  * @license    http://www.shippit.com/terms
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
-    <event name="checkout_submit_all_after">
+    <event name="sales_order_place_after">
         <observer name="shippit_add_order_to_sync_queue" instance="Shippit\Shipping\Observer\AddOrderToSyncQueueObserver" />
     </event>
 
