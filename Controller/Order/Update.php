@@ -126,10 +126,30 @@ class Update extends \Magento\Framework\App\Action\Action
         $this->_logger->addDebug('Shipment Sync Request Recieved', $metaData);
 
         $apiKey = $this->getRequest()->getParam('api_key');
-        $orderIncrementId = $request['retailer_order_number'];
-        $orderShipmentState = $request['current_state'];
-        $courierName = $request['courier_name'];
-        $trackingNumber = $request['tracking_number'];
+        
+        if (isset($request['retailer_order_number'])) {
+            $orderIncrementId = $request['retailer_order_number'];
+        } else {
+            $orderIncrementId = [];
+        }
+
+        if (isset($request['current_state'])) {
+            $orderShipmentState = $request['current_state'];
+        } else {
+            $orderShipmentState = [];
+        }
+
+        if (isset($request['courier_name'])) {
+            $courierName = $request['courier_name'];
+        } else {
+            $courierName = [];
+        }
+
+        if (isset($request['tracking_number'])) {
+            $trackingNumber = $request['tracking_number'];
+        } else {
+            $trackingNumber = [];
+        }
 
         if (isset($request['products'])) {
             $products = $request['products'];
