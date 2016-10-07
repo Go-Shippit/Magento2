@@ -14,10 +14,6 @@
  * @license    http://www.shippit.com/terms
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
-    <event name="sales_order_place_after">
-        <observer name="shippit_add_order_to_sync_queue" instance="Shippit\Shipping\Observer\AddOrderToSyncQueueObserver" />
-    </event>
-
     <event name="admin_system_config_changed_section_shippit">
         <observer name="shippit_validate_merchant" instance="Shippit\Shipping\Observer\ValidateMerchantObserver" />
     </event>

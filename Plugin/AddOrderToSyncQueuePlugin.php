@@ -14,17 +14,15 @@
  * @license    http://www.shippit.com/terms
  */
 
-namespace Shippit\Shipping\Observer;
+namespace Shippit\Shipping\Plugin;
 
-use Magento\Framework\Event\Observer;
-use Magento\Framework\Event\ObserverInterface;
 use Shippit\Shipping\Model\Config\Source\Shippit\Sync\Order\Mode;
 use Shippit\Shipping\Model\Config\Source\Shippit\Sync\Order\SendAllOrders;
 
 use Magento\Sales\Model\Order;
 use Shippit\Shipping\Model\Sync\Order as SyncOrder;
 
-class AddOrderToSyncQueueObserver implements ObserverInterface
+class AddOrderToSyncQueuePlugin
 {
     protected $_helper;
     protected $_syncOrder;
@@ -48,23 +46,23 @@ class AddOrderToSyncQueueObserver implements ObserverInterface
         $this->_logger = $logger;
     }
  
-    public function execute(Observer $observer)
+    public function afterPlace($subject, $result)
     {
         // Ensure the module is active
         if (!$this->_helper->isActive()) {
-            return $this;
+            return $result;
         }
 
         // If the sync mode is custom, stop processing
         if ($this->_helper->getMode() == Mode::CUSTOM) {
-            return $this;
+            return $result;
         }
 
-        $order = $observer->getEvent()->getOrder();
+        $order = $result;
 
         // Ensure we have an order and it requires shipping
         if (!$order || !$order->getId() || $order->getIsVirtual()) {
-            return $this;
+            return $result;
         }
 
         $shippingMethod = $order->getShippingMethod();
@@ -84,7 +82,7 @@ class AddOrderToSyncQueueObserver implements ObserverInterface
             $this->_addOrder($order, $shippitShippingMethod);
         }
 
-        return $this;
+        return $result;
     }
 
     private function _addOrder($order, $shippitShippingMethod)
