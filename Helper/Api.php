@@ -87,6 +87,10 @@ class Api extends \Magento\Framework\App\Helper\AbstractHelper
         try {
             $apiResponse = $apiRequest->request($method);
         } catch (\Exception $e) {
+            if (!isset($apiResponse)) {
+                $apiResponse = null;
+            }
+
             $this->log($uri, $requestData, $apiResponse, false, 'API Request Error');
 
             throw new LocalizedException(
