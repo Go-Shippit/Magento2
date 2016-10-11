@@ -78,7 +78,7 @@ class Update extends \Magento\Framework\App\Action\Action
      * @var \Shippit\Shipping\Logger\Logger
      */
     protected $_logger;
-    
+
     /**
      * @param \Magento\Framework\App\Action\Context $context
      */
@@ -116,8 +116,7 @@ class Update extends \Magento\Framework\App\Action\Action
             return;
         }
 
-        $request = $this->_jsonHelper
-            ->jsonDecode(file_get_contents('php://input'));
+        $request = $this->_getRequest();
 
         $this->_logRequest($request);
 
@@ -160,7 +159,7 @@ class Update extends \Magento\Framework\App\Action\Action
 
     protected function _checkIsActive()
     {
-        if (!$this->helper->isActive()) {
+        if (!$this->_helper->isActive()) {
             $response = $this->_prepareResponse(
                 false,
                 self::ERROR_SYNC_DISABLED
@@ -177,12 +176,11 @@ class Update extends \Magento\Framework\App\Action\Action
     protected function _checkApiKey()
     {
         $apiKey = $this->getRequest()->getParam('api_key');
-        
+
         if (empty($apiKey)) {
             $response = $this->_prepareResponse(
                 false,
-                self::ERROR_API_KEY_MISSING,
-                Zend_Log::WARN
+                self::ERROR_API_KEY_MISSING
             );
 
             $this->getResponse()->setBody($response);
@@ -190,21 +188,30 @@ class Update extends \Magento\Framework\App\Action\Action
             return false;
         }
 
-        $configuredApiKey = Mage::helper('shippit')->getApiKey();
-        
+        $configuredApiKey = $this->_helper->getApiKey();
+
         if ($configuredApiKey != $apiKey) {
             $response = $this->_prepareResponse(
                 false,
-                self::ERROR_API_KEY_MISMATCH,
-                Zend_Log::WARN
+                self::ERROR_API_KEY_MISMATCH
             );
-            
+
             $this->getResponse()->setBody($response);
 
             return false;
         }
 
         return true;
+    }
+
+    protected function _getRequest()
+    {
+        if (!empty(file_get_contents('php://input'))) {
+            return $this->_jsonHelper
+                ->jsonDecode(file_get_contents('php://input'));
+        } else {
+            return array();
+        }
     }
 
     protected function _logRequest($request = array())
@@ -223,8 +230,7 @@ class Update extends \Magento\Framework\App\Action\Action
         if (empty($request)) {
             $response = $this->_prepareResponse(
                 false,
-                self::ERROR_BAD_REQUEST,
-                Zend_Log::WARN
+                self::ERROR_BAD_REQUEST
             );
 
             $this->getResponse()->setBody($response);
@@ -237,7 +243,7 @@ class Update extends \Magento\Framework\App\Action\Action
                 true,
                 self::NOTICE_SHIPMENT_STATUS
             );
-            
+
             $this->getResponse()->setBody($response);
 
             return false;
@@ -248,7 +254,7 @@ class Update extends \Magento\Framework\App\Action\Action
                 false,
                 self::ERROR_ORDER_MISSING
             );
-            
+
             $this->getResponse()->setBody($response);
 
             return false;
@@ -264,7 +270,7 @@ class Update extends \Magento\Framework\App\Action\Action
                 false,
                 self::ERROR_ORDER_MISSING
             );
-            
+
             $this->getResponse()->setBody($response);
 
             return false;
@@ -297,7 +303,7 @@ class Update extends \Magento\Framework\App\Action\Action
         if (!isset($request['retailer_order_number'])) {
             return false;
         }
-     
+
         $orderIncrementId = $request['retailer_order_number'];
 
         return $this->_orderInterface->load($orderIncrementId, 'increment_id');
@@ -316,15 +322,19 @@ class Update extends \Magento\Framework\App\Action\Action
     {
         if (isset($request['courier_name'])) {
             return 'Shippit - ' . $request['courier_name'];
-        }
-        else {
+        } else {
             return 'Shippit';
         }
     }
 
     protected function _getTrackingNumber($request = array())
     {
-        return $request['tracking_number'];
+        if (isset($request['tracking_number'])) {
+            return $request['tracking_number'];
+        }
+        else {
+            return 'N/A';
+        }
     }
 
     protected function _prepareResponse($success, $message)
@@ -336,7 +346,7 @@ class Update extends \Magento\Framework\App\Action\Action
 
         $metaData = [
             'api_request' => [
-                'request_body' => $this->_jsonHelper->jsonDecode(file_get_contents('php://input')),
+                'request_body' => $this->_getRequest(),
                 'response_body' => $response
             ]
         ];
@@ -384,7 +394,7 @@ class Update extends \Magento\Framework\App\Action\Action
 
             return $this->_prepareResponse(true, self::SUCCESS_SHIPMENT_CREATED);
         }
-        
+
         return $this->_prepareResponse(false, self::ERROR_SHIPMENT_FAILED);
     }
 }
