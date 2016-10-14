@@ -29,7 +29,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements SyncOrderI
     const STATUS_FAILED_TEXT = 'Failed';
 
     const SYNC_MAX_ATTEMPTS = 5;
-    
+
     /**
      * @var \Magento\Sales\Api\Data\OrderInterface
      */
@@ -39,6 +39,11 @@ class Order extends \Magento\Framework\Model\AbstractModel implements SyncOrderI
      * @var \Shippit\Shipping\Api\Data\SyncOrderItemInterface
      */
     protected $_syncOrderItemInterface;
+
+    /**
+     * @var \Shippit\Shipping\Model\Sync\Order\ItemFactory
+     */
+    protected $_syncOrderItemFactory;
 
     /**
      * An instance of an order
@@ -53,7 +58,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements SyncOrderI
      * @var Array
      */
     protected $_items;
-    
+
     /**
      * A collection of sync order items
      *
@@ -75,12 +80,14 @@ class Order extends \Magento\Framework\Model\AbstractModel implements SyncOrderI
         \Magento\Framework\Registry $registry,
         \Magento\Sales\Api\Data\OrderInterface $orderInterface,
         \Shippit\Shipping\Api\Data\SyncOrderItemInterface $syncOrderItemInterface,
+        \Shippit\Shipping\Model\Sync\Order\ItemFactory $syncOrderItemFactory,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
     ) {
         $this->_orderInterface = $orderInterface;
         $this->_syncOrderItemInterface = $syncOrderItemInterface;
+        $this->_syncOrderItemFactory = $syncOrderItemFactory;
 
         parent::__construct($context, $registry, $resource, $resourceCollection, $data);
     }
@@ -102,7 +109,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements SyncOrderI
             ->setShippingMethod($syncOrderRequest->getShippingMethod())
             ->setApiKey($syncOrderRequest->getApiKey());
     }
-    
+
     /**
      * Get the Sync Order Id
      *
@@ -347,7 +354,10 @@ class Order extends \Magento\Framework\Model\AbstractModel implements SyncOrderI
     public function addItems(array $items)
     {
         foreach ($items as $item) {
-            $itemObject = $this->_syncOrderItemInterface->addItem($item);
+            $itemObject = $this->_syncOrderItemFactory
+                ->create()
+                ->addItem($item);
+
             $this->addItem($itemObject);
         }
 
