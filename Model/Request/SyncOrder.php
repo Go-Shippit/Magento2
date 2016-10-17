@@ -281,9 +281,9 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
         $newItem = [
             'sku' => $sku,
             'title' => $title,
-            'qty' => $qty,
-            'price' => $price,
-            'weight' => $weight,
+            'qty' => (float) $qty,
+            'price' => (float) $price,
+            'weight' => (float) $weight,
             'location' => $location
         ];
 
