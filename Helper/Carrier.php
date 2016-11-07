@@ -64,6 +64,16 @@ class Carrier extends \Shippit\Shipping\Helper\Data
         return explode(',', self::getValue('allowed_methods'));
     }
 
+    public function getMargin()
+    {
+        return self::getValue('margin');
+    }
+
+    public function getMarginAmount()
+    {
+        return self::getValue('margin_amount');
+    }
+
     public function getMaxTimeslots()
     {
         return self::getValue('max_timeslots');

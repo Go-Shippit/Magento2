@@ -131,7 +131,20 @@
                     <can_be_empty>1</can_be_empty>
                 </field>
 
-                <field id="max_timeslots" translate="label" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="margin" translate="label" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Margin Enabled</label>
+                    <source_model>Shippit\Shipping\Model\Config\Source\Shippit\Margin</source_model>
+                </field>
+
+                <field id="margin_amount" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Margin Amount</label>
+                    <!-- @TODO:<depends>
+                        <field id="margin">fixed</field>
+                        <field id="margin">percentage</field>
+                    </depends> -->
+                </field>
+
+                <field id="max_timeslots" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Maximum Timeslots</label>
                     <source_model>Shippit\Shipping\Model\Config\Source\Shippit\MaxTimeslots</source_model>
                 </field>
@@ -170,24 +183,24 @@
                         <field id="enabled_product_attribute_active">1</field>
                     </depends>
                 </field>
-                
+
                 <field id="sallowspecific" translate="label" type="select" sortOrder="150" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Ship to Applicable Countries</label>
                     <frontend_class>shipping-applicable-country</frontend_class>
                     <source_model>Magento\Shipping\Model\Config\Source\Allspecificcountries</source_model>
                 </field>
-                
+
                 <field id="specificcountry" translate="label" type="multiselect" sortOrder="160" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Ship to Specific Countries</label>
                     <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
                     <can_be_empty>1</can_be_empty>
                 </field>
-                
+
                 <field id="showmethod" translate="label" type="select" sortOrder="170" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Show Method if Not Applicable</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                
+
                 <field id="specificerrmsg" translate="label" type="textarea" sortOrder="180" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Displayed Error Message</label>
                     <depends>

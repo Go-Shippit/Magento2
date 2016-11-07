@@ -15,11 +15,11 @@
  */
 
 namespace Shippit\Shipping\Model\Carrier;
- 
+
 use Magento\Quote\Model\Quote\Address\RateRequest;
 use Magento\Shipping\Model\Carrier\AbstractCarrierOnline;
 use Magento\Shipping\Model\Rate\Result;
- 
+
 class Shippit extends AbstractCarrierOnline implements
     \Magento\Shipping\Model\Carrier\CarrierInterface
 {
@@ -36,7 +36,7 @@ class Shippit extends AbstractCarrierOnline implements
     protected $_api;
     protected $_methods;
     protected $_quote;
- 
+
     /**
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      * @param \Magento\Quote\Model\Quote\Address\RateResult\ErrorFactory $rateErrorFactory
@@ -120,7 +120,7 @@ class Shippit extends AbstractCarrierOnline implements
         $postcode = $request->getDestPostcode();
         $state = $request->getDestRegionCode();
         $suburb = $request->getDestCity();
-        
+
         if (!empty($postcode) && !empty($state) && !empty($suburb)) {
             return $this;
         }
@@ -128,11 +128,11 @@ class Shippit extends AbstractCarrierOnline implements
             return false;
         }
     }
- 
+
     protected function _doShipmentRequest(\Magento\Framework\DataObject $request)
     {
         $result = new \Magento\Framework\DataObject();
-        
+
         return $result;
     }
 
@@ -162,7 +162,7 @@ class Shippit extends AbstractCarrierOnline implements
             $this->_logger->addDebug(self::NOTICE_PRODUCTS_NOT_ELIGIBLE);
             return false;
         }
-        
+
         $quoteRequest = $this->_quote;
 
         // Get the first available dates based on the customer's shippit profile settings
@@ -183,10 +183,10 @@ class Shippit extends AbstractCarrierOnline implements
         }
         catch (\Exception $e) {
             $this->_logger->addError('Quote Request Error - ' . $e->getMessage());
-        
+
             return false;
         }
-        
+
         /** @var \Magento\Shipping\Model\Rate\Result $rateResult */
         $rateResult = $this->_rateFactory->create();
 
@@ -235,7 +235,7 @@ class Shippit extends AbstractCarrierOnline implements
                 ->setMethod('Standard')
                 ->setMethodTitle('Standard')
                 ->setCost($shippingQuoteQuote->price)
-                ->setPrice($shippingQuoteQuote->price);
+                ->setPrice($this->_getQuotePrice($shippingQuoteQuote->price));
 
             $rateResult->append($rateResultMethod);
         }
@@ -250,7 +250,7 @@ class Shippit extends AbstractCarrierOnline implements
                 ->setMethod('Express')
                 ->setMethodTitle('Express')
                 ->setCost($shippingQuoteQuote->price)
-                ->setPrice($shippingQuoteQuote->price);
+                ->setPrice($this->_getQuotePrice($shippingQuoteQuote->price));
 
             $rateResult->append($rateResultMethod);
         }
@@ -287,10 +287,32 @@ class Shippit extends AbstractCarrierOnline implements
                 ->setMethod($method)
                 ->setMethodTitle($methodTitle)
                 ->setCost($shippingQuoteQuote->price)
-                ->setPrice($shippingQuoteQuote->price);
+                ->setPrice($this->_getQuotePrice($shippingQuoteQuote->price));
 
             $rateResult->append($rateResultMethod);
         }
+    }
+
+    /**
+     * Get the quote price, including the margin amount if enabled
+     * @param  float $quotePrice The quote amount
+     * @return float             The quote amount, with margin if applicable
+     */
+    private function _getQuotePrice($quotePrice)
+    {
+        switch ($this->_helper->getMargin()) {
+            case 'fixed':
+                $quotePrice += (float) $this->_helper->getMarginAmount();
+                break;
+            case 'percentage':
+                $quotePrice *= (1 + ( (float) $this->_helper->getMarginAmount() / 100));
+                break;
+        }
+
+        // ensure we get the lowest price, but not below 0.
+        $quotePrice = max(0, $quotePrice);
+
+        return $quotePrice;
     }
 
     public function isTrackingAvailable()
@@ -314,7 +336,7 @@ class Shippit extends AbstractCarrierOnline implements
 
         foreach ($trackings as $tracking) {
             $trackStatus = $this->_trackStatusFactory->create();
-            
+
             $trackStatus->setCarrier($this->_code)
                 ->setCarrierTitle($this->getConfigData('title'))
                 ->setUrl('https://www.shippit.com/track/' . $tracking)
@@ -336,7 +358,7 @@ class Shippit extends AbstractCarrierOnline implements
     public function getAllowedMethods()
     {
         $configAllowedMethods = $this->_helper->getAllowedMethods();
-        
+
         $availableMethods = $this->_methods->toArray();
 
         $allowedMethods = [];
@@ -430,7 +452,7 @@ class Shippit extends AbstractCarrierOnline implements
 
         $attributeCode = $this->_helper->getEnabledProductAttributeCode();
         $attributeValue = $this->_helper->getEnabledProductAttributeValue();
-        
+
         if (!empty($attributeCode) && !empty($attributeValue)) {
             $attributeProductCount = $this->_product
                 ->getCollection()
