@@ -204,21 +204,32 @@ class Shippit extends AbstractCarrierOnline implements
     {
         $allowedMethods = $this->_helper->getAllowedMethods();
 
-        $isPremiumAvailable = in_array('premium', $allowedMethods);
+        $isPriorityAvailable = in_array('priority', $allowedMethods);
         $isExpressAvailable = in_array('express', $allowedMethods);
         $isStandardAvailable = in_array('standard', $allowedMethods);
 
         // Process the response and return available options
         foreach ($shippingQuotes as $shippingQuoteKey => $shippingQuote) {
             if ($shippingQuote->success) {
-                if ($shippingQuote->courier_type == 'Bonds'
-                    && $isPremiumAvailable) {
-                    $this->_addPremiumQuote($rateResult, $shippingQuote);
-                } else if ($shippingQuote->courier_type == 'eparcelexpress'
-                    && $isExpressAvailable) {
-                    $this->_addExpressQuote($rateResult, $shippingQuote);
-                } else if ($isStandardAvailable) {
-                    $this->_addStandardQuote($rateResult, $shippingQuote);
+                switch ($shippingQuote->service_level) {
+                    case 'priority':
+                        if ($isPriorityAvailable) {
+                            $this->_addPriorityQuote($rateResult, $shippingQuote);
+                        }
+
+                        break;
+                    case 'express':
+                        if ($isExpressAvailable) {
+                            $this->_addExpressQuote($rateResult, $shippingQuote);
+                        }
+
+                        break;
+                    case 'standard':
+                        if ($isStandardAvailable) {
+                            $this->_addStandardQuote($rateResult, $shippingQuote);
+                        }
+
+                        break;
                 }
             }
         }
@@ -256,7 +267,7 @@ class Shippit extends AbstractCarrierOnline implements
         }
     }
 
-    private function _addPremiumQuote(&$rateResult, $shippingQuote)
+    private function _addPriorityQuote(&$rateResult, $shippingQuote)
     {
         $maxTimeslots = $this->_helper->getMaxTimeslots();
         $timeslotCount = 0;
@@ -274,12 +285,12 @@ class Shippit extends AbstractCarrierOnline implements
                 $timeslotCount++;
                 $carrierTitle = $this->_helper->getTitle();
                 $method = $shippingQuote->courier_type . '_' . $shippingQuoteQuote->delivery_date . '_' . $shippingQuoteQuote->delivery_window;
-                $methodTitle = 'Premium' . ' - Delivered ' . $shippingQuoteQuote->delivery_date. ', Between ' . $shippingQuoteQuote->delivery_window_desc;
+                $methodTitle = 'Priority' . ' - Delivered ' . $shippingQuoteQuote->delivery_date. ', Between ' . $shippingQuoteQuote->delivery_window_desc;
             }
             else {
                 $carrierTitle = $this->_helper->getTitle();
-                $method = 'Premium';
-                $methodTitle = 'Premium';
+                $method = 'Priority';
+                $methodTitle = 'Priority';
             }
 
             $rateResultMethod->setCarrier($this->_code)
@@ -496,7 +507,7 @@ class Shippit extends AbstractCarrierOnline implements
             if ($item->getProduct()->getTypeId() == \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE) {
                 $parcelAttributes[] = [
                     'qty' => $item->getQty(),
-                    'weight' => $item->getWeight()
+                    'weight' => ($item->getWeight() ? $item->getWeight() : 0.2)
                 ];
             }
         }

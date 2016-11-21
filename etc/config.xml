@@ -47,7 +47,7 @@
             <shippit>
                 <model>Shippit\Shipping\Model\Carrier\Shippit</model>
                 <active>0</active>
-                <allowed_methods>standard,express,premium</allowed_methods>
+                <allowed_methods>standard,express,priority</allowed_methods>
                 <title>Shippit</title>
                 <max_timeslots/>
                 <enabled_product_active>0</enabled_product_active>

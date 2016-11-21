@@ -44,9 +44,9 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
     protected $_syncOrder;
 
     // Shippit Service Class API Mappings
-    const SHIPPING_SERVICE_STANDARD = 'CouriersPlease';
-    const SHIPPING_SERVICE_EXPRESS  = 'eparcelexpress';
-    const SHIPPING_SERVICE_PREMIUM  = 'Bonds';
+    const SHIPPING_SERVICE_STANDARD = 'Standard';
+    const SHIPPING_SERVICE_EXPRESS  = 'Express';
+    const SHIPPING_SERVICE_PRIORITY = 'Priority';
 
     /**
      * @param \Magento\Framework\Model\Context $context
@@ -372,9 +372,9 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
      */
     public function setShippingMethod($shippingMethod = null)
     {
-        // if the order is a premium delivery,
+        // if the order is a priority delivery,
         // get the special delivery attributes
-        if ($shippingMethod == 'premium') {
+        if ($shippingMethod == 'priority') {
             $deliveryDate = $this->_getOrderDeliveryDate($this->_order);
             $deliveryWindow = $this->_getOrderDeliveryWindow($this->_order);
         }
@@ -384,8 +384,8 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
             return $this->setCourierType(self::SHIPPING_SERVICE_STANDARD);
         } else if ($shippingMethod == 'express') {
             return $this->setCourierType(self::SHIPPING_SERVICE_EXPRESS);
-        } else if ($shippingMethod == 'premium' && isset($deliveryDate) && isset($deliveryWindow)) {
-            return $this->setCourierType(self::SHIPPING_SERVICE_PREMIUM)
+        } else if ($shippingMethod == 'priority' && isset($deliveryDate) && isset($deliveryWindow)) {
+            return $this->setCourierType(self::SHIPPING_SERVICE_PRIORITY)
                 ->setDeliveryDate($deliveryDate)
                 ->setDeliveryWindow($deliveryWindow);
         } else {

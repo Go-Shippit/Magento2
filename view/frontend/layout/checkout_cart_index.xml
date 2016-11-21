@@ -1,3 +1,18 @@
+<?xml version="1.0"?>
+<!--
+ * Shippit Pty Ltd
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the terms
+ * that is available through the world-wide-web at this URL:
+ * http://www.shippit.com/terms
+ *
+ * @category   Shippit
+ * @copyright  Copyright (c) 2016 by Shippit Pty Ltd (http://www.shippit.com)
+ * @author     Matthew Muscat <matthew@mamis.com.au>
+ * @license    http://www.shippit.com/terms
+-->
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
         <referenceBlock name="checkout.cart.shipping">
@@ -9,7 +24,7 @@
                                 <item name="shipping-rates-validation" xsi:type="array">
                                     <item name="children" xsi:type="array">
                                         <item name="shippit-rates-validation" xsi:type="array">
-                                            <item name="component" xsi:type="string">MShippit_Shipping/js/view/shipping-rates-validation</item>
+                                            <item name="component" xsi:type="string">Shippit_Shipping/js/view/shipping-rates-validation</item>
                                         </item>
                                     </item>
                                 </item>
