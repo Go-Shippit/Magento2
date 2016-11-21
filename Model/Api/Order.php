@@ -161,7 +161,7 @@ class Order extends \Magento\Framework\Model\AbstractModel
                 ['eq' => $storeId]
             );
     }
-    
+
     public function sync($syncOrder, $displayNotifications = false)
     {
         if (!$this->_helper->isActive()) {
@@ -172,11 +172,11 @@ class Order extends \Magento\Framework\Model\AbstractModel
             // increase the attempt count by 1
             $syncOrder->setAttemptCount($syncOrder->getAttemptCount() + 1);
             $order = $syncOrder->getOrder();
-            
+
             // Build the order request
             $orderRequest = $this->_requestOrderFactory->create()
                 ->processSyncOrder($syncOrder);
-                
+
             $apiResponse = $this->_api->sendOrder($orderRequest);
 
             // Add the order tracking details to

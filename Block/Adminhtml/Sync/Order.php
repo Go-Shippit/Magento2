@@ -22,7 +22,7 @@ class Order extends \Magento\Backend\Block\Widget\Grid\Container
     {
         $this->_blockGroup = 'Shippit_Shipping';
         $this->_controller = 'adminhtml_sync_order';
-        
+
         parent::_construct();
         $this->removeButton('add');
     }

@@ -95,7 +95,7 @@ class Order extends \Shippit\Shipping\Helper\Data
             $shippingOptions = str_replace(self::CARRIER_CODE . '_', '', $shippingMethod);
             $shippingOptions = explode('_', $shippingOptions);
             $courierData = [];
-            
+
             if (isset($shippingOptions[0])) {
                 $method = strtolower($shippingOptions[0]);
 
@@ -110,7 +110,7 @@ class Order extends \Shippit\Shipping\Helper\Data
                 }
             }
         }
-        
+
         // Use the mapping values and attempt to get a value
         $shippingMethodMapping = $this->getShippingMethodMapping();
 

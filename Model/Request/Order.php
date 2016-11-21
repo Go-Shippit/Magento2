@@ -68,7 +68,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
         $this->_helper = $helper;
         $this->_syncOrder = $syncOrder;
         $this->_carrierCode = $helper::CARRIER_CODE;
-        
+
         parent::__construct($context, $registry, $resource, $resourceCollection, $data);
     }
 
@@ -133,7 +133,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
         // Attempt to retrieve from the postcode lookup for AU Addresses
         if (empty($deliveryState) && $this->getDeliveryCountry() == 'AU') {
             $postcodeState = $this->_helper->getStateFromPostcode($this->getDeliveryPostcode());
-        
+
             if ($postcodeState) {
                 $this->setData(self::DELIVERY_STATE, $postcodeState);
             }
@@ -141,7 +141,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
 
         $deliveryState = $this->getDeliveryState();
         $deliverySuburb = $this->getDeliverySuburb();
-        
+
         // If the delivery state is empty
         // Copy the suburb field to the state field
         if (empty($deliveryState) && !empty($deliverySuburb)) {
@@ -403,7 +403,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
             $shippingOptions = str_replace($this->_carrierCode . '_', '', $shippingMethod);
             $shippingOptions = explode('_', $shippingOptions);
             $courierData = [];
-            
+
             if (isset($shippingOptions[0])) {
                 if ($shippingOptions[0] == 'Bonds') {
                     return $shippingOptions[1];
@@ -431,7 +431,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
             $shippingOptions = str_replace($this->_carrierCode . '_', '', $shippingMethod);
             $shippingOptions = explode('_', $shippingOptions);
             $courierData = [];
-            
+
             if (isset($shippingOptions[0])) {
                 if ($shippingOptions[0] == 'Bonds') {
                     return $shippingOptions[2];

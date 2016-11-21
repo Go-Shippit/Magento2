@@ -41,7 +41,7 @@ class Status implements \Magento\Framework\Option\ArrayInterface
                 'value' => SyncOrder::STATUS_FAILED
             ]
         ];
-        
+
         return $optionsArray;
     }
 
@@ -57,7 +57,7 @@ class Status implements \Magento\Framework\Option\ArrayInterface
             SyncOrder::STATUS_SYNCED => SyncOrder::STATUS_SYNCED_TEXT,
             SyncOrder::STATUS_FAILED => SyncOrder::STATUS_FAILED_TEXT
         ];
-        
+
         return $optionsArray;
     }
 }

@@ -72,7 +72,7 @@ class MassSync extends \Magento\Backend\App\Action
             // display error message
             $this->messageManager->addError($e->getMessage());
         }
-        
+
         return $resultRedirect->setPath('sales/order/index/');
     }
 }

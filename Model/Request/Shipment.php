@@ -64,7 +64,7 @@ class Shipment extends \Magento\Framework\Model\AbstractModel implements Shipmen
         $this->_helper = $helper;
         $this->_orderInterface = $orderInterface;
         $this->_orderItemInterface = $orderItemInterface;
-        
+
         parent::__construct($context, $registry, $resource, $resourceCollection, $data);
     }
 
@@ -77,7 +77,7 @@ class Shipment extends \Magento\Framework\Model\AbstractModel implements Shipmen
     {
         $order = $this->_orderInterface
             ->load($incrementId, 'increment_id');
-       
+
         return $this->setOrder($order);
     }
 
@@ -138,9 +138,9 @@ class Shipment extends \Magento\Framework\Model\AbstractModel implements Shipmen
              * get the parent item to determine the correct qty to ship
              */
             $rootItem = $this->_getRootItem($item);
-            
+
             $itemQty = $this->_helper->getQtyToShip($rootItem, $requestedQty);
-            
+
             if ($itemQty > 0) {
                 $this->addItem($item->getId(), $itemQty);
             }

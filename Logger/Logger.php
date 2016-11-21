@@ -18,5 +18,5 @@ namespace Shippit\Shipping\Logger;
 
 class Logger extends \Monolog\Logger
 {
-    
+
 }

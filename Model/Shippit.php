@@ -25,7 +25,7 @@ class Shippit extends \Magento\Framework\Model\AbstractModel implements \Shippit
     protected $_logger;
     protected $_order;
     protected $_messageManager;
- 
+
     public function __construct (
         \Shippit\Shipping\Helper\Sync\Order $helper,
         \Shippit\Shipping\Api\Data\SyncOrderInterfaceFactory $syncOrder,
@@ -94,7 +94,7 @@ class Shippit extends \Magento\Framework\Model\AbstractModel implements \Shippit
             ->create()
             ->addSyncOrderRequest($request)
             ->save();
-        
+
         // sync immediately if sync mode is realtime,
         if ($syncMode == \Shippit\Shipping\Model\Config\Source\Shippit\Sync\Order\Mode::REALTIME) {
             // return the result of the sync

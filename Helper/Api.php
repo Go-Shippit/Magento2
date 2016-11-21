@@ -101,7 +101,7 @@ class Api extends \Magento\Framework\App\Helper\AbstractHelper
         if ($exceptionOnResponseError && $apiResponse->isError()) {
             $message = 'API Response Error' . "\n";
             $message .= 'Response: ' . $apiResponse->getStatus() . ' - ' . $apiResponse->getMessage() . "\n";
-            
+
             $this->log($uri, $requestData, $apiResponse, false, $message);
 
             throw new LocalizedException(

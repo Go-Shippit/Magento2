@@ -43,7 +43,7 @@ class ServiceClasses extends \Magento\Framework\View\Element\Html\Select
 
         $this->methods = $methods;
     }
-    
+
     /**
      * Render block HTML
      *

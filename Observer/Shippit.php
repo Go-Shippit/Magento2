@@ -23,7 +23,7 @@ class Shippit implements ObserverInterface
 {
     protected $_helper;
     protected $_shippit;
- 
+
     public function __construct (
         \Shippit\Shipping\Helper\Sync\Order $helper,
         \Shippit\Shipping\Model\Shippit $shippit

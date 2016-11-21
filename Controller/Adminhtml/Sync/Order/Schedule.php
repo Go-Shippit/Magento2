@@ -61,7 +61,7 @@ class Schedule extends \Magento\Backend\App\Action
 
         // display error message
         $this->messageManager->addError(__('We can\'t find a Order Sync to schedule.'));
-        
+
         return $resultRedirect->setPath('*/*/');
     }
 }

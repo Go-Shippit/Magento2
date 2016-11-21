@@ -57,7 +57,7 @@ class SyncOrdersCommand extends Command
 
         parent::configure();
     }
- 
+
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->_state->setAreaCode('adminhtml');

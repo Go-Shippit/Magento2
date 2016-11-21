@@ -47,7 +47,7 @@ class Delete extends \Magento\Backend\App\Action
                 $model = $this->_objectManager
                     ->create('Shippit\Shipping\Api\Data\SyncOrderInterface')
                     ->load($id);
-                    
+
                 $model->delete();
 
                 // display success message
@@ -63,7 +63,7 @@ class Delete extends \Magento\Backend\App\Action
 
         // display error message
         $this->messageManager->addError(__('We can\'t find a Order Sync to delete.'));
-        
+
         return $resultRedirect->setPath('*/*/');
     }
 }

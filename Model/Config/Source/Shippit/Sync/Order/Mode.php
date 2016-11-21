@@ -45,7 +45,7 @@ class Mode implements \Magento\Framework\Option\ArrayInterface
                 'value' => self::CUSTOM
             ]
         ];
-        
+
         return $optionsArray;
     }
 
@@ -61,7 +61,7 @@ class Mode implements \Magento\Framework\Option\ArrayInterface
             self::SCHEDULED => 'Scheduled',
             self::CUSTOM => 'Custom'
         ];
-        
+
         return $optionsArray;
     }
 }

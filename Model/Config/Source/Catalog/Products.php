@@ -40,14 +40,14 @@ class Products implements \Magento\Framework\Option\ArrayInterface
             ->getCollection()
             ->addAttributeToSelect('name')
             ->setOrder('name', 'ASC');
-    
+
         foreach ($products as $product) {
             $productArray[] = [
                 'label' => $product->getName(),
                 'value' => $product->getId()
             ];
         }
-    
+
         return $productArray;
     }
 }

@@ -34,7 +34,7 @@ class Context
         $buttonList
     ) {
         $request = $this->_context->getRequest();
-        
+
         if ($request->getFullActionName() == 'sales_order_view') {
             $buttonList->add(
                 'shippit_send_order',

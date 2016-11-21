@@ -31,7 +31,7 @@ class AddOrderToSyncQueuePlugin
     protected $_logger;
 
     protected $_hasAttemptedSync = false;
- 
+
     public function __construct (
         \Shippit\Shipping\Helper\Sync\Order $helper,
         \Shippit\Shipping\Api\Data\SyncOrderInterface $syncOrder,
@@ -45,7 +45,7 @@ class AddOrderToSyncQueuePlugin
         $this->_apiOrder = $apiOrder;
         $this->_logger = $logger;
     }
- 
+
     public function afterPlace($subject, $result)
     {
         // Ensure the module is active
@@ -123,7 +123,7 @@ class AddOrderToSyncQueuePlugin
             // ensure the sync order is in the pending state
             && $syncOrder->getStatus() == SyncOrder::STATUS_PENDING) {
             $this->_hasAttemptedSync = true;
-            
+
             // attempt the sync
             $syncResult = $this->_apiOrder->sync($syncOrder);
 

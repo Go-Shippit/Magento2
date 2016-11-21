@@ -63,7 +63,7 @@ class Attributes implements \Magento\Framework\Option\ArrayInterface
                 'value' => $attribute->getAttributeCode()
             ];
         }
-        
+
         return $attributeArray;
     }
 }

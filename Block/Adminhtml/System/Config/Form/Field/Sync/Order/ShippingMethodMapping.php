@@ -106,7 +106,7 @@ class ShippingMethodMapping extends \Magento\Config\Block\System\Config\Form\Fie
         $options = [];
         $shippingMethod = $row->getShippingMethod();
         $shippitServiceClass = $row->getShippitServiceClass();
-        
+
         if ($shippingMethod) {
             $options['option_' . $this->getShippingMethodRenderer()->calcOptionHash($shippingMethod)] = 'selected="selected"';
         }
@@ -114,7 +114,7 @@ class ShippingMethodMapping extends \Magento\Config\Block\System\Config\Form\Fie
         if ($shippitServiceClass) {
             $options['option_' . $this->getShippitServiceClassRenderer()->calcOptionHash($shippitServiceClass)] = 'selected="selected"';
         }
-        
+
         $row->setData('option_extra_attrs', $options);
     }
 }

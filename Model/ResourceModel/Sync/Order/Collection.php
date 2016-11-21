@@ -24,7 +24,7 @@ class Collection extends AbstractCollection
      * @var string
      */
     protected $_idFieldName = 'sync_order_id';
-    
+
     /**
      * Define resource model
      *

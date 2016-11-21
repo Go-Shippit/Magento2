@@ -57,7 +57,7 @@ class Sync extends \Magento\Backend\App\Action
 
             return $resultRedirect->setPath('sales/order/view/', ['order_id' => $orderId]);
         }
-     
+
         try {
             $this->_eventManager->dispatch(
                 'shippit_add_order',
@@ -72,7 +72,7 @@ class Sync extends \Magento\Backend\App\Action
             // display error message
             $this->messageManager->addError($e->getMessage());
         }
-        
+
         return $resultRedirect->setPath('sales/order/view/', ['order_id' => $orderId]);
     }
 }

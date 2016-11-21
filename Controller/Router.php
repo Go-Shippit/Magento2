@@ -8,14 +8,14 @@ class Router implements \Magento\Framework\App\RouterInterface
      * @var \Magento\Framework\App\ActionFactory
      */
     protected $actionFactory;
- 
+
     /**
      * Response
      *
      * @var \Magento\Framework\App\ResponseInterface
      */
     protected $_response;
- 
+
     /**
      * @param \Magento\Framework\App\ActionFactory $actionFactory
      * @param \Magento\Framework\App\ResponseInterface $response
@@ -27,7 +27,7 @@ class Router implements \Magento\Framework\App\RouterInterface
         $this->actionFactory = $actionFactory;
         $this->_response = $response;
     }
- 
+
     /**
      * Validate and Match
      *
@@ -37,7 +37,7 @@ class Router implements \Magento\Framework\App\RouterInterface
     public function match(\Magento\Framework\App\RequestInterface $request)
     {
         $identifier = trim($request->getPathInfo(), '/');
-        
+
         if (strpos($identifier, 'shippit') !== false) {
             $request->setModuleName('shippit')
                 ->setControllerName('order')
@@ -46,7 +46,7 @@ class Router implements \Magento\Framework\App\RouterInterface
             //There is no match
             return;
         }
- 
+
         /*
          * We have match and now we will forward action
          */

@@ -48,7 +48,7 @@ class InstallData implements InstallDataInterface
             ];
             $setup->getConnection()
                 ->insert($tableCountryRegion, $bind);
-            
+
             $regionId = $setup->getConnection()
                 ->lastInsertId($setup->getTable('directory_country_region'));
 

@@ -21,7 +21,7 @@ use \Magento\Framework\Exception\LocalizedException;
 class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shippit\Shipping\Api\Request\SyncOrderInterface
 {
     const ERROR_NO_ITEMS_AVAILABLE_FOR_SHIPPING = 'No items could be added to the sync order request, please ensure the items are available for shipping';
-    
+
     /**
      * @var \Shippit\Shipping\Helper\Sync\Order
      */
@@ -60,7 +60,7 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
         $this->_helper = $helper;
         $this->_itemsHelper = $itemsHelper;
         $this->_orderItemInterface = $orderItemInterface;
-        
+
         parent::__construct($context, $registry, $resource, $resourceCollection, $data);
     }
 
@@ -227,7 +227,7 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
              * get the parent item to determine the correct qty to ship
              */
             $rootItem = $this->_getRootItem($item);
-            
+
             $itemQty = $this->_itemsHelper->getQtyToShip($rootItem, $requestedQty);
             $itemWeight = $item->getWeight();
 

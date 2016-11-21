@@ -42,7 +42,7 @@ class Quote extends \Magento\Framework\Model\AbstractModel implements QuoteInter
         array $data = []
     ) {
         $this->_helper = $helper;
-        
+
         parent::__construct($context, $registry, $resource, $resourceCollection, $data);
     }
 

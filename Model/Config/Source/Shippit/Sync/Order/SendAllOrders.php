@@ -48,7 +48,7 @@ class SendAllOrders implements \Magento\Framework\Option\ArrayInterface
                 'value' => self::NO
             ]
         ];
-        
+
         return $optionsArray;
     }
 
@@ -64,7 +64,7 @@ class SendAllOrders implements \Magento\Framework\Option\ArrayInterface
             self::ALL_AU => self::ALL_AU_LABEL,
             self::NO => self::NO_LABEL
         ];
-        
+
         return $optionsArray;
     }
 }

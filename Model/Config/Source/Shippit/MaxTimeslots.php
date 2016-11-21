@@ -42,7 +42,7 @@ class MaxTimeslots implements \Magento\Framework\Option\ArrayInterface
                 'value' => $timeslot
             ];
         }
-        
+
         return $optionsArray;
     }
 
@@ -61,7 +61,7 @@ class MaxTimeslots implements \Magento\Framework\Option\ArrayInterface
         foreach ($timeslots as $timeslot) {
             $array[$timeslot] = $timeslot . ' Timeslots';
         }
-        
+
         return $array;
     }
 }

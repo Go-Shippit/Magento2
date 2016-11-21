@@ -122,9 +122,9 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
                 'order_status',
                 'order.status'
             );
- 
+
         $this->setCollection($collection);
-    
+
         return parent::_prepareCollection();
     }
 
@@ -161,7 +161,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
                 'index' => 'created_at'
             ]
         );
- 
+
         $this->addColumn(
             'shipping_method',
             [
@@ -171,7 +171,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
                 'options' => $this->shippitMethods->toArray(),
             ]
         );
- 
+
         $this->addColumn(
             'order_state',
             [
@@ -262,7 +262,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
             $value,
             $value
         );
-        
+
         return $cell;
     }
 

@@ -39,7 +39,7 @@ class ValidateMerchantObserver implements ObserverInterface
     protected $_storeManager;
 
     protected $_hasAttemptedSync = false;
- 
+
     public function __construct (
         \Shippit\Shipping\Helper\Data $helper,
         \Shippit\Shipping\Helper\Sync\Shipping $syncShippingHelper,
@@ -59,7 +59,7 @@ class ValidateMerchantObserver implements ObserverInterface
         $this->_storeManager = $storeManager;
         $this->_logger = $logger;
     }
- 
+
     public function execute(Observer $observer)
     {
         try {
@@ -80,7 +80,7 @@ class ValidateMerchantObserver implements ObserverInterface
             else {
                 $this->_logger->addNotice(self::NOTICE_API_KEY_VALID);
                 $this->_messageManager->addSuccess(self::NOTICE_API_KEY_VALID);
-                
+
                 $apiKeyValid = true;
             }
         }
@@ -113,11 +113,11 @@ class ValidateMerchantObserver implements ObserverInterface
             //             '_secure' => true,
             //         ]
             //     );
-            
+
             $webhookUrl = $this->_storeManager->getStore()
                 ->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_LINK)
                 . 'shippit/order/update/api_key/' . $apiKey;
-            
+
             $requestData = $this->_dataObjectFactory->create();
             $requestData->setWebhookUrl($webhookUrl);
             $merchant = $this->_api->putMerchant($requestData, true);
