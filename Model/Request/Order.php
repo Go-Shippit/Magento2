@@ -44,9 +44,9 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
     protected $_syncOrder;
 
     // Shippit Service Class API Mappings
-    const SHIPPING_SERVICE_STANDARD = 'Standard';
-    const SHIPPING_SERVICE_EXPRESS  = 'Express';
-    const SHIPPING_SERVICE_PRIORITY = 'Priority';
+    const SHIPPING_SERVICE_STANDARD = 'standard';
+    const SHIPPING_SERVICE_EXPRESS  = 'express';
+    const SHIPPING_SERVICE_PRIORITY = 'priority';
 
     /**
      * @param \Magento\Framework\Model\Context $context
