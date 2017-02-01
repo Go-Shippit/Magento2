@@ -160,7 +160,6 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
         $validShippingMethods = [
             'standard',
             'express',
-            'international',
             'priority'
         ];
 
