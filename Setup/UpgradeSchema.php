@@ -85,6 +85,18 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 ]
             );
 
+        // drop the foreign key while we adjust indexes
+        $installer->getConnection()
+            ->dropForeignKey(
+                $installer->getTable('shippit_sync_order'),
+                $installer->getFkName(
+                    'shippit_sync_order',
+                    'order_id',
+                    'sales_order',
+                    'entity_id'
+                )
+            );
+
         // drop unique index on order_id
         $installer->getConnection()
             ->dropIndex(
@@ -105,6 +117,22 @@ class UpgradeSchema implements UpgradeSchemaInterface
                     ['order_id']
                 ),
                 'order_id'
+            );
+
+        // re-add the foreign key once all indexes are updated
+        $installer->getConnection()
+            ->addForeignKey(
+                $installer->getFkName(
+                    'shippit_sync_order',
+                    'order_id',
+                    'sales_order',
+                    'entity_id'
+                ),
+                $installer->getTable('shippit_sync_order'),
+                'order_id',
+                $installer->getTable('sales_order'),
+                'entity_id',
+                \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
             );
 
         $installer->getConnection()

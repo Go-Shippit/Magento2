@@ -38,7 +38,7 @@ class InstallSchema implements InstallSchemaInterface
 
         $table = $installer->getConnection()
             ->newTable($installer->getTable('shippit_sync_order'))
-             ->addColumn(
+            ->addColumn(
                 'sync_order_id',
                 \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
                 null,
