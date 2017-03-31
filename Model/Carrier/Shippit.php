@@ -200,7 +200,7 @@ class Shippit extends AbstractCarrierOnline implements
         return $this->_code;
     }
 
-    private function _processShippingQuotes(&$rateResult, $shippingQuotes)
+    protected function _processShippingQuotes(&$rateResult, $shippingQuotes)
     {
         $allowedMethods = $this->_helper->getAllowedMethods();
 
@@ -237,7 +237,7 @@ class Shippit extends AbstractCarrierOnline implements
         return $rateResult;
     }
 
-    private function _addStandardQuote(&$rateResult, $shippingQuote)
+    protected function _addStandardQuote(&$rateResult, $shippingQuote)
     {
         foreach ($shippingQuote->quotes as $shippingQuoteQuote) {
             $rateResultMethod = $this->_rateMethodFactory->create();
@@ -252,7 +252,7 @@ class Shippit extends AbstractCarrierOnline implements
         }
     }
 
-    private function _addExpressQuote(&$rateResult, $shippingQuote)
+    protected function _addExpressQuote(&$rateResult, $shippingQuote)
     {
         foreach ($shippingQuote->quotes as $shippingQuoteQuote) {
             $rateResultMethod = $this->_rateMethodFactory->create();
@@ -267,7 +267,7 @@ class Shippit extends AbstractCarrierOnline implements
         }
     }
 
-    private function _addPriorityQuote(&$rateResult, $shippingQuote)
+    protected function _addPriorityQuote(&$rateResult, $shippingQuote)
     {
         $maxTimeslots = $this->_helper->getMaxTimeslots();
         $timeslotCount = 0;
@@ -309,7 +309,7 @@ class Shippit extends AbstractCarrierOnline implements
      * @param  float $quotePrice The quote amount
      * @return float             The quote amount, with margin if applicable
      */
-    private function _getQuotePrice($quotePrice)
+    protected function _getQuotePrice($quotePrice)
     {
         switch ($this->_helper->getMargin()) {
             case 'fixed':
@@ -408,7 +408,7 @@ class Shippit extends AbstractCarrierOnline implements
      * @param  [type] $request The shipment request
      * @return boolean         True or false
      */
-    private function _canShipProducts($request)
+    protected function _canShipProducts($request)
     {
         $items = $request->getAllItems();
         $productIds = [];
@@ -436,7 +436,7 @@ class Shippit extends AbstractCarrierOnline implements
         }
     }
 
-    private function _canShipEnabledProducts($productIds)
+    protected function _canShipEnabledProducts($productIds)
     {
         if (!$this->_helper->isEnabledProductActive()) {
             return true;
@@ -455,7 +455,7 @@ class Shippit extends AbstractCarrierOnline implements
         return true;
     }
 
-    private function _canShipEnabledProductAttributes($productIds)
+    protected function _canShipEnabledProductAttributes($productIds)
     {
         if (!$this->_helper->isEnabledProductAttributeActive()) {
             return true;
@@ -497,7 +497,7 @@ class Shippit extends AbstractCarrierOnline implements
         return true;
     }
 
-    private function _getParcelAttributes($request)
+    protected function _getParcelAttributes($request)
     {
         $items = $request->getAllItems();
         $parcelAttributes = [];

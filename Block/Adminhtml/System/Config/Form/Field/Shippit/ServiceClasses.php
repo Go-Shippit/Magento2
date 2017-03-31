@@ -24,7 +24,7 @@ class ServiceClasses extends \Magento\Framework\View\Element\Html\Select
     /**
      * @var Methods
      */
-    private $methods;
+    protected $methods;
 
     /**
      * Constructor

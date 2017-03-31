@@ -256,7 +256,7 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
         return $this;
     }
 
-    private function _getRootItem($item)
+    protected function _getRootItem($item)
     {
         if ($item->getParentItem()) {
             return $item->getParentItem();

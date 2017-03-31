@@ -122,7 +122,7 @@ class Items extends \Shippit\Shipping\Helper\Sync\Order
         return $attributeValue;
     }
 
-    private function getFunctionName($attributeCode, $prefix = 'get', $capitaliseFirstChar = true)
+    protected function getFunctionName($attributeCode, $prefix = 'get', $capitaliseFirstChar = true)
     {
         if ($capitaliseFirstChar) {
             $attributeCode[0] = strtoupper($attributeCode[0]);

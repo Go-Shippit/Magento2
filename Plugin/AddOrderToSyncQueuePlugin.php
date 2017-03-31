@@ -85,7 +85,7 @@ class AddOrderToSyncQueuePlugin
         return $result;
     }
 
-    private function _addOrder($order, $shippitShippingMethod)
+    protected function _addOrder($order, $shippitShippingMethod)
     {
         try {
             $request = $this->_requestSyncOrder
@@ -113,7 +113,7 @@ class AddOrderToSyncQueuePlugin
         }
     }
 
-    private function _syncOrder($syncOrder)
+    protected function _syncOrder($syncOrder)
     {
         $order = $syncOrder->getOrder();
 

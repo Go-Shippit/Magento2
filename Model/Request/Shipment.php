@@ -149,7 +149,7 @@ class Shipment extends \Magento\Framework\Model\AbstractModel implements Shipmen
         return $this;
     }
 
-    private function _getRootItem($item)
+    protected function _getRootItem($item)
     {
         if ($item->hasParentItem()) {
             return $item->getParentItem();
