@@ -510,7 +510,7 @@ class Shippit extends AbstractCarrierOnline implements
             $attributeOptions = $attributeOptions->getAllOptions();
             $pattern = preg_quote($attributeValue, '/');
             $pattern = str_replace('\*', '.*', $pattern);
-            $attributeOptionIds = array();
+            $attributeOptionIds = [];
 
             foreach ($attributeOptions as $attributeOption) {
                 if (preg_match('/^' . $pattern . '$/i', $attributeOption['label'])) {
@@ -520,7 +520,7 @@ class Shippit extends AbstractCarrierOnline implements
         }
         else {
             $attributeOptions = $attributeOptions->getOptionId($attributeValue);
-            $attributeOptionIds = array($attributeOptions);
+            $attributeOptionIds = [$attributeOptions];
         }
 
         // if we have no options that match the filter,
@@ -548,7 +548,7 @@ class Shippit extends AbstractCarrierOnline implements
 
     protected function _getAllAttributeOptionIds($attributeOptions)
     {
-        $attributeOptionIds = array();
+        $attributeOptionIds = [];
 
         foreach ($attributeOptions as $attributeOption) {
             if ($attributeOption['value']) {

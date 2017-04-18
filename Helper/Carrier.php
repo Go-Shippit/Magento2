@@ -96,11 +96,11 @@ class Carrier extends \Shippit\Shipping\Helper\Data
 
     public function getEnabledProductAttributeCode()
     {
-        return self::getValue('product_attribute_code');
+        return self::getValue('enabled_product_attribute_code');
     }
 
     public function getEnabledProductAttributeValue()
     {
-        return self::getValue('product_attribute_value');
+        return self::getValue('enabled_product_attribute_value');
     }
 }
