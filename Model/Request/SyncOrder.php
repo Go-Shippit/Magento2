@@ -42,9 +42,9 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
      * @param \Magento\Framework\Registry $registry
      * @param \Shippit\Shipping\Helper\Sync\Order $helper
      * @param \Shippit\Shipping\Helper\Sync\Order\Items $itemsHelper
+     * @param \Magento\Sales\Api\Data\OrderItemInterface $orderItemInterface,
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource $resource
      * @param \Magento\Framework\Data\Collection\AbstractDb $resourceCollection
-     * @param \Shippit\Shipping\Helper\Data $helper
      * @param array $data
      */
     public function __construct(
@@ -255,7 +255,7 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
         return $this;
     }
 
-    private function _getRootItem($item)
+    protected function _getRootItem($item)
     {
         if ($item->getParentItem()) {
             return $item->getParentItem();

@@ -56,6 +56,7 @@ class Shippit extends AbstractCarrierOnline implements
      * @param \Shippit\Shipping\Helper\Api $api
      * @param \Shippit\Shipping\Model\Config\Source\Shippit\Methods $methods
      * @param \Shippit\Shipping\Api\Request\QuoteInterface $quote
+     * @param \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $productCollectionFactory
      * @param array $data
      */
     public function __construct(
@@ -78,12 +79,16 @@ class Shippit extends AbstractCarrierOnline implements
         \Shippit\Shipping\Helper\Api $api,
         \Shippit\Shipping\Model\Config\Source\Shippit\Methods $methods,
         \Shippit\Shipping\Api\Request\QuoteInterface $quote,
+        \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $productCollectionFactory,
+        \Magento\Catalog\Model\Product\Attribute\Repository $productAttributeRepository,
         array $data = []
     ) {
         $this->_helper = $helper;
         $this->_api = $api;
         $this->_methods = $methods;
         $this->_quote = $quote;
+        $this->_productCollectionFactory = $productCollectionFactory;
+        $this->_productAttributeRepository = $productAttributeRepository;
 
         parent::__construct(
             $scopeConfig,
@@ -200,7 +205,7 @@ class Shippit extends AbstractCarrierOnline implements
         return $this->_code;
     }
 
-    private function _processShippingQuotes(&$rateResult, $shippingQuotes)
+    protected function _processShippingQuotes(&$rateResult, $shippingQuotes)
     {
         $allowedMethods = $this->_helper->getAllowedMethods();
 
@@ -237,7 +242,7 @@ class Shippit extends AbstractCarrierOnline implements
         return $rateResult;
     }
 
-    private function _addStandardQuote(&$rateResult, $shippingQuote)
+    protected function _addStandardQuote(&$rateResult, $shippingQuote)
     {
         foreach ($shippingQuote->quotes as $shippingQuoteQuote) {
             $rateResultMethod = $this->_rateMethodFactory->create();
@@ -252,7 +257,7 @@ class Shippit extends AbstractCarrierOnline implements
         }
     }
 
-    private function _addExpressQuote(&$rateResult, $shippingQuote)
+    protected function _addExpressQuote(&$rateResult, $shippingQuote)
     {
         foreach ($shippingQuote->quotes as $shippingQuoteQuote) {
             $rateResultMethod = $this->_rateMethodFactory->create();
@@ -267,7 +272,7 @@ class Shippit extends AbstractCarrierOnline implements
         }
     }
 
-    private function _addPriorityQuote(&$rateResult, $shippingQuote)
+    protected function _addPriorityQuote(&$rateResult, $shippingQuote)
     {
         $maxTimeslots = $this->_helper->getMaxTimeslots();
         $timeslotCount = 0;
@@ -309,7 +314,7 @@ class Shippit extends AbstractCarrierOnline implements
      * @param  float $quotePrice The quote amount
      * @return float             The quote amount, with margin if applicable
      */
-    private function _getQuotePrice($quotePrice)
+    protected function _getQuotePrice($quotePrice)
     {
         switch ($this->_helper->getMargin()) {
             case 'fixed':
@@ -408,7 +413,7 @@ class Shippit extends AbstractCarrierOnline implements
      * @param  [type] $request The shipment request
      * @return boolean         True or false
      */
-    private function _canShipProducts($request)
+    protected function _canShipProducts($request)
     {
         $items = $request->getAllItems();
         $productIds = [];
@@ -436,7 +441,7 @@ class Shippit extends AbstractCarrierOnline implements
         }
     }
 
-    private function _canShipEnabledProducts($productIds)
+    protected function _canShipEnabledProducts($productIds)
     {
         if (!$this->_helper->isEnabledProductActive()) {
             return true;
@@ -455,7 +460,7 @@ class Shippit extends AbstractCarrierOnline implements
         return true;
     }
 
-    private function _canShipEnabledProductAttributes($productIds)
+    protected function _canShipEnabledProductAttributes($productIds)
     {
         if (!$this->_helper->isEnabledProductAttributeActive()) {
             return true;
@@ -465,26 +470,22 @@ class Shippit extends AbstractCarrierOnline implements
         $attributeValue = $this->_helper->getEnabledProductAttributeValue();
 
         if (!empty($attributeCode) && !empty($attributeValue)) {
-            $attributeProductCount = $this->_product
-                ->getCollection()
-                ->addAttributeToFilter('entity_id', ['in' => $productIds]);
+            $attributeProductCount = $this->_productCollectionFactory->create();
+            $attributeProductCount->addAttributeToFilter('entity_id', ['in' => $productIds]);
 
-            // When filtering by attribute value, allow for * as a wildcard
-            if (strpos($attributeValue, '*') !== FALSE) {
-                $attributeValue = str_replace('*', '%', $attributeValue);
+            $attributeInputType = $this->_productAttributeRepository
+                ->get($attributeCode)
+                ->getFrontendInput();
 
-                $attributeProductCount = $attributeProductCount
-                    ->addAttributeToFilter(
-                        $attributeCode,
-                        ['like' => $attributeValue]
-                    )
-                    ->getSize();
+            if ($attributeInputType == 'select' || $attributeInputType == 'multiselect') {
+                // Attempt to filter items by the select / multiselect instance
+                $attributeProductCount = $this->_filterByAttributeOptionId($attributeProductCount, $attributeCode, $attributeValue);
             }
-            // Otherwise, use the exact match
             else {
-                $attributeProductCount = $attributeProductCount->addAttributeToFilter($attributeCode, ['eq' => $attributeValue])
-                    ->getSize();
+                $attributeProductCount = $this->_filterByAttributeValue($attributeProductCount, $attributeCode, $attributeValue);
             }
+
+            $attributeProductCount = $attributeProductCount->getSize();
 
             // If the number of filtered products is not
             // equal to the products in the cart, return false
@@ -497,7 +498,68 @@ class Shippit extends AbstractCarrierOnline implements
         return true;
     }
 
-    private function _getParcelAttributes($request)
+    protected function _filterByAttributeOptionId($collection, $attributeCode, $attributeValue)
+    {
+        $attributeOptions = $this->_productAttributeRepository
+            ->get($attributeCode)
+            ->getSource();
+
+        $attributeOptionIds = $this->_getAllAttributeOptionIds($attributeOptions);
+
+        if (strpos($attributeValue, '*') !== FALSE) {
+            $attributeOptions = $attributeOptions->getAllOptions();
+            $pattern = preg_quote($attributeValue, '/');
+            $pattern = str_replace('\*', '.*', $pattern);
+            $attributeOptionIds = [];
+
+            foreach ($attributeOptions as $attributeOption) {
+                if (preg_match('/^' . $pattern . '$/i', $attributeOption['label'])) {
+                    $attributeOptionIds[] = $attributeOption['value'];
+                }
+            }
+        }
+        else {
+            $attributeOptions = $attributeOptions->getOptionId($attributeValue);
+            $attributeOptionIds = [$attributeOptions];
+        }
+
+        // if we have no options that match the filter,
+        // avoid filtering and return early.
+        if (empty($attributeOptionIds)) {
+            return $collection;
+        }
+
+        return $collection->addAttributeToFilter(
+            $attributeCode,
+            ['in' => $attributeOptionIds]
+        );
+    }
+
+    protected function _filterByAttributeValue($collection, $attributeCode, $attributeValue)
+    {
+        // Convert the attribute value with "*" to replace with a mysql wildcard character
+        $attributeValue = str_replace('*', '%', $attributeValue);
+
+        return $collection->addAttributeToFilter(
+            $attributeCode,
+            ['like' => $attributeValue]
+        );
+    }
+
+    protected function _getAllAttributeOptionIds($attributeOptions)
+    {
+        $attributeOptionIds = [];
+
+        foreach ($attributeOptions as $attributeOption) {
+            if ($attributeOption['value']) {
+                $attributeOptionIds[] = $attributeOption['value'];
+            }
+        }
+
+        return $attributeOptionIds;
+    }
+
+    protected function _getParcelAttributes($request)
     {
         $items = $request->getAllItems();
         $parcelAttributes = [];

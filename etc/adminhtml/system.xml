@@ -168,7 +168,7 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
 
-                <field id="product_attribute_code" translate="label" type="select" sortOrder="130" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="enabled_product_attribute_code" translate="label" type="select" sortOrder="130" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Product Attribute Code</label>
                     <source_model>Shippit\Shipping\Model\Config\Source\Catalog\Attributes</source_model>
                     <depends>
@@ -177,7 +177,7 @@
                     <can_be_empty>1</can_be_empty>
                 </field>
 
-                <field id="product_attribute_value" translate="label" type="text" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="enabled_product_attribute_value" translate="label" type="text" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Product Attribute Value</label>
                     <depends>
                         <field id="enabled_product_attribute_active">1</field>
