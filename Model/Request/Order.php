@@ -393,7 +393,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
         }
     }
 
-    private function _getOrderDeliveryDate($order)
+    protected function _getOrderDeliveryDate($order)
     {
         $shippingMethod = $order->getShippingMethod();
 
@@ -421,7 +421,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
         }
     }
 
-    private function _getOrderDeliveryWindow($order)
+    protected function _getOrderDeliveryWindow($order)
     {
         $shippingMethod = $order->getShippingMethod();
 

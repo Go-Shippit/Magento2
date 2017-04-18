@@ -94,7 +94,7 @@ class ValidateMerchantObserver implements ObserverInterface
         }
     }
 
-    private function _registerWebhook()
+    protected function _registerWebhook()
     {
         if (!$this->_syncShippingHelper->isActive()) {
             return;
