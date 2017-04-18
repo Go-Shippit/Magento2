@@ -472,36 +472,20 @@ class Shippit extends AbstractCarrierOnline implements
         if (!empty($attributeCode) && !empty($attributeValue)) {
             $attributeProductCount = $this->_productCollectionFactory->create();
             $attributeProductCount->addAttributeToFilter('entity_id', ['in' => $productIds]);
-            $attributeProductCount->getItems();
 
-            // When filtering by attribute value, allow for * as a wildcard
-            if (strpos($attributeValue, '*') !== FALSE) {
-                // Get all attribute options for given attribute code
-                $attributeOptions = $this->_productAttributeRepository->get($attributeCode)->getOptions();
-                $attributeOptionIds = $this->_getAllAttributeOptionIds($attributeOptions);
+            $attributeInputType = $this->_productAttributeRepository
+                ->get($attributeCode)
+                ->getFrontendInput();
 
-                $attributeProductCount = $attributeProductCount
-                    ->addAttributeToFilter(
-                        $attributeCode,
-                        ['in' => $attributeOptionIds]
-                    )
-                    ->getSize();
+            if ($attributeInputType == 'select' || $attributeInputType == 'multiselect') {
+                // Attempt to filter items by the select / multiselect instance
+                $attributeProductCount = $this->_filterByAttributeOptionId($attributeProductCount, $attributeCode, $attributeValue);
             }
-            // Otherwise, use the exact match
             else {
-                // Get the attribute option id for the given attribute code
-                $attributeOptionId = $this->_productAttributeRepository
-                    ->get($attributeCode)
-                    ->getSource()
-                    ->getOptionId($attributeValue);
-
-                $attributeProductCount = $attributeProductCount
-                    ->addAttributeToFilter(
-                        $attributeCode,
-                        ['eq' => $attributeOptionId]
-                    )
-                    ->getSize();
+                $attributeProductCount = $this->_filterByAttributeValue($attributeProductCount, $attributeCode, $attributeValue);
             }
+
+            $attributeProductCount = $attributeProductCount->getSize();
 
             // If the number of filtered products is not
             // equal to the products in the cart, return false
@@ -512,6 +496,54 @@ class Shippit extends AbstractCarrierOnline implements
 
         // All checks have passed, return true
         return true;
+    }
+
+    protected function _filterByAttributeOptionId($collection, $attributeCode, $attributeValue)
+    {
+        $attributeOptions = $this->_productAttributeRepository
+            ->get($attributeCode)
+            ->getSource();
+
+        $attributeOptionIds = $this->_getAllAttributeOptionIds($attributeOptions);
+
+        if (strpos($attributeValue, '*') !== FALSE) {
+            $attributeOptions = $attributeOptions->getAllOptions();
+            $pattern = preg_quote($attributeValue, '/');
+            $pattern = str_replace('\*', '.*', $pattern);
+            $attributeOptionIds = array();
+
+            foreach ($attributeOptions as $attributeOption) {
+                if (preg_match('/^' . $pattern . '$/i', $attributeOption['label'])) {
+                    $attributeOptionIds[] = $attributeOption['value'];
+                }
+            }
+        }
+        else {
+            $attributeOptions = $attributeOptions->getOptionId($attributeValue);
+            $attributeOptionIds = array($attributeOptions);
+        }
+
+        // if we have no options that match the filter,
+        // avoid filtering and return early.
+        if (empty($attributeOptionIds)) {
+            return $collection;
+        }
+
+        return $collection->addAttributeToFilter(
+            $attributeCode,
+            ['in' => $attributeOptionIds]
+        );
+    }
+
+    protected function _filterByAttributeValue($collection, $attributeCode, $attributeValue)
+    {
+        // Convert the attribute value with "*" to replace with a mysql wildcard character
+        $attributeValue = str_replace('*', '%', $attributeValue);
+
+        return $collection->addAttributeToFilter(
+            $attributeCode,
+            ['like' => $attributeValue]
+        );
     }
 
     protected function _getAllAttributeOptionIds($attributeOptions)
