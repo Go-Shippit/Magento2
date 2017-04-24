@@ -33,7 +33,7 @@ This will fetch and install the latest version of the Magento 2 module, as refer
 
 ### Manual File Upload
 
-*Note: Installation of the module via file update should be completed by a developer or someone comfortable with working with the Magento Application Structure - we suggest testing this installation on a staging instance before pushing this live*
+*Note: Installation of the module via manual file upload should be completed by a developer or someone comfortable with working with the Magento Application Structure - we suggest testing this installation on a staging instance before pushing this live*
 
 1. Download the extension from github (https://github.com/Go-Shippit/Magento2)
 2. In the magento installation, create a folder path of `app/code/Shippit/Shipping`
