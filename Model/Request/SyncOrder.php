@@ -237,7 +237,7 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
                     $item->getSku(),
                     $item->getName(),
                     $itemQty,
-                    $rootItem->getBasePrice(),
+                    $rootItem->getBasePriceInclTax(),
                     $itemWeight,
                     $itemLocation
                 );
