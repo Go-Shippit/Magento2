@@ -48,7 +48,11 @@ class DeliveryInstructionsPlugin
             ['children']
             ['shippingAddress']
             ['children']
-            ['shipping-address-fieldset']
+            ['shippingAdditional']
+            ['children']
+            ['shippit']
+            ['children']
+            ['shippit-options']
             ['children']
             ['shippit_delivery_instructions'] = [
                 'component' => 'Magento_Ui/js/form/element/textarea',

@@ -48,7 +48,11 @@ class AuthorityToLeavePlugin
             ['children']
             ['shippingAddress']
             ['children']
-            ['shipping-address-fieldset']
+            ['shippingAdditional']
+            ['children']
+            ['shippit']
+            ['children']
+            ['shippit-options']
             ['children']
             ['shippit_authority_to_leave']= [
                 'component' => 'Magento_Ui/js/form/element/boolean',

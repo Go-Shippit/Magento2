@@ -56,8 +56,8 @@ define([
                     'shipping_method_code': quote.shippingMethod()['method_code'],
                     'shipping_carrier_code': quote.shippingMethod()['carrier_code'],
                     'extension_attributes': {
-                        shippit_authority_to_leave: (jQuery('[name="shippit_authority_to_leave"]').is(':checked') ? 1 : 0),
-                        shippit_delivery_instructions: jQuery('[name="shippit_delivery_instructions"]').val()
+                        shippit_authority_to_leave: (jQuery('#shippit-options [name="shippit_authority_to_leave"]').is(':checked') ? 1 : 0),
+                        shippit_delivery_instructions: jQuery('#shippit-options [name="shippit_delivery_instructions"]').val()
                     }
                 }
             };
