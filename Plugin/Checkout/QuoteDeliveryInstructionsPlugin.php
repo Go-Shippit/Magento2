@@ -50,7 +50,7 @@ class QuoteDeliveryInstructionsPlugin
         $cartId,
         \Magento\Checkout\Api\Data\ShippingInformationInterface $addressInformation
     ) {
-        if (!$this->helper->isAuthorityToLeaveActive()) {
+        if (!$this->helper->isDeliveryInstructionsActive()) {
             return;
         }
 
