@@ -33,7 +33,6 @@ class UpgradeSchema implements UpgradeSchemaInterface
     public function upgrade(SchemaSetupInterface $setup, ModuleContextInterface $context)
     {
         $installer = $setup;
-
         $installer->startSetup();
 
         if (version_compare($context->getVersion(), '1.0.4') < 0) {
@@ -44,6 +43,11 @@ class UpgradeSchema implements UpgradeSchemaInterface
         if (version_compare($context->getVersion(), '1.0.5') < 0) {
             //code to upgrade to 1.0.5
             $this->upgrade_105($installer);
+        }
+
+        if (version_compare($context->getVersion(), '1.1.21') < 0) {
+            //code to upgrade to 1.1.21
+            $this->upgrade_1121($installer);
         }
 
         $installer->endSetup();
@@ -318,5 +322,57 @@ class UpgradeSchema implements UpgradeSchemaInterface
                     'default' => '0'
                 ]
             );
+    }
+
+    // Upgrade to v 1.1.21
+    public function upgrade_1121($installer)
+    {
+        $installer->startSetup();
+
+        $installer->getConnection()->addColumn(
+            $installer->getTable('quote'),
+            'shippit_authority_to_leave',
+            [
+                'type' => \Magento\Framework\DB\Ddl\Table::TYPE_BOOLEAN,
+                'nullable' => false,
+                'default' => '0',
+                'comment' => 'Authority To Leave',
+            ]
+        );
+
+        $installer->getConnection()->addColumn(
+            $installer->getTable('quote'),
+            'shippit_delivery_instructions',
+            [
+                'type' => 'text',
+                'nullable' => true,
+                'default' => null,
+                'comment' => 'Delivery Instructions'
+            ]
+        );
+
+        $installer->getConnection()->addColumn(
+            $installer->getTable('sales_order'),
+            'shippit_authority_to_leave',
+            [
+                'type' => \Magento\Framework\DB\Ddl\Table::TYPE_BOOLEAN,
+                'nullable' => false,
+                'default' => '0',
+                'comment' => 'Authority To Leave',
+            ]
+        );
+
+        $installer->getConnection()->addColumn(
+            $installer->getTable('sales_order'),
+            'shippit_delivery_instructions',
+            [
+                'type' => 'text',
+                'nullable' => true,
+                'default' => null,
+                'comment' => 'Delivery Comment'
+            ]
+        );
+
+        $installer->endSetup();
     }
 }
