@@ -336,7 +336,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 'type' => \Magento\Framework\DB\Ddl\Table::TYPE_BOOLEAN,
                 'nullable' => false,
                 'default' => '0',
-                'comment' => 'Authority To Leave',
+                'comment' => 'Shippit - Authority To Leave',
             ]
         );
 
@@ -347,7 +347,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 'type' => 'text',
                 'nullable' => true,
                 'default' => null,
-                'comment' => 'Delivery Instructions'
+                'comment' => 'Shippit - Delivery Instructions'
             ]
         );
 
@@ -358,7 +358,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 'type' => \Magento\Framework\DB\Ddl\Table::TYPE_BOOLEAN,
                 'nullable' => false,
                 'default' => '0',
-                'comment' => 'Authority To Leave',
+                'comment' => 'Shippit - Authority To Leave',
             ]
         );
 
@@ -369,7 +369,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 'type' => 'text',
                 'nullable' => true,
                 'default' => null,
-                'comment' => 'Delivery Comment'
+                'comment' => 'Shippit - Delivery Instructions'
             ]
         );
 
