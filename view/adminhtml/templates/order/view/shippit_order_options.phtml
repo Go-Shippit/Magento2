@@ -1,0 +1,46 @@
+<?php
+/**
+ * Shippit Pty Ltd
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the terms
+ * that is available through the world-wide-web at this URL:
+ * http://www.shippit.com/terms
+ *
+ * @category   Shippit
+ * @copyright  Copyright (c) 2016 by Shippit Pty Ltd (http://www.shippit.com)
+ * @author     Matthew Muscat <matthew@mamis.com.au>
+ * @license    http://www.shippit.com/terms
+ */
+?>
+<?php
+	$ScopeConfigInterface = \Magento\Framework\App\ObjectManager::getInstance()
+  		->get('Magento\Framework\App\Config\ScopeConfigInterface');
+
+	$isAuthroirtytoLeaveEnabled =  $ScopeConfigInterface->getValue('shippit/checkout/authority_to_leave_active');
+
+  	$isDeliveryInstructionsEnabled =  $ScopeConfigInterface->getValue('shippit/checkout/delivery_instructions_active');
+
+?>
+<?php if ($isAuthroirtytoLeaveEnabled): ?>
+	<div class="admin__page-section-item order-shipping-method">
+	<strong>
+		<?php echo $block->escapeHtml(__('Authority To Leave')) ?>
+	</strong>
+	<span>
+		<?php echo ($block->getShippitAuthorityToLeave()) ? 'Yes' : 'No' ?>
+	</span>
+	</div>
+<?php endif; ?>
+
+<?php if ($isDeliveryInstructionsEnabled): ?>
+	<div class="admin__page-section-item order-shipping-method">
+	<strong>
+		<?php echo $block->escapeHtml(__('Delivery Instructions')) ?>
+	</strong>
+	<span>
+		<?php echo $block->getShippitDeliveryInstructions() ?>
+	</span>
+	</div>
+<?php endif; ?>
