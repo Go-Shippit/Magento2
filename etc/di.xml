@@ -61,4 +61,13 @@
             </argument>
         </arguments>
     </type>
+
+    <!-- Checkout Plugins to save ATL and Delivery instructions to quote -->
+    <type name="Magento\Checkout\Model\ShippingInformationManagement">
+        <plugin name="shippit-quote-authority-to-leave" type="Shippit\Shipping\Plugin\Checkout\QuoteAuthorityToLeavePlugin" sortOrder="1000"/>
+    </type>
+
+    <type name="Magento\Checkout\Model\ShippingInformationManagement">
+        <plugin name="shippit-quote-delivery-instructions" type="Shippit\Shipping\Plugin\Checkout\QuoteDeliveryInstructionsPlugin" sortOrder="1000"/>
+    </type>
 </config>

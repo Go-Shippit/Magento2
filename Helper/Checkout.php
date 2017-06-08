@@ -14,11 +14,11 @@
  * @license    http://www.shippit.com/terms
  */
 
-namespace Shippit\Shipping\Helper\Sync;
+namespace Shippit\Shipping\Helper;
 
-class Shipping extends \Shippit\Shipping\Helper\Data
+class Checkout extends \Shippit\Shipping\Helper\Data
 {
-    const XML_PATH_SETTINGS = 'shippit/sync_shipping/';
+    const XML_PATH_SETTINGS = 'shippit/checkout/';
 
     /**
      * Return store config value for key
@@ -36,8 +36,16 @@ class Shipping extends \Shippit\Shipping\Helper\Data
     /**
      * @return bool
      */
-    public function isActive()
+    public function isAuthorityToLeaveActive()
     {
-        return parent::isActive() && self::getValue('active');
+        return parent::isActive() && self::getValue('authority_to_leave_active');
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDeliveryInstructionsActive()
+    {
+        return parent::isActive() && self::getValue('delivery_instructions_active');
     }
 }

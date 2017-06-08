@@ -1,5 +1,6 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
+/**
  * Shippit Pty Ltd
  *
  * NOTICE OF LICENSE
@@ -12,9 +13,10 @@
  * @copyright  Copyright (c) 2016 by Shippit Pty Ltd (http://www.shippit.com)
  * @author     Matthew Muscat <matthew@mamis.com.au>
  * @license    http://www.shippit.com/terms
+ */
 -->
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
-    <type name="Magento\Backend\Block\Widget\Context">
-        <plugin name="add_shippit_button_sales_view" type="Shippit\Shipping\Plugin\Sales\AddSendToShippitButtonPlugin" sortOrder="100" />
-    </type>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <event name="core_layout_render_element">
+        <observer name="sr_shippit_options_to_order_view" instance="Shippit\Shipping\Observer\AddHtmlToOrderShippingViewObserver" />
+    </event>
 </config>

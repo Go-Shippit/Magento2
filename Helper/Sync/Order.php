@@ -20,17 +20,6 @@ class Order extends \Shippit\Shipping\Helper\Data
 {
     const XML_PATH_SETTINGS = 'shippit/sync_order/';
 
-    protected $_scopeConfig;
-
-    /**
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-     */
-    public function __construct(
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-    ) {
-        $this->_scopeConfig = $scopeConfig;
-    }
-
     /**
      * Return store config value for key
      *

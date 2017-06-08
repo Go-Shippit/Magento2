@@ -21,4 +21,9 @@
     <event name="shippit_add_order">
         <observer name="shippit_add_order" instance="Shippit\Shipping\Observer\Shippit" />
     </event>
+
+    <event name="sales_model_service_quote_submit_before">
+        <observer name="shippit_save_delivery_instructions_to_order" instance="Shippit\Shipping\Observer\SaveDeliveryInstructionsToOrderObserver"/>
+        <observer name="shippit_save_authority_to_leave_to_order" instance="Shippit\Shipping\Observer\SaveAuthorityToLeaveToOrderObserver"/>
+    </event>
 </config>
