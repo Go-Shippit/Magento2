@@ -14,7 +14,8 @@
  * @license    http://www.shippit.com/terms
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
-    <type name="Magento\Backend\Block\Widget\Context">
-        <plugin name="add_shippit_button_sales_view" type="Shippit\Shipping\Plugin\Sales\AddSendToShippitButtonPlugin" sortOrder="100" />
+    <type name="Magento\Checkout\Block\Checkout\LayoutProcessor">
+    	<plugin name="shippit-add-authority-to-leave" type="Shippit\Shipping\Plugin\Checkout\AuthorityToLeavePlugin" sortOrder="100"/>
+        <plugin name="shippit-add-delivery-instructions" type="Shippit\Shipping\Plugin\Checkout\DeliveryInstructionsPlugin" sortOrder="100"/>
     </type>
 </config>

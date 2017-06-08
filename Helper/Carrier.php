@@ -22,17 +22,6 @@ class Carrier extends \Shippit\Shipping\Helper\Data
 {
     const XML_PATH_SETTINGS = 'carriers/shippit/';
 
-    protected $_scopeConfig;
-
-    /**
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-     */
-    public function __construct(
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-    ) {
-        $this->_scopeConfig = $scopeConfig;
-    }
-
     /**
      * Return store config value for key
      *

@@ -1,5 +1,4 @@
-<?xml version="1.0"?>
-<!--
+/*
  * Shippit Pty Ltd
  *
  * NOTICE OF LICENSE
@@ -12,11 +11,17 @@
  * @copyright  Copyright (c) 2016 by Shippit Pty Ltd (http://www.shippit.com)
  * @author     Matthew Muscat <matthew@mamis.com.au>
  * @license    http://www.shippit.com/terms
--->
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
-    <module name="Shippit_Shipping" setup_version="1.1.21">
-    	<sequence>
-    		<module name="Magento_Shipping" />
-    	</sequence>
-    </module>
-</config>
+ */
+
+define([
+    'uiComponent'
+
+], function (Component) {
+    'use strict';
+
+    return Component.extend({
+        defaults: {
+            template: 'Shippit_Shipping/checkout/shipping/shippit'
+        }
+    });
+});
