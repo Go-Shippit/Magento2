@@ -34,7 +34,7 @@
 	</div>
 <?php endif; ?>
 
-<?php if ($isDeliveryInstructionsEnabled): ?>
+<?php if ($isDeliveryInstructionsEnabled && !empty($block->getShippitDeliveryInstructions())): ?>
 	<div class="admin__page-section-item order-shipping-method">
 	<strong>
 		<?php echo $block->escapeHtml(__('Delivery Instructions')) ?>
