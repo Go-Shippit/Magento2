@@ -14,33 +14,28 @@
  * @license    http://www.shippit.com/terms
  */
 ?>
-<?php
-	$ScopeConfigInterface = \Magento\Framework\App\ObjectManager::getInstance()
-  		->get('Magento\Framework\App\Config\ScopeConfigInterface');
+<?php if ($block->getHelper()->isAuthorityToLeaveActive()): ?>
+    <div class="admin__page-section-item order-shipping-method">
+        <strong>
+            <?php echo $block->escapeHtml(__('Authority To Leave')) ?>
+        </strong>
+        <span>
+            <?php echo ($block->getShippitAuthorityToLeave()) ? 'Yes' : 'No' ?>
+        </span>
+    </div>
+<?php endif ?>
 
-	$isAuthroirtytoLeaveEnabled =  $ScopeConfigInterface->getValue('shippit/checkout/authority_to_leave_active');
-
-  	$isDeliveryInstructionsEnabled =  $ScopeConfigInterface->getValue('shippit/checkout/delivery_instructions_active');
-
-?>
-<?php if ($isAuthroirtytoLeaveEnabled): ?>
-	<div class="admin__page-section-item order-shipping-method">
-	<strong>
-		<?php echo $block->escapeHtml(__('Authority To Leave')) ?>
-	</strong>
-	<span>
-		<?php echo ($block->getShippitAuthorityToLeave()) ? 'Yes' : 'No' ?>
-	</span>
-	</div>
-<?php endif; ?>
-
-<?php if ($isDeliveryInstructionsEnabled && !empty($block->getShippitDeliveryInstructions())): ?>
-	<div class="admin__page-section-item order-shipping-method">
-	<strong>
-		<?php echo $block->escapeHtml(__('Delivery Instructions')) ?>
-	</strong>
-	<span>
-		<?php echo $block->getShippitDeliveryInstructions() ?>
-	</span>
-	</div>
-<?php endif; ?>
+<?php if ($block->getHelper()->isDeliveryInstructionsActive()): ?>
+    <div class="admin__page-section-item order-shipping-method">
+        <strong>
+            <?php echo $block->escapeHtml(__('Delivery Instructions')) ?>
+        </strong>
+        <span>
+            <?php if (empty($block->getShippitDeliveryInstructions())): ?>
+                N/A
+            <?php else: ?>
+                <?php echo $block->escapeHtml($block->getShippitDeliveryInstructions()) ?>
+            <?php endif ?>
+        </span>
+    </div>
+<?php endif ?>
