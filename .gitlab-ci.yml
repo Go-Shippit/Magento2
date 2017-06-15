@@ -1,0 +1,55 @@
+# Stages
+stages:
+  - linter
+  - code-style
+
+
+###########
+# PHP 5.6 #
+###########
+
+# PHP Linter
+php-5.6-linter:
+  type: linter
+  image: tetraweb/php:5.6
+  script:
+    - php -v
+    - if find . -name "*.php" -exec php -l {} \; | grep "Fatal error"; then exit 1; fi
+
+
+###########
+# PHP 7.0 #
+###########
+
+# PHP Linter
+php-7.0-linter:
+  type: linter
+  image: tetraweb/php:7.0
+  script:
+    - php -v
+    - if find . -name "*.php" -exec php -l {} \; | grep "Fatal error"; then exit 1; fi
+
+
+###########
+# PHP 7.1 #
+###########
+
+# PHP Linter
+php-7.1-linter:
+  type: linter
+  image: tetraweb/php:7.1
+  script:
+    - php -v
+    - if find . -name "*.php" -exec php -l {} \; | grep "Fatal error"; then exit 1; fi
+
+# PHP CS
+php-7.1-phpcs:
+  type: code-style
+  image: tetraweb/php:7.1
+  script:
+    - php -v
+    - phpcs --version
+    - phpcs --colors --standard=PSR2 --report=full .
+    - phpcs --colors --standard=PSR2 --report=summary .
+    - phpcs --colors --standard=PSR2 --report=gitblame .
+  allow_failure: true
