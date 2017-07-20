@@ -24,10 +24,10 @@
                 <debug_active>0</debug_active>
             </general>
 
-            <!-- <checkout>
-                <authority_to_leave>1</authority_to_leave>
-                <delivery_instructions>1</delivery_instructions>
-            </checkout> -->
+            <checkout>
+                <authority_to_leave_active>1</authority_to_leave_active>
+                <delivery_instructions_active>1</delivery_instructions_active>
+            </checkout>
 
             <sync_order>
                 <active>0</active>
