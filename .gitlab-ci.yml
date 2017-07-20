@@ -14,7 +14,7 @@ php-5.6-linter:
   image: tetraweb/php:5.6
   script:
     - php -v
-    - if find . -name "*.php" -exec php -l {} \; | grep "Fatal error"; then exit 1; fi
+    - find . -name "*.php" -exec php -l {} \; | grep -v '^No syntax errors detected'; test $? -eq 1
 
 
 ###########
@@ -27,7 +27,7 @@ php-7.0-linter:
   image: tetraweb/php:7.0
   script:
     - php -v
-    - if find . -name "*.php" -exec php -l {} \; | grep "Fatal error"; then exit 1; fi
+    - find . -name "*.php" -exec php -l {} \; | grep -v '^No syntax errors detected'; test $? -eq 1
 
 
 ###########
@@ -40,7 +40,7 @@ php-7.1-linter:
   image: tetraweb/php:7.1
   script:
     - php -v
-    - if find . -name "*.php" -exec php -l {} \; | grep "Fatal error"; then exit 1; fi
+    - find . -name "*.php" -exec php -l {} \; | grep -v '^No syntax errors detected'; test $? -eq 1
 
 # PHP CS
 php-7.1-phpcs:
