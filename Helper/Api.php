@@ -23,7 +23,7 @@ class Api extends \Magento\Framework\App\Helper\AbstractHelper
 {
     const API_ENDPOINT_PRODUCTION = 'https://www.shippit.com/api/3';
     const API_ENDPOINT_STAGING = 'https://staging.shippit.com/api/3';
-    const API_TIMEOUT = 5;
+    const API_TIMEOUT = 15;
     const API_USER_AGENT = 'Shippit_Shipping for Magento2';
 
     protected $_api;
