@@ -35,7 +35,7 @@ class Methods extends \Magento\Framework\View\Element\Html\Select
      */
     public function __construct(
         \Magento\Framework\View\Element\Context $context,
-        \Magento\Shipping\Model\Config\Source\Allmethods $methods,
+        \Shippit\Shipping\Model\Config\Source\Shipping\Methods $methods,
         array $data = []
     ) {
         parent::__construct($context, $data);
@@ -51,7 +51,7 @@ class Methods extends \Magento\Framework\View\Element\Html\Select
     protected function _toHtml()
     {
         if (!$this->getOptions()) {
-            $this->setOptions($this->methods->toOptionArray());
+            $this->setOptions($this->methods->toOptionArray(true));
         }
 
         return parent::_toHtml();

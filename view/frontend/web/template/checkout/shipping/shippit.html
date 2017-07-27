@@ -13,7 +13,7 @@
  * @license    http://www.shippit.com/terms
 -->
 
-<div class="shippit-options fieldset" id="shippit-options">
+<div class="shippit-options fieldset" id="shippit-options" data-bind="visible: canShowShippingOptions()">
     <!-- ko foreach: getRegion('shippit-options') -->
     <!-- ko template: getTemplate() --><!-- /ko -->
     <!-- /ko -->

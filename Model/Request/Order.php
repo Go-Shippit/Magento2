@@ -405,7 +405,9 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
             $courierData = [];
 
             if (isset($shippingOptions[0])) {
-                if ($shippingOptions[0] == 'Bonds') {
+                // Bonds Method Name matching has been added for
+                // historical order shipping method support
+                if ($shippingOptions[0] == 'Priority' || $shippingOptions[0] == 'Bonds') {
                     return $shippingOptions[1];
                 }
                 else {
@@ -433,7 +435,9 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
             $courierData = [];
 
             if (isset($shippingOptions[0])) {
-                if ($shippingOptions[0] == 'Bonds') {
+                // Bonds Method Name matching has been added for
+                // historical order shipping method support
+                if ($shippingOptions[0] == 'Priority' || $shippingOptions[0] == 'Bonds') {
                     return $shippingOptions[2];
                 }
                 else {

@@ -18,4 +18,12 @@
     	<plugin name="shippit-add-authority-to-leave" type="Shippit\Shipping\Plugin\Checkout\AuthorityToLeavePlugin" sortOrder="100"/>
         <plugin name="shippit-add-delivery-instructions" type="Shippit\Shipping\Plugin\Checkout\DeliveryInstructionsPlugin" sortOrder="100"/>
     </type>
+
+    <type name="Magento\Checkout\Model\CompositeConfigProvider">
+        <arguments>
+            <argument name="configProviders" xsi:type="array">
+                <item name="shippit_checkout_config_provider" xsi:type="object">Shippit\Shipping\Model\Config\CheckoutConfigProvider</item>
+            </argument>
+        </arguments>
+    </type>
 </config>

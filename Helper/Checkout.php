@@ -48,4 +48,15 @@ class Checkout extends \Shippit\Shipping\Helper\Data
     {
         return parent::isActive() && self::getValue('delivery_instructions_active');
     }
+
+    public function getHideCheckoutOptionsShippingMethods()
+    {
+        $shippingMethods = self::getValue('hide_checkout_options_shipping_methods');
+
+        if (!empty($shippingMethods)) {
+            return explode(',', $shippingMethods);
+        }
+
+        return [];
+    }
 }

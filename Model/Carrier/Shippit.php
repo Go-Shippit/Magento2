@@ -289,7 +289,7 @@ class Shippit extends AbstractCarrierOnline implements
                 && property_exists($shippingQuoteQuote, 'delivery_window_desc')) {
                 $timeslotCount++;
                 $carrierTitle = $this->_helper->getTitle();
-                $method = $shippingQuote->courier_type . '_' . $shippingQuoteQuote->delivery_date . '_' . $shippingQuoteQuote->delivery_window;
+                $method = 'Priority' . '_' . $shippingQuoteQuote->delivery_date . '_' . $shippingQuoteQuote->delivery_window;
                 $methodTitle = 'Priority' . ' - Delivered ' . $shippingQuoteQuote->delivery_date. ', Between ' . $shippingQuoteQuote->delivery_window_desc;
             }
             else {
