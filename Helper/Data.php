@@ -21,6 +21,7 @@ use \Magento\Framework\App\Config\ScopeConfigInterface;
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
     const CARRIER_CODE = 'shippit';
+    const CARRIER_CODE_SHIPPIT_CC = 'shippit_cc';
     const XML_PATH_SETTINGS = 'shippit/general/';
 
     protected $_scopeConfig;

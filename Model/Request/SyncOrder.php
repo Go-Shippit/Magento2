@@ -160,7 +160,8 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
         $validShippingMethods = [
             'standard',
             'express',
-            'priority'
+            'priority',
+            'click_and_collect',
         ];
 
         // if the shipping method passed is not a standard shippit service class, attempt to get a service class based on the configured mapping
