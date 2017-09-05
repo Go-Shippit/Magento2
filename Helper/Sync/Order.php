@@ -96,9 +96,11 @@ class Order extends \Shippit\Shipping\Helper\Data
                 // "priority" was referred to as "premium"
                 if ($method == 'priority' || $method == 'premium') {
                     return 'priority';
-                } else if ($method == 'express') {
+                }
+                else if ($method == 'express') {
                     return 'express';
-                } else if ($method == 'standard') {
+                }
+                else if ($method == 'standard') {
                     return 'standard';
                 }
             }

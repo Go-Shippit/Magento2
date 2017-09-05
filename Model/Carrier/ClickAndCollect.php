@@ -58,8 +58,6 @@ class ClickAndCollect extends AbstractCarrier implements
             $logger,
             $data
         );
-
-        $this->_logger->addDebug('ClickAndCollect');
     }
 
     public function isTrackingAvailable()
@@ -82,7 +80,6 @@ class ClickAndCollect extends AbstractCarrier implements
      */
     public function collectRates(RateRequest $request)
     {
-        $this->_logger->addDebug('ClickAndCollect -> collectRates');
         // @TODO: check if the module is active
 
         $rateResult = $this->_rateResultFactory->create();
