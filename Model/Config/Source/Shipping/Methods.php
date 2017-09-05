@@ -57,7 +57,6 @@ class Methods implements \Magento\Framework\Option\ArrayInterface
             }
 
             if ($carrierMethods) {
-
                 $carrierTitle = $this->_scopeConfig->getValue(
                     'carriers/' . $carrierCode . '/title',
                     \Magento\Store\Model\ScopeInterface::SCOPE_STORE
