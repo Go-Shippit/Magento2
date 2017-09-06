@@ -80,7 +80,10 @@ class ClickAndCollect extends AbstractCarrier implements
      */
     public function collectRates(RateRequest $request)
     {
-        // @TODO: check if the module is active
+        // check if the Shippit module is active
+        if (!$this->_helper->isActive()) {
+            return false;
+        }
 
         $rateResult = $this->_rateResultFactory->create();
 
