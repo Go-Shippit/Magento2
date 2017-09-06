@@ -65,7 +65,7 @@
             <shippit_cc>
                 <model>Shippit\Shipping\Model\Carrier\ClickAndCollect</model>
                 <active>0</active>
-                <title>Shippit Click and Collect</title>
+                <title>Click and Collect</title>
                 <method/>
                 <sallowspecific/>
                 <specificcountry/>

@@ -26,7 +26,7 @@ class ClickAndCollect extends AbstractCarrier implements
     /**
      * @var string
      */
-    protected $_code = \Shippit\Shipping\Helper\Data::CARRIER_CODE_SHIPPIT_CC;
+    protected $_code = \Shippit\Shipping\Helper\Data::CARRIER_CODE_CC;
 
     protected $_helper;
     protected $_rateResultFactory;
