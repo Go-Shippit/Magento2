@@ -133,7 +133,7 @@
 
                 <field id="allowed_methods" translate="label" type="multiselect" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Allowed Methods</label>
-                    <source_model>Shippit\Shipping\Model\Config\Source\Shippit\LiveQuotes\Methods</source_model>
+                    <source_model>Shippit\Shipping\Model\Config\Source\Shippit\Shipping\QuoteMethods</source_model>
                     <can_be_empty>1</can_be_empty>
                 </field>
 

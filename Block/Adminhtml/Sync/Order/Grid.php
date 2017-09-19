@@ -36,7 +36,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
     protected $syncOrderStatus;
 
     /**
-     * @var \Shippit\Shipping\Model\Config\Source\Shippit\Methods
+     * @var \Shippit\Shipping\Model\Config\Source\Shippit\Shipping\Methods
      */
     protected $shippitMethods;
 
@@ -52,7 +52,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
         \Magento\Sales\Model\Order\Config $orderConfig,
         \Shippit\Shipping\Model\ResourceModel\Sync\Order\Collection $syncOrderCollection,
         \Shippit\Shipping\Model\Config\Source\Shippit\Sync\Order\Status $syncOrderStatus,
-        \Shippit\Shipping\Model\Config\Source\Shippit\Methods $shippitMethods,
+        \Shippit\Shipping\Model\Config\Source\Shippit\Shipping\Methods $shippitMethods,
         array $data = []
     ) {
         parent::__construct($context, $backendHelper, $data);

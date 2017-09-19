@@ -2,6 +2,8 @@
 
 namespace Shippit\Shipping\Model\Config\Source\Shipping;
 
+use Magento\Store\Model\ScopeInterface;
+
 class Methods implements \Magento\Framework\Option\ArrayInterface
 {
     /**
@@ -48,10 +50,9 @@ class Methods implements \Magento\Framework\Option\ArrayInterface
         foreach ($carriers as $carrierCode => $carrierModel) {
             $carrierMethods = $carrierModel->getAllowedMethods();
 
-            // if the carrier is shippit, exclude it from the
-            // returned results
-            if ($excludeShippit && ($carrierCode == 'shippit' ||
-                    $carrierCode == 'shippit_cc')
+            // if the carrier is shippit, exclude
+            // it from the returned results
+            if ($excludeShippit && ($carrierCode == 'shippit' || $carrierCode == 'shippit_cc')
                 ) {
                 continue;
             }
@@ -59,7 +60,7 @@ class Methods implements \Magento\Framework\Option\ArrayInterface
             if ($carrierMethods) {
                 $carrierTitle = $this->_scopeConfig->getValue(
                     'carriers/' . $carrierCode . '/title',
-                    \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+                    ScopeInterface::SCOPE_STORE
                 );
 
                 $methods[$carrierCode] = [

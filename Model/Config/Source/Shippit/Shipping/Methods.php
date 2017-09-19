@@ -14,7 +14,9 @@
  * @license    http://www.shippit.com/terms
  */
 
-namespace Shippit\Shipping\Model\Config\Source\Shippit\LiveQuotes;
+namespace Shippit\Shipping\Model\Config\Source\Shippit\Shipping;
+
+use Shippit\Shipping\Helper\Data;
 
 class Methods implements \Magento\Framework\Option\ArrayInterface
 {
@@ -37,7 +39,26 @@ class Methods implements \Magento\Framework\Option\ArrayInterface
             [
                 'label' => 'Priority',
                 'value' => 'priority'
+            ],
+            [
+                'label' => 'Click and Collect',
+                'value' => 'click_and_collect'
             ]
+        ];
+    }
+
+    /**
+     * Get options in "key-value" format
+     *
+     * @return array
+     */
+    public function toArray()
+    {
+        return [
+            'standard' => 'Standard',
+            'express' => 'Express',
+            'priority' => 'Priority',
+            'click_and_collect' => 'Click and Collect'
         ];
     }
 }
