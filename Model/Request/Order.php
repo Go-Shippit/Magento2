@@ -47,6 +47,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
     const SHIPPING_SERVICE_STANDARD = 'standard';
     const SHIPPING_SERVICE_EXPRESS  = 'express';
     const SHIPPING_SERVICE_PRIORITY = 'priority';
+    const SHIPPING_SERVICE_CC       = 'click_and_collect';
 
     /**
      * @param \Magento\Framework\Model\Context $context
@@ -382,13 +383,19 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
         // set the courier details based on the shipping method
         if ($shippingMethod == 'standard') {
             return $this->setCourierType(self::SHIPPING_SERVICE_STANDARD);
-        } else if ($shippingMethod == 'express') {
+        }
+        else if ($shippingMethod == 'express') {
             return $this->setCourierType(self::SHIPPING_SERVICE_EXPRESS);
-        } else if ($shippingMethod == 'priority' && isset($deliveryDate) && isset($deliveryWindow)) {
+        }
+        else if ($shippingMethod == 'priority' && isset($deliveryDate) && isset($deliveryWindow)) {
             return $this->setCourierType(self::SHIPPING_SERVICE_PRIORITY)
                 ->setDeliveryDate($deliveryDate)
                 ->setDeliveryWindow($deliveryWindow);
-        } else {
+        }
+        else if ($shippingMethod == 'click_and_collect') {
+            return $this->setCourierType(self::SHIPPING_SERVICE_CC);
+        }
+        else {
             return $this->setData(self::COURIER_TYPE, self::SHIPPING_SERVICE_STANDARD);
         }
     }

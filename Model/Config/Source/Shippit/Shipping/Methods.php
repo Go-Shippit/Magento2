@@ -14,7 +14,7 @@
  * @license    http://www.shippit.com/terms
  */
 
-namespace Shippit\Shipping\Model\Config\Source\Shippit;
+namespace Shippit\Shipping\Model\Config\Source\Shippit\Shipping;
 
 use Shippit\Shipping\Helper\Data;
 

@@ -54,7 +54,7 @@ class Shippit extends AbstractCarrierOnline implements
      * @param \Magento\CatalogInventory\Api\StockRegistryInterface $stockRegistry
      * @param \Shippit\Shipping\Helper\Carrier $helper
      * @param \Shippit\Shipping\Helper\Api $api
-     * @param \Shippit\Shipping\Model\Config\Source\Shippit\Methods $methods
+     * @param \Shippit\Shipping\Model\Config\Source\Shippit\Shipping\QuoteMethods $methods
      * @param \Shippit\Shipping\Api\Request\QuoteInterface $quote
      * @param \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $productCollectionFactory
      * @param array $data
@@ -77,7 +77,7 @@ class Shippit extends AbstractCarrierOnline implements
         \Magento\CatalogInventory\Api\StockRegistryInterface $stockRegistry,
         \Shippit\Shipping\Helper\Carrier $helper,
         \Shippit\Shipping\Helper\Api $api,
-        \Shippit\Shipping\Model\Config\Source\Shippit\Methods $methods,
+        \Shippit\Shipping\Model\Config\Source\Shippit\Shipping\QuoteMethods $methods,
         \Shippit\Shipping\Api\Request\QuoteInterface $quote,
         \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $productCollectionFactory,
         \Magento\Catalog\Model\Product\Attribute\Repository $productAttributeRepository,

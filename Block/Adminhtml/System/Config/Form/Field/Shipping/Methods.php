@@ -51,7 +51,7 @@ class Methods extends \Magento\Framework\View\Element\Html\Select
     protected function _toHtml()
     {
         if (!$this->getOptions()) {
-            $this->setOptions($this->methods->toOptionArray(true));
+            $this->setOptions($this->methods->toOptionArray(true, true));
         }
 
         return parent::_toHtml();

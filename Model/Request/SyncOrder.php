@@ -154,13 +154,14 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
      */
     public function setShippingMethod($shippingMethod)
     {
-        // Standard, express and priority options are available
+        // Standard, express Standard, express, priority and click_and_collect options are available
         // Priority services requires the use of live quoting to determine
         // booking availability
         $validShippingMethods = [
             'standard',
             'express',
-            'priority'
+            'priority',
+            'click_and_collect',
         ];
 
         // if the shipping method passed is not a standard shippit service class, attempt to get a service class based on the configured mapping

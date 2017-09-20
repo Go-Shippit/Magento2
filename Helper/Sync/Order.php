@@ -78,6 +78,10 @@ class Order extends \Shippit\Shipping\Helper\Data
     // Helper Methods
     public function getShippitShippingMethod($shippingMethod)
     {
+        if (strpos($shippingMethod, self::CARRIER_CODE_CC) !== FALSE) {
+            return 'click_and_collect';
+        }
+
         // If the shipping method is a shippit method,
         // processing using the selected shipping options
         if (strpos($shippingMethod, self::CARRIER_CODE) !== false) {
@@ -92,9 +96,11 @@ class Order extends \Shippit\Shipping\Helper\Data
                 // "priority" was referred to as "premium"
                 if ($method == 'priority' || $method == 'premium') {
                     return 'priority';
-                } else if ($method == 'express') {
+                }
+                else if ($method == 'express') {
                     return 'express';
-                } else if ($method == 'standard') {
+                }
+                else if ($method == 'standard') {
                     return 'standard';
                 }
             }

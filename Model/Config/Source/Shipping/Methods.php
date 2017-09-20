@@ -2,6 +2,8 @@
 
 namespace Shippit\Shipping\Model\Config\Source\Shipping;
 
+use Magento\Store\Model\ScopeInterface;
+
 class Methods implements \Magento\Framework\Option\ArrayInterface
 {
     /**
@@ -34,7 +36,7 @@ class Methods implements \Magento\Framework\Option\ArrayInterface
      * @param bool $isActiveOnlyFlag
      * @return array
      */
-    public function toOptionArray($showPlaceholder = false)
+    public function toOptionArray($showPlaceholder = false, $excludeShippit = false)
     {
         if (!$showPlaceholder) {
             $methods = [[
@@ -48,25 +50,30 @@ class Methods implements \Magento\Framework\Option\ArrayInterface
         foreach ($carriers as $carrierCode => $carrierModel) {
             $carrierMethods = $carrierModel->getAllowedMethods();
 
-            if (!$carrierMethods) {
+            // if the carrier is shippit, exclude
+            // it from the returned results
+            if ($excludeShippit && ($carrierCode == 'shippit' || $carrierCode == 'shippit_cc')
+                ) {
                 continue;
             }
 
-            $carrierTitle = $this->_scopeConfig->getValue(
-                'carriers/' . $carrierCode . '/title',
-                \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-            );
+            if ($carrierMethods) {
+                $carrierTitle = $this->_scopeConfig->getValue(
+                    'carriers/' . $carrierCode . '/title',
+                    ScopeInterface::SCOPE_STORE
+                );
 
-            $methods[$carrierCode] = [
-                'label' => $carrierTitle,
-                'value' => [],
-            ];
-
-            foreach ($carrierMethods as $methodCode => $methodTitle) {
-                $methods[$carrierCode]['value'][] = [
-                    'value' => $carrierCode . '_' . $methodCode,
-                    'label' => '[' . $carrierCode . '] ' . $methodTitle,
+                $methods[$carrierCode] = [
+                    'label' => $carrierTitle,
+                    'value' => [],
                 ];
+
+                foreach ($carrierMethods as $methodCode => $methodTitle) {
+                    $methods[$carrierCode]['value'][] = [
+                        'value' => $carrierCode . '_' . $methodCode,
+                        'label' => '[' . $carrierCode . '] ' . $methodTitle,
+                    ];
+                }
             }
         }
 
