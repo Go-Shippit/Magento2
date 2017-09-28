@@ -36,7 +36,7 @@ class ClickAndCollect extends AbstractCarrier implements
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      * @param \Magento\Quote\Model\Quote\Address\RateResult\ErrorFactory $rateErrorFactory
      * @param \Shippit\Shipping\Logger\Logger $logger
-     * @param \Shippit\Shipping\Helper\Carrier $helper
+     * @param \Shippit\Shipping\Helper\Data $helper
      * @param array $data
      */
     public function __construct(
@@ -45,7 +45,7 @@ class ClickAndCollect extends AbstractCarrier implements
         \Shippit\Shipping\Logger\Logger $logger,
         \Magento\Shipping\Model\Rate\ResultFactory $rateResultFactory,
         \Magento\Quote\Model\Quote\Address\RateResult\MethodFactory $rateMethodFactory,
-        \Shippit\Shipping\Helper\Carrier $helper,
+        \Shippit\Shipping\Helper\Data $helper,
         array $data = []
     ) {
         $this->_rateResultFactory = $rateResultFactory;
