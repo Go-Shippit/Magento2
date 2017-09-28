@@ -14,11 +14,11 @@
  * @license    http://www.shippit.com/terms
  */
 
-namespace Shippit\Shipping\Helper;
+namespace Shippit\Shipping\Helper\Carrier;
 
 use \Magento\Framework\App\Config\ScopeConfigInterface;
 
-class Carrier extends \Shippit\Shipping\Helper\Data
+class Shippit extends \Shippit\Shipping\Helper\Data
 {
     const XML_PATH_SETTINGS = 'carriers/shippit/';
 
