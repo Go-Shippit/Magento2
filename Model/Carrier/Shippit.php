@@ -52,7 +52,7 @@ class Shippit extends AbstractCarrierOnline implements
      * @param \Magento\Directory\Model\CurrencyFactory $currencyFactory
      * @param \Magento\Directory\Helper\Data $directoryData
      * @param \Magento\CatalogInventory\Api\StockRegistryInterface $stockRegistry
-     * @param \Shippit\Shipping\Helper\Carrier $helper
+     * @param \Shippit\Shipping\Helper\Carrier\Shippit $helper
      * @param \Shippit\Shipping\Helper\Api $api
      * @param \Shippit\Shipping\Model\Config\Source\Shippit\Shipping\QuoteMethods $methods
      * @param \Shippit\Shipping\Api\Request\QuoteInterface $quote
@@ -75,7 +75,7 @@ class Shippit extends AbstractCarrierOnline implements
         \Magento\Directory\Model\CurrencyFactory $currencyFactory,
         \Magento\Directory\Helper\Data $directoryData,
         \Magento\CatalogInventory\Api\StockRegistryInterface $stockRegistry,
-        \Shippit\Shipping\Helper\Carrier $helper,
+        \Shippit\Shipping\Helper\Carrier\Shippit $helper,
         \Shippit\Shipping\Helper\Api $api,
         \Shippit\Shipping\Model\Config\Source\Shippit\Shipping\QuoteMethods $methods,
         \Shippit\Shipping\Api\Request\QuoteInterface $quote,
