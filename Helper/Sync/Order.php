@@ -63,7 +63,7 @@ class Order extends \Shippit\Shipping\Helper\Data
 
     public function getShippingMethodMapping()
     {
-        $values = unserialize( self::getValue('shipping_method_mapping'));
+        $values = $this->unserialize(self::getValue('shipping_method_mapping'));
         $mappings = [];
 
         if (!empty($values)) {
@@ -116,5 +116,21 @@ class Order extends \Shippit\Shipping\Helper\Data
 
         // All options have failed, return false
         return false;
+    }
+
+    /**
+     * Add a method to unserialze data using either
+     * Magento v2.0, v2.1 methods (PHP Object)
+     * or the new Magento v2.2 (Json Object)
+     */
+    private function unserialize($value)
+    {
+        $unserialized = json_decode($value, true);
+
+        if (json_last_error() === JSON_ERROR_NONE) {
+            return $unserialized;
+        }
+
+        return unserialize($value);
     }
 }
