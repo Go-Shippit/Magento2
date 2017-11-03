@@ -9,7 +9,7 @@
  * http://www.shippit.com/terms
  *
  * @category   Shippit
- * @copyright  Copyright (c) 2016 by Shippit Pty Ltd (http://www.shippit.com)
+ * @copyright  Copyright (c) by Shippit Pty Ltd (http://www.shippit.com)
  * @author     Matthew Muscat <matthew@mamis.com.au>
  * @license    http://www.shippit.com/terms
 -->
@@ -103,7 +103,7 @@
                 <field id="shipping_method_mapping" translate="label comment" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Shipping Method Mapping</label>
                     <frontend_model>Shippit\Shipping\Block\Adminhtml\System\Config\Form\Field\Sync\Order\ShippingMethodMapping</frontend_model>
-                    <backend_model>Magento\Config\Model\Config\Backend\Serialized\ArraySerialized</backend_model>
+                    <backend_model>Shippit\Shipping\Model\Config\ArraySerialized</backend_model>
                     <comment>A mapping of the Magento Shipping Methods to Shippit Services classes</comment>
                 </field>
             </group>
