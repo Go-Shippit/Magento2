@@ -9,7 +9,7 @@
  * http://www.shippit.com/terms
  *
  * @category   Shippit
- * @copyright  Copyright (c) 2016 by Shippit Pty Ltd (http://www.shippit.com)
+ * @copyright  Copyright (c) by Shippit Pty Ltd (http://www.shippit.com)
  * @author     Matthew Muscat <matthew@mamis.com.au>
  * @license    http://www.shippit.com/terms
  */
