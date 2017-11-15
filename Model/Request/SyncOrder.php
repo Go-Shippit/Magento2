@@ -216,35 +216,30 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
         $itemsAdded = 0;
 
         foreach ($itemsCollection as $item) {
-            if ($item->getHasChildren()) {
+            // Skip the item if...
+            // - it is a dummy item not required for shipment
+            // - it is a virtual item
+            if ($item->isDummy(true) || $item->getIsVirtual()) {
                 continue;
             }
 
-            $requestedQty = $this->_itemsHelper->getItemData($items, 'sku', $item->getSku(), 'qty');
+            $itemQty = $this->getItemQty($items, $item);
 
-            /**
-             * Magento marks a shipment only for the parent item in the order
-             * get the parent item to determine the correct qty to ship
-             */
-            $rootItem = $this->_getRootItem($item);
-
-            $itemQty = $this->_itemsHelper->getQtyToShip($rootItem, $requestedQty);
-            $itemWeight = $item->getWeight();
-
-            $itemLocation = $this->_itemsHelper->getLocation($item);
-
-            if ($itemQty > 0) {
-                $this->addItem(
-                    $item->getSku(),
-                    $item->getName(),
-                    $itemQty,
-                    $rootItem->getBasePriceInclTax(),
-                    $itemWeight,
-                    $itemLocation
-                );
-
-                $itemsAdded++;
+            // If the item qty is 0, skip this item from being sent to Shippit
+            if ($itemQty <= 0) {
+                continue;
             }
+
+            $this->addItem(
+                $this->getItemSku($item),
+                $this->getItemName($item),
+                $itemQty,
+                $this->getItemPrice($item),
+                $this->getItemWeight($item),
+                $this->getItemLocation($item)
+            );
+
+            $itemsAdded++;
         }
 
         if ($itemsAdded == 0) {
@@ -264,6 +259,60 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
         else {
             return $item;
         }
+    }
+
+    protected function getItemSku($item)
+    {
+        return $item->getSku();
+    }
+
+    protected function getItemName($item)
+    {
+        return $item->getName();
+    }
+
+    protected function getItemQty($items, $item)
+    {
+        $requestedQty = $this->getRequestedQuantity($items, 'sku', $item->getSku(), 'qty');
+
+        return $this->_itemsHelper->getQtyToShip($item, $requestedQty);
+    }
+
+    protected function getRequestedQuantity($items, $itemKey, $itemSku, $itemDataKey)
+    {
+        return $this->_itemsHelper->getItemData($items, $itemKey, $itemSku, $itemDataKey);
+    }
+
+    protected function getItemPrice($item)
+    {
+        $rootItem = $this->_getRootItem($item);
+
+        // Get the item price
+        // - If the root item is a bundle, use the item price
+        //   Otherwise, use the root item price
+        if ($rootItem->getProductType() == 'bundle') {
+            // if we are sending the bundle together
+            if ($rootItem->getId() == $item->getId()) {
+                return $rootItem->getBasePriceInclTax();
+            }
+            // if we are sending individually
+            else {
+                return $item->getBasePriceInclTax();
+            }
+        }
+        else {
+            return $rootItem->getBasePriceInclTax();
+        }
+    }
+
+    protected function getItemWeight($item)
+    {
+        return $item->getWeight();
+    }
+
+    protected function getItemLocation($item)
+    {
+        return $this->_itemsHelper->getLocation($item);
     }
 
     /**
