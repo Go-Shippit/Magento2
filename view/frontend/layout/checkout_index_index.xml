@@ -29,6 +29,7 @@
                                     <item name="children" xsi:type="array">
                                         <item name="shipping-step" xsi:type="array">
                                             <item name="children" xsi:type="array">
+                                                <!-- Add the shippit shipping options to the shipping method additional area -->
                                                 <item name="shippingAddress" xsi:type="array">
                                                     <item name="children" xsi:type="array">
                                                         <item name="shippingAdditional" xsi:type="array">
@@ -41,9 +42,7 @@
                                                                         <item name="shippit-options" xsi:type="array">
                                                                             <item name="component" xsi:type="string">uiComponent</item>
                                                                             <item name="displayArea" xsi:type="string">shippit-options</item>
-                                                                            <item name="children" xsi:type="array">
-                                                                                <!-- shippit-options -->
-                                                                            </item>
+                                                                            <item name="children" xsi:type="array" />
                                                                         </item>
                                                                     </item>
                                                                 </item>
@@ -51,6 +50,8 @@
                                                         </item>
                                                     </item>
                                                 </item>
+
+                                                <!-- Require all fields to be submitted for shipping rates to be available -->
                                                 <item name="step-config" xsi:type="array">
                                                     <item name="children" xsi:type="array">
                                                         <item name="shipping-rates-validation" xsi:type="array">

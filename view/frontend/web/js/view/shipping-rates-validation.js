@@ -12,6 +12,7 @@
  * @author     Matthew Muscat <matthew@mamis.com.au>
  * @license    http://www.shippit.com/terms
  */
+
 define(
     [
         'uiComponent',
@@ -30,6 +31,7 @@ define(
         'use strict';
         defaultShippingRatesValidator.registerValidator('shippit', shippingRatesValidator);
         defaultShippingRatesValidationRules.registerRules('shippit', shippingRatesValidationRules);
+
         return Component;
     }
 );

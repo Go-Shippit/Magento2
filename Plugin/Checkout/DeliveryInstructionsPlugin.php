@@ -33,7 +33,7 @@ class DeliveryInstructionsPlugin
      */
     public function afterProcess(
         \Magento\Checkout\Block\Checkout\LayoutProcessor $subject,
-        array  $jsLayout
+        array $jsLayout
     ) {
         if (!$this->helper->isDeliveryInstructionsActive()) {
             return $jsLayout;

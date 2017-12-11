@@ -27,7 +27,9 @@ define([
         },
 
         initObservable: function () {
-            this.canShowShippingOptions = ko.computed(
+            this._super();
+
+            this.canShowShippitShippingOptions = ko.computed(
                 function() {
                     // Retrieve the currently selected shipping method
                     var method = quote.shippingMethod();
