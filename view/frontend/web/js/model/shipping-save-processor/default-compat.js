@@ -23,7 +23,8 @@ define([
     'Magento_Checkout/js/model/payment/method-converter',
     'Magento_Checkout/js/model/error-processor',
     'Magento_Checkout/js/model/full-screen-loader',
-    'Magento_Checkout/js/action/select-billing-address'
+    'Magento_Checkout/js/action/select-billing-address',
+    'Shippit_Shipping/js/model/shipping-save-processor/payload-extender-compat'
 ], function (
     jQuery,
     ko,
@@ -34,15 +35,24 @@ define([
     methodConverter,
     errorProcessor,
     fullScreenLoader,
-    selectBillingAddressAction
+    selectBillingAddressAction,
+    payloadExtender
 ) {
     'use strict';
 
-    return {
-        /**
-         * @return {jQuery.Deferred}
-         */
-        saveShippingInformation: function () {
+    if (require.specified('Magento_Checkout/js/model/shipping-save-processor/payload-extender')) {
+        // If the payload-extender is available, Shippit
+        // will extend the payload via the Magento Core
+        // mixin method for the payload — skipping
+        // this compatability mixin
+
+        return function (target) {
+            return target;
+        }
+    }
+
+    return function (target) {
+        target.saveShippingInformation = function () {
             var payload;
 
             if (!quote.billingAddress()) {
@@ -54,13 +64,11 @@ define([
                     'shipping_address': quote.shippingAddress(),
                     'billing_address': quote.billingAddress(),
                     'shipping_method_code': quote.shippingMethod()['method_code'],
-                    'shipping_carrier_code': quote.shippingMethod()['carrier_code'],
-                    'extension_attributes': {
-                        shippit_authority_to_leave: (jQuery('#shippit-options [name="shippit_authority_to_leave"]').is(':checked') ? 1 : 0),
-                        shippit_delivery_instructions: jQuery('#shippit-options [name="shippit_delivery_instructions"]').val()
-                    }
+                    'shipping_carrier_code': quote.shippingMethod()['carrier_code']
                 }
             };
+
+            payloadExtender(payload);
 
             fullScreenLoader.startLoader();
 
@@ -80,5 +88,7 @@ define([
                 }
             );
         }
+
+        return target;
     };
 });
