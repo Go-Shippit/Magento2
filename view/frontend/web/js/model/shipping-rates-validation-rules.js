@@ -12,6 +12,7 @@
  * @author     Matthew Muscat <matthew@mamis.com.au>
  * @license    http://www.shippit.com/terms
  */
+
 define(
     [],
     function () {
