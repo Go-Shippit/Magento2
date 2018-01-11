@@ -234,7 +234,7 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
                 $this->getItemSku($item),
                 $this->getItemName($item),
                 $itemQty,
-                $this->getItemPrice($item, $itemQty),
+                $this->getItemPrice($item),
                 $this->getItemWeight($item),
                 $this->getItemLocation($item)
             );
@@ -283,7 +283,7 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
         return $this->_itemsHelper->getItemData($items, $itemKey, $itemSku, $itemDataKey);
     }
 
-    protected function getItemPrice($item, $itemQty)
+    protected function getItemPrice($item)
     {
         $rootItem = $this->_getRootItem($item);
 
@@ -291,48 +291,44 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
         // - If the root item is a bundle, use the item price
         //   Otherwise, use the root item price
         if ($rootItem->getProductType() == 'bundle') {
-            return $this->getBundleItemPrice($item, $itemQty);
+            return $this->getBundleItemPrice($item);
         }
         else {
-            return $this->getBasicItemPrice($item, $itemQty);
+            return $this->getBasicItemPrice($item);
         }
     }
 
-    protected function getBundleItemPrice($item, $itemQty)
+    protected function getBundleItemPrice($item)
     {
         $rootItem = $this->_getRootItem($item);
 
-        // if we are sending the bundle together,
-        // use the overall bundle total
+        // if we are sending the bundle together
         if ($rootItem->getId() == $item->getId()) {
             $childItems = $rootItem->getChildrenItems();
             $itemPrice = 0;
 
             foreach ($childItems as $childItem) {
-                $childItemQty = ($childItem->getQtyOrdered() / $itemQty);
-                $discountAmount = $childItem->getBaseDiscountAmount();
-                $itemPrice += (
-                    ($childItem->getBasePriceInclTax() * $childItemQty)
-                        - $discountAmount
-                );
-            }
+                // Get the number of items in the bundle per bundle package purchased
+                $childItemQty = ($childItem->getQtyOrdered() / $rootItem->getQtyOrdered());
+                $rowTotalAfterDiscounts = $childItem->getBaseRowTotal() - $childItem->getBaseDiscountAmount();
+                $rowUnitPrice = $rowTotalAfterDiscounts / $childItem->getQtyOrdered();
+                $bundleItemUnitPrice = $rowUnitPrice * $childItemQty;
 
-            // Set the price value to be based on the unit price (per item ordered)
-            $itemPrice = ($itemPrice / $itemQty);
+                $itemPrice += $bundleItemUnitPrice;
+            }
 
             return round($itemPrice, 2);
         }
         // if we are sending the bundle individually
-        // use the item's individual price
         else {
-            return $this->getBasicItemPrice($item, $itemQty);
+            return $this->getBasicItemPrice($item);
         }
     }
 
-    protected function getBasicItemPrice($item, $itemQty)
+    protected function getBasicItemPrice($item)
     {
-        $discountAmount = ($item->getBaseDiscountAmount() / $itemQty);
-        $itemPrice = ($item->getBasePriceInclTax() - $discountAmount);
+        $rowTotalAfterDiscounts = $item->getBaseRowTotal() - $item->getBaseDiscountAmount();
+        $itemPrice = $rowTotalAfterDiscounts / $item->getQtyOrdered();
 
         return round($itemPrice, 2);
     }
