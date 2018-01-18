@@ -48,6 +48,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
     const SHIPPING_SERVICE_EXPRESS  = 'express';
     const SHIPPING_SERVICE_PRIORITY = 'priority';
     const SHIPPING_SERVICE_CC       = 'click_and_collect';
+    const SHIPPING_SERVICE_PLAINLABEL = 'PlainLabel';
 
     /**
      * @param \Magento\Framework\Model\Context $context
@@ -322,6 +323,26 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
     }
 
     /**
+     * Get the Courier Allocation
+     *
+     * @return array|null
+     */
+    public function getCourierAllocation()
+    {
+        return $this->getData(self::COURIER_ALLOCATION);
+    }
+
+    /**
+     * Get the Courier Allocation
+     *
+     * @return array|null
+     */
+    public function setCourierAllocation($courierAllocation)
+    {
+        return $this->setData(self::COURIER_ALLOCATION, $courierAllocation);
+    }
+
+    /**
      * Get the Delivery Date
      *
      * @return string|null
@@ -394,6 +415,11 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
         }
         else if ($shippingMethod == 'click_and_collect') {
             return $this->setCourierType(self::SHIPPING_SERVICE_CC);
+        }
+        else if ($shippingMethod == 'PlainLabel') {
+            $this->setCourierType(null);
+            $this->setCourierAllocation(self::SHIPPING_SERVICE_PLAINLABEL);
+            return $this;
         }
         else {
             return $this->setData(self::COURIER_TYPE, self::SHIPPING_SERVICE_STANDARD);
