@@ -50,6 +50,11 @@ class UpgradeSchema implements UpgradeSchemaInterface
             $this->upgrade_1121($installer);
         }
 
+        if (version_compare($context->getVersion(), '1.2.6') < 0) {
+            //code to upgrade to 1.2.6
+            $this->upgrade_126($installer);
+        }
+
         $installer->endSetup();
     }
 
@@ -370,6 +375,52 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 'nullable' => true,
                 'default' => null,
                 'comment' => 'Shippit - Delivery Instructions'
+            ]
+        );
+
+        $installer->endSetup();
+    }
+
+    // Upgrade to v 1.2.6
+    public function upgrade_126($installer)
+    {
+        $installer->startSetup();
+
+        $table = $installer->getTable('shippit_sync_order_item');
+
+        $installer->getConnection()->addColumn(
+            $table,
+            'length',
+            [
+                'type'      => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
+                'length'    => '12,2',
+                'nullable'  => true,
+                'after' => 'weight',
+                'comment' => 'Item Dimension - Length',
+            ]
+        );
+
+        $installer->getConnection()->addColumn(
+            $table,
+            'width',
+            [
+                'type'      => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
+                'length'    => '12,2',
+                'nullable'  => true,
+                'after' => 'weight',
+                'comment' => 'Item Dimension - Width',
+            ]
+        );
+
+        $installer->getConnection()->addColumn(
+            $table,
+            'depth',
+            [
+                'type'      => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
+                'length'    => '12,2',
+                'nullable'  => true,
+                'after' => 'weight',
+                'comment' => 'Item Dimension - Depth',
             ]
         );
 

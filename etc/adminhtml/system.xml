@@ -86,20 +86,6 @@
                     <source_model>Shippit\Shipping\Model\Config\Source\Shippit\Sync\Order\SendAllOrders</source_model>
                 </field>
 
-                <field id="product_location_active" translate="label" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>Send Product Location to Shippit</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>
-
-                <field id="product_location_attribute_code" translate="label comment" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>Product Location Attribute Code</label>
-                    <source_model>Shippit\Shipping\Model\Config\Source\Catalog\Attributes</source_model>
-                    <depends>
-                        <field id="product_location_active">1</field>
-                    </depends>
-                    <comment>The Product Attribute to be used for location information on Shippit Pick Slips</comment>
-                </field>
-
                 <field id="shipping_method_mapping" translate="label comment" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Shipping Method Mapping</label>
                     <frontend_model>Shippit\Shipping\Block\Adminhtml\System\Config\Form\Field\Sync\Order\ShippingMethodMapping</frontend_model>
@@ -108,7 +94,67 @@
                 </field>
             </group>
 
-            <group id="sync_shipping" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="sync_item" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Items Sync</label>
+
+                <field id="product_dimension_active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Send Product Dimensions</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Send the product package dimensions to Shippit</comment>
+                </field>
+
+                <field id="product_unit_dimension" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Product Dimensions Unit</label>
+                    <source_model>Shippit\Shipping\Model\Config\Source\Catalog\Unit\Dimensions</source_model>
+                    <comment>The unit of measurement used for the product dimensions</comment>
+                    <depends>
+                        <field id="product_dimension_active">1</field>
+                    </depends>
+                </field>
+
+                <field id="product_dimension_length_attribute_code" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Product Length Attribute Code</label>
+                    <source_model>Shippit\Shipping\Model\Config\Source\Catalog\Attributes</source_model>
+                    <comment>The Product Attribute to be used for length data</comment>
+                    <depends>
+                        <field id="product_dimension_active">1</field>
+                    </depends>
+                </field>
+
+                <field id="product_dimension_width_attribute_code" translate="label" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Product Width Attribute Code</label>
+                    <source_model>Shippit\Shipping\Model\Config\Source\Catalog\Attributes</source_model>
+                    <comment>The Product Attribute to be used for width data</comment>
+                    <depends>
+                        <field id="product_dimension_active">1</field>
+                    </depends>
+                </field>
+
+                <field id="product_dimension_depth_attribute_code" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Product Depth Attribute Code</label>
+                    <source_model>Shippit\Shipping\Model\Config\Source\Catalog\Attributes</source_model>
+                    <comment>The Product Attribute to be used for depth data</comment>
+                    <depends>
+                        <field id="product_dimension_active">1</field>
+                    </depends>
+                </field>
+
+                <field id="product_location_active" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Send Product Location to Shippit</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+
+                <field id="product_location_attribute_code" translate="label comment" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Product Location Attribute Code</label>
+                    <source_model>Shippit\Shipping\Model\Config\Source\Catalog\Attributes</source_model>
+                    <depends>
+                        <field id="product_location_active">1</field>
+                    </depends>
+                    <comment>The Product Attribute to be used for location information on Shippit Pick Slips</comment>
+                </field>
+            </group>
+
+            <group id="sync_shipping" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Shipping Sync</label>
 
                 <field id="active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">

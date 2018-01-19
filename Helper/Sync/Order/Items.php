@@ -18,7 +18,125 @@ namespace Shippit\Shipping\Helper\Sync\Order;
 
 class Items extends \Shippit\Shipping\Helper\Sync\Order
 {
+    const UNIT_DIMENSION_MILLIMETRES = 'millimetres';
+    const UNIT_DIMENSION_CENTIMETRES = 'centimetres';
+    const UNIT_DIMENSION_METRES = 'metres';
+
+    const XML_PATH_SETTINGS = 'shippit/sync_item/';
+
     protected $_locationAttributeCode = null;
+
+    /**
+     * Return store config value for key
+     *
+     * @param   string $key
+     * @return  string
+     */
+    public function getValue($key, $scope = 'website')
+    {
+        $path = self::XML_PATH_SETTINGS . $key;
+
+        return $this->_scopeConfig->getValue($path, $scope);
+    }
+
+    public function isProductDimensionActive()
+    {
+        return $this->getValue('product_dimension_active');
+    }
+
+    public function getProductUnitDimension()
+    {
+        return $this->getValue('product_unit_dimension');
+    }
+
+    public function getProductDimensionLengthAttributeCode()
+    {
+        return $this->getValue('product_dimension_length_attribute_code');
+    }
+
+    public function getProductDimensionWidthAttributeCode()
+    {
+        return $this->getValue('product_dimension_width_attribute_code');
+    }
+
+    public function getProductDimensionDepthAttributeCode()
+    {
+        return $this->getValue('product_dimension_depth_attribute_code');
+    }
+
+    public function getDimension($dimension)
+    {
+        // ensure the dimension is present and not empty
+        if (empty($dimension)) {
+            return null;
+        }
+
+        switch ($this->getProductUnitDimension()) {
+            case self::UNIT_DIMENSION_MILLIMETRES:
+                $dimension = ($dimension / 1000);
+                break;
+            case self::UNIT_DIMENSION_CENTIMETRES:
+                $dimension = ($dimension / 100);
+                break;
+            case self::UNIT_DIMENSION_METRES:
+                $dimension = $dimension;
+                break;
+        }
+
+        return (float) $dimension;
+    }
+
+    public function getWidth($item)
+    {
+        $attributeCode = $this->getProductDimensionWidthAttributeCode();
+
+        if ($attributeCode) {
+            $attributeValue = $this->getAttributeValue($item->getProduct(), $attributeCode);
+        }
+        else {
+            $attributeValue = null;
+        }
+
+        return $this->getDimension($attributeValue);
+    }
+
+    public function getLength($item)
+    {
+        $attributeCode = $this->getProductDimensionLengthAttributeCode();
+
+        if ($attributeCode) {
+            $attributeValue = $this->getAttributeValue($item->getProduct(), $attributeCode);
+        }
+        else {
+            $attributeValue = null;
+        }
+
+        return $this->getDimension($attributeValue);
+    }
+
+    public function getDepth($item)
+    {
+        $attributeCode = $this->getProductDimensionDepthAttributeCode();
+
+        if ($attributeCode) {
+            $attributeValue = $this->getAttributeValue($item->getProduct(), $attributeCode);
+        }
+        else {
+            $attributeValue = null;
+        }
+
+        return $this->getDimension($attributeValue);
+    }
+
+    public function isProductLocationActive()
+    {
+        return $this->getValue('product_location_active');
+    }
+
+    public function getProductLocationAttributeCode()
+    {
+        return $this->getValue('product_location_attribute_code');
+    }
 
     public function getSkus($items)
     {
