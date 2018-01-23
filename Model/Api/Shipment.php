@@ -160,6 +160,12 @@ class Shipment extends \Magento\Framework\Model\AbstractModel
             );
     }
 
+    /**
+     * Process each shipment queue record to create shipment record
+     * @param  shipment  $syncShipment
+     * @param  boolean $displayNotifications
+     * @return Shipment
+     */
     public function sync($syncShipment, $displayNotifications = false)
     {
         if (!$this->_helper->isActive()) {
@@ -209,6 +215,14 @@ class Shipment extends \Magento\Framework\Model\AbstractModel
         return true;
     }
 
+    /**
+     * Create shipment record
+     * @param  Order $order
+     * @param  array $items
+     * @param  string $courierName
+     * @param  string $trackingNumber
+     * @return Shipment
+     */
     protected function _createShipment($order, $items, $courierName, $trackingNumber)
     {
         $shipment = $this->_shipmentFactory
