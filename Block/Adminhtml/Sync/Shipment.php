@@ -1,5 +1,5 @@
-<?xml version="1.0"?>
-<!--
+<?php
+/**
  * Shippit Pty Ltd
  *
  * NOTICE OF LICENSE
@@ -12,11 +12,18 @@
  * @copyright  Copyright (c) by Shippit Pty Ltd (http://www.shippit.com)
  * @author     Matthew Muscat <matthew@mamis.com.au>
  * @license    http://www.shippit.com/terms
--->
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
-    <module name="Shippit_Shipping" setup_version="1.2.7">
-    	<sequence>
-    		<module name="Magento_Shipping" />
-    	</sequence>
-    </module>
-</config>
+ */
+
+namespace Shippit\Shipping\Block\Adminhtml\Sync;
+
+class Shipment extends \Magento\Backend\Block\Widget\Grid\Container
+{
+    protected function _construct()
+    {
+        $this->_blockGroup = 'Shippit_Shipping';
+        $this->_controller = 'adminhtml_sync_shipment';
+
+        parent::_construct();
+        $this->removeButton('add');
+    }
+}

@@ -50,6 +50,11 @@ class UpgradeSchema implements UpgradeSchemaInterface
             $this->upgrade_1121($installer);
         }
 
+        if (version_compare($context->getVersion(), '1.2.7') < 0) {
+            //code to upgrade to 1.2.5
+            $this->upgrade_127($installer);
+        }
+
         $installer->endSetup();
     }
 
@@ -372,6 +377,237 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 'comment' => 'Shippit - Delivery Instructions'
             ]
         );
+
+        $installer->endSetup();
+    }
+
+
+    // Upgrade to v 1.2.5
+    public function upgrade_127($installer)
+    {
+
+        $installer->startSetup();
+
+        // Create a shipment table
+        $shipmentTable = $installer->getConnection()
+            ->newTable($installer->getTable('shippit_sync_shipment'))
+            ->addColumn(
+                'sync_shipment_id',
+                \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+                null,
+                array(
+                    'identity'  => true,
+                    'unsigned' => true,
+                    'nullable'  => false,
+                    'primary'   => true,
+                ),
+                'Id'
+            )
+            ->addColumn(
+                'store_id',
+                \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
+                null,
+                array(
+                    'unsigned'  => true,
+                ),
+                'Store Id'
+            )
+            ->addColumn(
+                'order_increment',
+                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                255,
+                array(
+                    'unsigned'  => true,
+                    'default'   => null,
+                    'nullable'  => true,
+                ),
+                'Order Increment'
+            )
+            ->addColumn(
+                'shipment_increment',
+                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                255,
+                array(
+                    'unsigned'  => true,
+                    'default'   => null,
+                    'nullable'  => true,
+                ),
+                'Shipment Increment'
+            )
+            ->addColumn(
+                'status',
+                \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
+                null,
+                array(
+                    'unsigned'  => true,
+                    'nullable'  => false,
+                ),
+                'Status'
+            )
+            ->addColumn(
+                'courier_allocation',
+                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                255,
+                array(),
+                'Courier Allocation'
+            )
+            ->addColumn(
+                'track_number',
+                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                255,
+                array(),
+                'Tracking Number'
+            )
+            ->addColumn(
+                'attempt_count',
+                \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
+                null,
+                array(
+                    'unsigned'  => true,
+                    'nullable'  => false,
+                ),
+                'Attempt Count'
+            )
+            ->addColumn(
+                'created_at',
+                \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
+                null,
+                array('nullable' => false, 'default' => \Magento\Framework\DB\Ddl\Table::TIMESTAMP_INIT_UPDATE),
+                'Created At'
+            )
+            ->addColumn(
+                'synced_at',
+                \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
+                null,
+                array(),
+                'Synced At'
+            )
+            ->addIndex(
+                $installer->getIdxName(
+                    'shippit_sync_shipment',
+                    ['store_id']
+                ),
+                ['store_id']
+            )
+            ->addIndex(
+                $installer->getIdxName(
+                    'shippit_sync_shipment',
+                    ['order_increment']
+                ),
+                ['order_increment']
+            )
+            ->addIndex(
+                $installer->getIdxName(
+                    'shippit_sync_shipment',
+                    ['shipment_increment']
+                ),
+                ['shipment_increment']
+            )
+            ->addIndex(
+                $installer->getIdxName(
+                    'shippit_sync_shipment',
+                    ['track_number']
+                ),
+                ['track_number']
+            )
+            ->addForeignKey(
+                $installer->getFkName(
+                    'shippit_sync_shipment',
+                    'store_id',
+                    'store',
+                    'store_id'
+                ),
+                'store_id',
+                $installer->getTable('store'),
+                'store_id',
+                \Magento\Framework\DB\Ddl\Table::ACTION_SET_NULL,
+                \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
+            )
+            ->setComment('Shippit Shipment Sync History');
+
+        $response = $installer->getConnection()->createTable($shipmentTable);
+        // end of create shipment table
+
+        // Create a shipment item table
+        $shipmentItemTable = $installer->getConnection()
+            ->newTable($installer->getTable('shippit_sync_shipment_item'))
+            ->addColumn(
+                'sync_shipment_item_id',
+                \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+                null,
+                array(
+                    'identity'  => true,
+                    'nullable'  => false,
+                    'primary'   => true,
+                ),
+                'Id'
+            )
+            ->addColumn(
+                'sync_shipment_id',
+                \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+                null,
+                array(
+                    'unsigned'  => true,
+                    'nullable'  => false,
+                ),
+                'Shipment Sync Id'
+            )
+            ->addColumn(
+                'sku',
+                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                255,
+                array(
+                    'nullable'  => false,
+                ),
+                'Item SKU'
+            )
+            ->addColumn(
+                'title',
+                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                '64k',
+                array(),
+                'Item Name'
+            )
+            ->addColumn(
+                'qty',
+                \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
+                '12,4',
+                array(
+                    'default' => '0.0000',
+                ),
+                'Item Qty'
+            )
+            ->addIndex(
+                $installer->getIdxName(
+                    'shippit_sync_shipment_item',
+                    ['sync_shipment_id']
+                ),
+                ['sync_shipment_id']
+            )
+            ->addIndex(
+                $installer->getIdxName(
+                    'shippit_sync_shipment_item',
+                    ['sku']
+                ),
+                ['sku']
+            )
+            ->addForeignKey(
+                $installer->getFkName(
+                    'shippit_sync_shipment_item',
+                    'sync_shipment_id',
+                    'shippit_sync_shipment',
+                    'sync_shipment_id'
+                ),
+                'sync_shipment_id',
+                $installer->getTable('shippit_sync_shipment'),
+                'sync_shipment_id',
+                \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE,
+                \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
+            )
+            ->setComment('Shippit Shipment Items Sync History');
+
+        $installer->getConnection()->createTable($shipmentItemTable);
+        //end of create shipment items table
 
         $installer->endSetup();
     }
