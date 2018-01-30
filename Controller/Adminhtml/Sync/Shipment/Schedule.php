@@ -42,10 +42,10 @@ class Schedule extends \Magento\Backend\App\Action
      *
      * @return bool
      */
-    // protected function _isAllowed()
-    // {
-    //     return $this->_authorization->isAllowed(self::ADMIN_ACTION);
-    // }
+    protected function _isAllowed()
+    {
+        return $this->_authorization->isAllowed(self::ADMIN_ACTION);
+    }
 
     /**
      * Sync action
