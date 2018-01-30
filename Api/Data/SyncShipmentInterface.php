@@ -63,7 +63,7 @@ interface SyncShipmentInterface
     public function setSyncShipmentId($syncShipmentId);
 
     /**
-     * Get the Order Id
+     * Get the Store Id
      *
      * @return string|null
      */
@@ -93,7 +93,7 @@ interface SyncShipmentInterface
     public function setOrderIncrement($orderIncrement);
 
     /**
-     * Get the Order Increment
+     * Get the Shipment Increment
      *
      * @return string|null
      */
@@ -168,22 +168,6 @@ interface SyncShipmentInterface
     public function setAttemptCount($attemptCount);
 
     /**
-     * Retrieve sync order items collection
-     *
-     * @param   bool $useCache
-     * @return  \Magento\Eav\Model\Entity\Collection\AbstractCollection;
-     */
-
-    public function getItemsCollection($useCache = true);
-
-    /**
-     * Add new items to the sync order request
-     *
-     * @param Array $items
-     */
-    public function addItems(array $items);
-
-    /**
      * Get the sync at
      *
      * @return date
@@ -210,4 +194,19 @@ interface SyncShipmentInterface
      * @return date
      */
     public function setCreatedAt($createdAt);
+
+    /**
+     * Retrieve sync shipment items collection
+     *
+     * @param   bool $useCache
+     * @return  \Magento\Eav\Model\Entity\Collection\AbstractCollection;
+     */
+    public function getItemsCollection($useCache = true);
+
+    /**
+     * Add new items to the sync order request
+     *
+     * @param Array $items
+     */
+    public function addItems(array $items);
 }

@@ -125,7 +125,7 @@ class Shipment extends \Magento\Framework\Model\AbstractModel
             // get shipments to sync
             $syncShipments = $this->getSyncShipments($storeId);
 
-            if(empty($syncShipments)) {
+            if (empty($syncShipments)) {
                 return $this;
             }
 
@@ -148,7 +148,7 @@ class Shipment extends \Magento\Framework\Model\AbstractModel
             ->getCollection()
             ->addFieldToFilter(
                 'status',
-                SyncShipment::STATUS_PENDING
+                ['eq' => SyncShipment::STATUS_PENDING]
             )
             ->addFieldToFilter(
                 'attempt_count',
@@ -168,10 +168,6 @@ class Shipment extends \Magento\Framework\Model\AbstractModel
      */
     public function sync($syncShipment, $displayNotifications = false)
     {
-        if (!$this->_helper->isActive()) {
-            return false;
-        }
-
         try {
             // increase the attempt count by 1
             $syncShipment->setAttemptCount($syncShipment->getAttemptCount() + 1);
@@ -196,7 +192,7 @@ class Shipment extends \Magento\Framework\Model\AbstractModel
 
         }
         catch (\Exception $e) {
-            $this->_logger->addError('API - Shipment Sync Request Failed - ' . $e->getMessage());
+            $this->_logger->addError('Shipment Sync Request Failed - ' . $e->getMessage());
 
             // Fail the sync item if it's breached the max attempts
             if ($syncShipment->getAttemptCount() > SyncShipment::SYNC_MAX_ATTEMPTS) {
@@ -207,7 +203,7 @@ class Shipment extends \Magento\Framework\Model\AbstractModel
             $syncShipment->save();
 
             if ($displayNotifications) {
-                $this->_messageManager->addError(__('Shipment ' . $syncShipment->getOrderIncrement() . ' was not created - ' . $e->getMessage()));
+                $this->_messageManager->addError(__('Shipment for Order ' . $syncShipment->getOrderIncrement() . ' was not created - ' . $e->getMessage()));
             }
             return false;
         }

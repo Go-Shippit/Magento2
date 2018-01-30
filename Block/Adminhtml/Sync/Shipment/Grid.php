@@ -16,8 +16,6 @@
 
 namespace Shippit\Shipping\Block\Adminhtml\Sync\Shipment;
 
-use Magento\Backend\Block\Widget\Grid as WidgetGrid;
-
 class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 {
 
@@ -51,7 +49,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
         $this->setDefaultDir('desc');
         $this->syncShipmentCollection = $syncShipmentCollection;
         $this->syncShipmentStatus = $syncShipmentStatus;
-        $this->setEmptyText(__('No Shippit Order Sync Items Found'));
+        $this->setEmptyText(__('No Shippit Shipment Sync Items Found'));
     }
 
     /**
@@ -73,8 +71,9 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
                     'courier_allocation',
                     'track_number',
                     'attempt_count',
-                    'synced_at',
-                    'created_at'
+                    'created_at',
+                    'synced_at'
+
                 ]
             );
 
@@ -172,7 +171,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
         }
 
         $cell = sprintf(
-            '<a href="https://www.shippit.com/track/%s" title="Track Order" target="_blank">%s</a>',
+            '<a href="https://www.shippit.com/track/%s" title="Track Shipment" target="_blank">%s</a>',
             $value,
             $value
         );

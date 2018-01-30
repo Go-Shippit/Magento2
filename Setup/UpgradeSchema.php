@@ -51,7 +51,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
         }
 
         if (version_compare($context->getVersion(), '1.2.7') < 0) {
-            //code to upgrade to 1.2.5
+            //code to upgrade to 1.2.7
             $this->upgrade_127($installer);
         }
 
@@ -382,7 +382,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
     }
 
 
-    // Upgrade to v 1.2.5
+    // Upgrade to v 1.2.7
     public function upgrade_127($installer)
     {
 
