@@ -46,7 +46,7 @@ class Methods implements \Magento\Framework\Option\ArrayInterface
             ],
             [
                 'label' => 'Plain Label',
-                'value' => 'PlainLabel'
+                'value' => 'plain_label'
             ]
         ];
     }
@@ -63,7 +63,7 @@ class Methods implements \Magento\Framework\Option\ArrayInterface
             'express' => 'Express',
             'priority' => 'Priority',
             'click_and_collect' => 'Click and Collect',
-            'PlainLabel' => 'Plain Label'
+            'plain_label' => 'Plain Label'
         ];
     }
 }
