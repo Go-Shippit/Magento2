@@ -44,10 +44,11 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
     protected $_syncOrder;
 
     // Shippit Service Class API Mappings
-    const SHIPPING_SERVICE_STANDARD = 'standard';
-    const SHIPPING_SERVICE_EXPRESS  = 'express';
-    const SHIPPING_SERVICE_PRIORITY = 'priority';
-    const SHIPPING_SERVICE_CC       = 'click_and_collect';
+    const SHIPPING_SERVICE_STANDARD     = 'standard';
+    const SHIPPING_SERVICE_EXPRESS      = 'express';
+    const SHIPPING_SERVICE_PRIORITY     = 'priority';
+    const SHIPPING_SERVICE_CC           = 'click_and_collect';
+    const SHIPPING_SERVICE_PLAINLABEL   = 'plain_label';
 
     /**
      * @param \Magento\Framework\Model\Context $context
@@ -322,6 +323,26 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
     }
 
     /**
+     * Get the Courier Allocation
+     *
+     * @return array|null
+     */
+    public function getCourierAllocation()
+    {
+        return $this->getData(self::COURIER_ALLOCATION);
+    }
+
+    /**
+     * Get the Courier Allocation
+     *
+     * @return array|null
+     */
+    public function setCourierAllocation($courierAllocation)
+    {
+        return $this->setData(self::COURIER_ALLOCATION, $courierAllocation);
+    }
+
+    /**
      * Get the Delivery Date
      *
      * @return string|null
@@ -375,25 +396,33 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
     {
         // if the order is a priority delivery,
         // get the special delivery attributes
-        if ($shippingMethod == 'priority') {
+        if ($shippingMethod == self::SHIPPING_SERVICE_PRIORITY) {
             $deliveryDate = $this->_getOrderDeliveryDate($this->_order);
             $deliveryWindow = $this->_getOrderDeliveryWindow($this->_order);
         }
 
         // set the courier details based on the shipping method
-        if ($shippingMethod == 'standard') {
+        if ($shippingMethod == self::SHIPPING_SERVICE_STANDARD) {
             return $this->setCourierType(self::SHIPPING_SERVICE_STANDARD);
         }
-        else if ($shippingMethod == 'express') {
+        elseif ($shippingMethod == self::SHIPPING_SERVICE_EXPRESS) {
             return $this->setCourierType(self::SHIPPING_SERVICE_EXPRESS);
         }
-        else if ($shippingMethod == 'priority' && isset($deliveryDate) && isset($deliveryWindow)) {
+        elseif ($shippingMethod == self::SHIPPING_SERVICE_PRIORITY && isset($deliveryDate) && isset($deliveryWindow)) {
             return $this->setCourierType(self::SHIPPING_SERVICE_PRIORITY)
                 ->setDeliveryDate($deliveryDate)
                 ->setDeliveryWindow($deliveryWindow);
         }
-        else if ($shippingMethod == 'click_and_collect') {
+        elseif ($shippingMethod == self::SHIPPING_SERVICE_CC) {
             return $this->setCourierType(self::SHIPPING_SERVICE_CC);
+        }
+        elseif ($shippingMethod == self::SHIPPING_SERVICE_PLAINLABEL) {
+            // For the plain labelling service, there is no courier type
+            // but a courier allocation of plain label is required
+            $this->setCourierType(null);
+            $this->setCourierAllocation('PlainLabel');
+
+            return $this;
         }
         else {
             return $this->setData(self::COURIER_TYPE, self::SHIPPING_SERVICE_STANDARD);

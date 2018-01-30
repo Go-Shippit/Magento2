@@ -162,6 +162,7 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
             'express',
             'priority',
             'click_and_collect',
+            'plain_label'
         ];
 
         // if the shipping method passed is not a standard shippit service class, attempt to get a service class based on the configured mapping
