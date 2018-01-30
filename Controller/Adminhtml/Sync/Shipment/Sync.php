@@ -23,8 +23,7 @@ class Sync extends \Magento\Backend\App\Action
     const ADMIN_ACTION = 'Shippit_Shipping::sync_shipment_sync';
 
     /**
-     * \Shippit\Shipping\Api\Data\SyncShipmentInterfaceFactory
-     * @var [type]
+     * @var \Shippit\Shipping\Api\Data\SyncShipmentInterfaceFactory
      */
     protected $_syncShipmentInterfaceFactory;
 
@@ -59,10 +58,10 @@ class Sync extends \Magento\Backend\App\Action
      *
      * @return bool
      */
-    // protected function _isAllowed()
-    // {
-    //     return $this->_authorization->isAllowed(self::ADMIN_ACTION);
-    // }
+    protected function _isAllowed()
+    {
+        return $this->_authorization->isAllowed(self::ADMIN_ACTION);
+    }
 
     /**
      * Sync action
@@ -85,12 +84,13 @@ class Sync extends \Magento\Backend\App\Action
             return;
         }
 
-        $syncShipments =  $this->_syncShipmentInterfaceFactory->create()
-        ->getCollection()
-        ->addFieldToFilter(
-            'sync_shipment_id',
-            array('in',$syncIds)
-        );
+        $syncShipments =  $this->_syncShipmentInterfaceFactory
+            ->create()
+            ->getCollection()
+            ->addFieldToFilter(
+                'sync_shipment_id',
+                array('in',$syncIds)
+            );
 
         if ($syncShipments->getSize() == 0) {
             $this->messageManager->addError(__('No valid shipments were found'));
@@ -123,10 +123,8 @@ class Sync extends \Magento\Backend\App\Action
             $this->_appEmulation->stopEnvironmentEmulation($environment);
         }
 
-
         $this->_redirect('*/*/index');
 
         return;
-
     }
 }

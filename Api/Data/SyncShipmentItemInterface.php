@@ -32,7 +32,7 @@ interface SyncShipmentItemInterface
     const LOCATION                  = 'location';
 
     /**
-     * Get the Sync Item Id
+     * Get the Sync Shipment Item Id
      *
      * @return string|null
      */
@@ -54,7 +54,7 @@ interface SyncShipmentItemInterface
     public function getSyncShipmentItemId();
 
     /**
-     * Set the Sync Item Id
+     * Set the Sync Shipment Item Id
      *
      * @param integer $syncShipmentItemId
      * @return string|null
@@ -167,7 +167,7 @@ interface SyncShipmentItemInterface
     public function setLocation($location);
 
     /**
-     * Add a new item to the sync order item request
+     * Add a new item to the sync shipment item request
      */
     public function addItem($item);
 }

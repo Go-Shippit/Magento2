@@ -44,7 +44,6 @@ class Collection extends AbstractCollection
      */
     public function addSyncShipmentFilter(\Shippit\Shipping\Api\Data\SyncShipmentInterface $syncShipment)
     {
-        // @TODO: Update DB migration to sync_shipment_id
         $syncShipmentId = $syncShipment->getSyncShipmentId();
 
         if ($syncShipmentId) {

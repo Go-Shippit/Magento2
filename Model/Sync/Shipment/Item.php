@@ -218,7 +218,7 @@ class Item extends \Magento\Framework\Model\AbstractModel implements \Shippit\Sh
     }
 
     /**
-     * Add a new item to the sync order item request
+     * Add a new item to the sync shipment item request
      */
     public function addItem($item)
     {

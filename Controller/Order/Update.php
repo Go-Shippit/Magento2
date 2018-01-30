@@ -277,6 +277,10 @@ class Update extends \Magento\Framework\App\Action\Action
 
     protected function _getOrderIncrement($request = array())
     {
+        if (!isset($request['retailer_order_number'])) {
+            return false;
+        }
+
         if (!empty($request['retailer_order_number'])) {
             return $request['retailer_order_number'];
         }

@@ -123,7 +123,7 @@ class Shipment extends \Magento\Framework\Model\AbstractModel implements SyncShi
     }
 
     /**
-     * Get the Order Id
+     * Get the Store Id
      *
      * @return string|null
      */
@@ -133,7 +133,7 @@ class Shipment extends \Magento\Framework\Model\AbstractModel implements SyncShi
     }
 
     /**
-     * Set the Order Id
+     * Set the Store Id
      *
      * @param string $orderId
      * @return string|null
@@ -144,7 +144,7 @@ class Shipment extends \Magento\Framework\Model\AbstractModel implements SyncShi
     }
 
     /**
-     * Get the Shipping Method
+     * Get the Order Increment
      *
      * @return string|null
      */
@@ -154,9 +154,9 @@ class Shipment extends \Magento\Framework\Model\AbstractModel implements SyncShi
     }
 
     /**
-     * Set the Shipping Method
+     * Set the Order Increment
      *
-     * @param string $shippingMethod
+     * @param string $orderincrement
      * @return string|null
      */
     public function setOrderIncrement($orderIncrement)
@@ -165,7 +165,7 @@ class Shipment extends \Magento\Framework\Model\AbstractModel implements SyncShi
     }
 
     /**
-     * Get the Shipping Method
+     * Get the Shipping Increment
      *
      * @return string|null
      */
@@ -175,9 +175,9 @@ class Shipment extends \Magento\Framework\Model\AbstractModel implements SyncShi
     }
 
     /**
-     * Set the Shipping Method
+     * Set the Shipping Increment
      *
-     * @param string $shippingMethod
+     * @param string $shippingincrement
      * @return string|null
      */
     public function setShipmentIncrement($shipmentIncrement)
@@ -207,7 +207,7 @@ class Shipment extends \Magento\Framework\Model\AbstractModel implements SyncShi
     }
 
     /**
-     * Get the status
+     * Get the courier allocation
      *
      * @return string|null
      */
@@ -217,9 +217,9 @@ class Shipment extends \Magento\Framework\Model\AbstractModel implements SyncShi
     }
 
     /**
-     * Set the status
+     * Set the courier allocation
      *
-     * @param string $status
+     * @param string $courierAllocation
      * @return string|null
      */
     public function setCourierAllocation($courierAllocation)
@@ -269,30 +269,8 @@ class Shipment extends \Magento\Framework\Model\AbstractModel implements SyncShi
         return $this->setData(self::ATTEMPT_COUNT, $attemptCount);
     }
 
-
     /**
-     * Get the attempt count
-     *
-     * @return string|null
-     */
-    public function getSyncedAt()
-    {
-        return $this->getData(self::SYNCED_AT);
-    }
-
-    /**
-     * Set the attempt count
-     *
-     * @param string $attemptCount
-     * @return string|null
-     */
-    public function setSyncedAt($syncedAt)
-    {
-        return $this->setData(self::SYNCED_AT, $syncedAt);
-    }
-
-    /**
-     * Get the attempt count
+     * Get the created at
      *
      * @return string|null
      */
@@ -302,7 +280,7 @@ class Shipment extends \Magento\Framework\Model\AbstractModel implements SyncShi
     }
 
     /**
-     * Set the attempt count
+     * Set the created at
      *
      * @param string $attemptCount
      * @return string|null
@@ -310,6 +288,27 @@ class Shipment extends \Magento\Framework\Model\AbstractModel implements SyncShi
     public function setCreatedAt($createdAt)
     {
         return $this->setData(self::CREATED_AT, $createdAt);
+    }
+
+    /**
+     * Get the synced at
+     *
+     * @return string|null
+     */
+    public function getSyncedAt()
+    {
+        return $this->getData(self::SYNCED_AT);
+    }
+
+    /**
+     * Set the synced at
+     *
+     * @param string $attemptCount
+     * @return string|null
+     */
+    public function setSyncedAt($syncedAt)
+    {
+        return $this->setData(self::SYNCED_AT, $syncedAt);
     }
 
     public function getOrder()
