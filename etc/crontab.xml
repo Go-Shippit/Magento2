@@ -15,12 +15,10 @@
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
     <group id="shippit">
-        <job name="shippit_sync_orders" instance="\Shippit\Shipping\Model\Api\Order"
-        method="run">
+        <job name="shippit_sync_orders" instance="\Shippit\Shipping\Model\Api\Order" method="run">
             <schedule>* * * * *</schedule>
         </job>
-        <job name="shippit_sync_shipments" instance="\Shippit\Shipping\Model\Api\Shipment"
-        method="run">
+        <job name="shippit_sync_shipments" instance="\Shippit\Shipping\Model\Api\Shipment" method="run">
             <schedule>* * * * *</schedule>
         </job>
     </group>
