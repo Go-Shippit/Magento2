@@ -14,8 +14,8 @@
  */
 
 define([
-	'jquery',
-	'mage/utils/wrapper'
+    'jquery',
+    'mage/utils/wrapper'
 ], function (
     jQuery,
     wrapper
