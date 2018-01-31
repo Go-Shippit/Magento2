@@ -131,7 +131,7 @@ class Shipment extends \Magento\Framework\Model\AbstractModel implements Shipmen
 
         // For all valid items, process the quantity to be marked as shipped
         foreach ($itemsCollection as $item) {
-            $requestedQty = $this->_helper->getItemData($items, 'sku', $item->getSku(), 'quantity');
+            $requestedQty = $this->_helper->getItemData($items, 'sku', $item->getSku(), 'qty');
 
             /**
              * Magento marks a shipment only for the parent item in the order
