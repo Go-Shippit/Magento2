@@ -40,39 +40,14 @@ class Update extends \Magento\Framework\App\Action\Action
     protected $_jsonHelper;
 
     /**
-     * @var \Magento\Framework\DB\TransactionFactory
-     */
-    protected $_transactionFactory;
-
-    /**
-     * @var \Magento\Sales\Api\Data\OrderInterface
-     */
-    protected $_orderInterface;
-
-    /**
-     * @var [type]
-     */
-    protected $_shipmentFactory;
-
-    /**
-     * @var [type]
-     */
-    protected $_shipmentSender;
-
-    /**
-     * @var \Magento\Sales\Api\Data\ShipmentTrackInterface
-     */
-    protected $_shipmentTrackInterface;
-
-    /**
      * @var \Shippit\Shipping\Helper\Sync\Shipping
      */
     protected $_helper;
 
     /**
-     * @var \Shippit\Shipping\Api\Request\ShipmentInterface
+     * @var \Shippit\Shipping\Api\Data\SyncShipmentInterfaceFactory
      */
-    protected $_requestShipmentInterface;
+    protected $_syncShipmentInterfaceFactory;
 
     /**
      * @var \Shippit\Shipping\Logger\Logger
@@ -80,25 +55,28 @@ class Update extends \Magento\Framework\App\Action\Action
     protected $_logger;
 
     /**
+     * @var \Magento\Store\Model\StoreManagerInterface
+     */
+    protected $_storeManager;
+
+    /**
      * @param \Magento\Framework\App\Action\Context $context
      */
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
-        \Magento\Framework\View\Result\PageFactory $resultPageFactory
+        \Magento\Framework\View\Result\PageFactory $resultPageFactory,
+        \Magento\Store\Model\StoreManagerInterface $storeManager
+
     ) {
         $this->_resultPageFactory = $resultPageFactory;
 
         parent::__construct($context);
 
         $this->_jsonHelper = $this->_objectManager->create('Magento\Framework\Json\Helper\Data');
-        $this->_transactionFactory = $this->_objectManager->create('Magento\Framework\DB\TransactionFactory');
-        $this->_orderInterface = $this->_objectManager->create('Magento\Sales\Api\Data\OrderInterface');
-        $this->_shipmentFactory = $this->_objectManager->create('Magento\Sales\Model\Order\ShipmentFactory');
-        $this->_shipmentSender = $this->_objectManager->create('Magento\Sales\Model\Order\Email\Sender\ShipmentSender');
-        $this->_shipmentTrackInterface = $this->_objectManager->create('Magento\Sales\Api\Data\ShipmentTrackInterface');
         $this->_helper = $this->_objectManager->create('Shippit\Shipping\Helper\Sync\Shipping');
-        $this->_requestShipmentInterface = $this->_objectManager->create('Shippit\Shipping\Api\Request\ShipmentInterface');
+        $this->_syncShipmentInterfaceFactory = $this->_objectManager->create('Shippit\Shipping\Api\Data\SyncShipmentInterfaceFactory');
         $this->_logger = $this->_objectManager->create('Shippit\Shipping\Logger\Logger');
+        $this->_storeManager = $storeManager;
     }
 
     /**
@@ -124,31 +102,30 @@ class Update extends \Magento\Framework\App\Action\Action
             return;
         }
 
-        // attempt to retrieve request data values for the shipment
-        $order = $this->_getOrder($request);
-        $products = $this->_getProducts($request);
-        $courierName = $this->_getCourierName($request);
-        $trackingNumber = $this->_getTrackingNumber($request);
-
-        if (!$this->_checkOrder($order)) {
-            return;
-        }
-
         try {
-            $shipmentRequest = $this->_requestShipmentInterface
-                ->setOrder($order)
-                ->processItems($products);
+            // attempt to retrieve request data values for the shipment
+            $orderIncrement = $this->_getOrderIncrement($request);
+            $storeId = $this->_getStoreId($request);
+            $courierName = $this->_getCourierName($request);
+            $trackingNumber = $this->_getTrackingNumber($request);
+            $products = $this->_getProducts($request);
 
-            // create the shipment
-            $response = $this->_createShipment(
-                $shipmentRequest->getOrder(),
-                $shipmentRequest->getItems(),
-                $courierName,
-                $trackingNumber
+            $this->_syncShipmentInterfaceFactory->create()
+                ->setOrderIncrement($orderIncrement)
+                ->setStoreId($storeId)
+                ->setCourierAllocation($courierName)
+                ->setTrackNumber($trackingNumber)
+                ->addItems($products)
+                ->save();
+
+            $response = $this->_prepareResponse(
+                true,
+                self::SUCCESS_SHIPMENT_CREATED
             );
 
             return $this->getResponse()->setBody($response);
-        } catch (\Exception $e)
+        }
+        catch (\Exception $e)
         {
             $response = $this->_prepareResponse(false, $e->getMessage());
             $this->_logger->addError($e);
@@ -298,24 +275,18 @@ class Update extends \Magento\Framework\App\Action\Action
         return true;
     }
 
-    protected function _getOrder($request = array())
+    protected function _getOrderIncrement($request = array())
     {
         if (!isset($request['retailer_order_number'])) {
-            return false;
+            return;
         }
 
-        $orderIncrementId = $request['retailer_order_number'];
-
-        return $this->_orderInterface->load($orderIncrementId, 'increment_id');
+        return $request['retailer_order_number'];
     }
 
-    protected function _getProducts($request = array())
+    protected function _getStoreId($request = array())
     {
-        if (isset($request['products'])) {
-            return $request['products'];
-        }
-
-        return array();
+        return $this->_storeManager->getStore()->getStoreId();
     }
 
     protected function _getCourierName($request = array())
@@ -335,6 +306,26 @@ class Update extends \Magento\Framework\App\Action\Action
         else {
             return 'N/A';
         }
+    }
+
+    protected function _getProducts($request = array())
+    {
+        if (empty($request['products'])) {
+            return array();
+        }
+
+        $products = $request['products'];
+
+        return array_map(
+            function($product) {
+                return array(
+                    'sku' => $product['sku'],
+                    'title' => $product['title'],
+                    'qty' => $product['quantity']
+                );
+            },
+            $products
+        );
     }
 
     protected function _prepareResponse($success, $message)
@@ -358,43 +349,5 @@ class Update extends \Magento\Framework\App\Action\Action
         }
 
         return $this->_jsonHelper->jsonEncode($response);
-    }
-
-    protected function _createShipment($order, $items, $courierName, $trackingNumber)
-    {
-        $shipment = $this->_shipmentFactory->create(
-            $order,
-            $items
-        );
-
-        if ($shipment) {
-            $comment = 'Your order has been shipped - your tracking number is ' . $trackingNumber;
-
-            $track = $this->_shipmentTrackInterface
-                ->setNumber($trackingNumber)
-                ->setCarrierCode(\Shippit\Shipping\Helper\Data::CARRIER_CODE)
-                ->setTitle($courierName);
-
-            $shipment->addTrack($track)
-                ->register()
-                ->addComment($comment, true);
-
-            try {
-                $shipment->getOrder()->setIsInProcess(true);
-                $transaction = $this->_transactionFactory->create();
-
-                $transaction->addObject($shipment)
-                    ->addObject($shipment->getOrder())
-                    ->save();
-
-                $this->_shipmentSender->send($shipment);
-            } catch (\Exception $e) {
-                return $this->_prepareResponse(false, self::ERROR_SHIPMENT_FAILED . ' ' .$e->getMessage());
-            }
-
-            return $this->_prepareResponse(true, self::SUCCESS_SHIPMENT_CREATED);
-        }
-
-        return $this->_prepareResponse(false, self::ERROR_SHIPMENT_FAILED);
     }
 }
