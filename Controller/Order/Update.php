@@ -278,12 +278,10 @@ class Update extends \Magento\Framework\App\Action\Action
     protected function _getOrderIncrement($request = array())
     {
         if (!isset($request['retailer_order_number'])) {
-            return false;
+            return;
         }
 
-        if (!empty($request['retailer_order_number'])) {
-            return $request['retailer_order_number'];
-        }
+        return $request['retailer_order_number'];
     }
 
     protected function _getStoreId($request = array())

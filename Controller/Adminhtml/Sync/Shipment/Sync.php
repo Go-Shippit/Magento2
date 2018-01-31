@@ -89,7 +89,7 @@ class Sync extends \Magento\Backend\App\Action
             ->getCollection()
             ->addFieldToFilter(
                 'sync_shipment_id',
-                array('in',$syncIds)
+                ['in' => $syncIds]
             );
 
         if ($syncShipments->getSize() == 0) {
