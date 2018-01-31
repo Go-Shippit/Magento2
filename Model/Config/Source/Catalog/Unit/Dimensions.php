@@ -32,8 +32,8 @@ class Dimensions implements \Magento\Framework\Option\ArrayInterface
             [
                 'label' => 'Metres (m)',
                 'value' => \Shippit\Shipping\Helper\Sync\Order\Items::UNIT_DIMENSION_METRES,
-            ]
-        );
+            ],
+        ];
 
         return $optionsArray;
     }
