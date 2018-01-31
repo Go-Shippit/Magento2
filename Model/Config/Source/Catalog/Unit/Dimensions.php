@@ -20,19 +20,19 @@ class Dimensions implements \Magento\Framework\Option\ArrayInterface
 {
     public function toOptionArray()
     {
-        $optionsArray = array(
-            array(
+        $optionsArray = [
+            [
                 'label' => 'Millimetres (mm)',
-                'value' => \Shippit\Shipping\Helper\Sync\Order\Items::UNIT_DIMENSION_MILLIMETRES
-            ),
-            array(
+                'value' => \Shippit\Shipping\Helper\Sync\Order\Items::UNIT_DIMENSION_MILLIMETRES,
+            ],
+            [
                 'label' => 'Centimetres (cm)',
-                'value' => \Shippit\Shipping\Helper\Sync\Order\Items::UNIT_DIMENSION_CENTIMETRES
-            ),
-            array(
+                'value' => \Shippit\Shipping\Helper\Sync\Order\Items::UNIT_DIMENSION_CENTIMETRES,
+            ],
+            [
                 'label' => 'Metres (m)',
-                'value' => \Shippit\Shipping\Helper\Sync\Order\Items::UNIT_DIMENSION_METRES
-            )
+                'value' => \Shippit\Shipping\Helper\Sync\Order\Items::UNIT_DIMENSION_METRES,
+            ]
         );
 
         return $optionsArray;

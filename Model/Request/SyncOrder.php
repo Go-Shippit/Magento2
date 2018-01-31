@@ -236,10 +236,10 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
                 $itemQty,
                 $this->getItemPrice($item),
                 $this->getItemWeight($item),
-                $this->getItemLocation($item),
                 $this->getItemLength($item),
                 $this->getItemWidth($item),
-                $this->getItemDepth($item)
+                $this->getItemDepth($item),
+                $this->getItemLocation($item)
             );
 
             $itemsAdded++;
@@ -381,24 +381,11 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
         return $item->getWeight();
     }
 
-    protected function getItemLocation($item)
-    {
-        $childItem = $this->_getChildItem($item);
-
-        return $this->_itemsHelper->getLocation($childItem);
-    }
-
-    protected function isProductDimensionActive()
-    {
-        return $this->_itemsHelper->isProductDimensionActive();
-    }
-
     protected function getItemLength($item)
     {
         $childItem = $this->_getChildItem($item);
-        $isProductDimensionActive = $this->isProductDimensionActive();
 
-        if (!$this->isProductDimensionActive()) {
+        if (!$this->_itemsHelper->isProductDimensionActive()) {
             return;
         }
 
@@ -408,9 +395,8 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
     protected function getItemWidth($item)
     {
         $childItem = $this->_getChildItem($item);
-        $isProductDimensionActive = $this->isProductDimensionActive();
 
-        if (!$this->isProductDimensionActive()) {
+        if (!$this->_itemsHelper->isProductDimensionActive()) {
             return;
         }
 
@@ -420,20 +406,26 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
     protected function getItemDepth($item)
     {
         $childItem = $this->_getChildItem($item);
-        $isProductDimensionActive = $this->isProductDimensionActive();
 
-        if (!$this->isProductDimensionActive()) {
+        if (!$this->_itemsHelper->isProductDimensionActive()) {
             return;
         }
 
         return $this->_itemsHelper->getDepth($childItem);
     }
 
+    protected function getItemLocation($item)
+    {
+        $childItem = $this->_getChildItem($item);
+
+        return $this->_itemsHelper->getLocation($childItem);
+    }
+
     /**
      * Add a parcel with attributes
      *
      */
-    public function addItem($sku, $title, $qty, $price, $weight = 0, $location = null, $length = null, $width = null, $depth = null)
+    public function addItem($sku, $title, $qty, $price, $weight = 0, $length = null, $width = null, $depth = null, $location = null)
     {
         $items = $this->getItems();
 

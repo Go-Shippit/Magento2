@@ -392,9 +392,9 @@ class UpgradeSchema implements UpgradeSchemaInterface
             $table,
             'length',
             [
-                'type'      => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
-                'length'    => '12,2',
-                'nullable'  => true,
+                'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
+                'length' => '12,2',
+                'nullable' => true,
                 'after' => 'weight',
                 'comment' => 'Item Dimension - Length',
             ]
@@ -404,10 +404,10 @@ class UpgradeSchema implements UpgradeSchemaInterface
             $table,
             'width',
             [
-                'type'      => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
-                'length'    => '12,2',
-                'nullable'  => true,
-                'after' => 'weight',
+                'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
+                'length' => '12,2',
+                'nullable' => true,
+                'after' => 'length',
                 'comment' => 'Item Dimension - Width',
             ]
         );
@@ -416,10 +416,10 @@ class UpgradeSchema implements UpgradeSchemaInterface
             $table,
             'depth',
             [
-                'type'      => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
-                'length'    => '12,2',
-                'nullable'  => true,
-                'after' => 'weight',
+                'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
+                'length' => '12,2',
+                'nullable' => true,
+                'after' => 'width',
                 'comment' => 'Item Dimension - Depth',
             ]
         );

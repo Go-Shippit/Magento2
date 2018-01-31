@@ -197,6 +197,69 @@ class Item extends \Magento\Framework\Model\AbstractModel implements \Shippit\Sh
     }
 
     /**
+     * Get the Item Length
+     *
+     * @return string|null
+     */
+    public function getLength()
+    {
+        return $this->getData(self::LENGTH);
+    }
+
+    /**
+     * Set the Item Length
+     *
+     * @param string $length
+     * @return string|null
+     */
+    public function setLength($length)
+    {
+        return $this->setData(self::LENGTH, $length);
+    }
+
+    /**
+     * Get the Item Width
+     *
+     * @return string|null
+     */
+    public function getWidth()
+    {
+        return $this->getData(self::WIDTH);
+    }
+
+    /**
+     * Set the Item Width
+     *
+     * @param string $width
+     * @return string|null
+     */
+    public function setWidth($width)
+    {
+        return $this->setData(self::WIDTH, $width);
+    }
+
+    /**
+     * Get the Item Depth
+     *
+     * @return string|null
+     */
+    public function getDepth()
+    {
+        return $this->getData(self::DEPTH);
+    }
+
+    /**
+     * Set the Item Depth
+     *
+     * @param string $depth
+     * @return string|null
+     */
+    public function setDepth($depth)
+    {
+        return $this->setData(self::DEPTH, $depth);
+    }
+
+    /**
      * Get the Item Location
      *
      * @return string|null
@@ -223,68 +286,5 @@ class Item extends \Magento\Framework\Model\AbstractModel implements \Shippit\Sh
     public function addItem($item)
     {
         return $this->setData($item);
-    }
-
-    /**
-     * Set the Item Length
-     *
-     * @param string $length
-     * @return string|null
-     */
-    public function setLength($length)
-    {
-        return $this->setData(self::LENGTH, $length);
-    }
-
-    /**
-     * Get the Item Length
-     *
-     * @return string|null
-     */
-    public function getLength()
-    {
-        return $this->getData(self::LENGTH);
-    }
-
-    /**
-     * Set the Item Width
-     *
-     * @param string $width
-     * @return string|null
-     */
-    public function setWidth($width)
-    {
-        return $this->setData(self::WIDTH, $width);
-    }
-
-    /**
-     * Get the Item Width
-     *
-     * @return string|null
-     */
-    public function getWidth()
-    {
-        return $this->getData(self::WIDTH);
-    }
-
-    /**
-     * Set the Item Depth
-     *
-     * @param string $depth
-     * @return string|null
-     */
-    public function setDepth($depth)
-    {
-        return $this->setData(self::DEPTH, $depth);
-    }
-
-    /**
-     * Get the Item Depth
-     *
-     * @return string|null
-     */
-    public function getDepth()
-    {
-        return $this->getData(self::DEPTH);
     }
 }

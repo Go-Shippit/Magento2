@@ -176,10 +176,10 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
                     $item->getQty(),
                     $item->getPrice(),
                     $item->getWeight(),
-                    $item->getLocation(),
                     $item->getLength(),
                     $item->getWidth(),
-                    $item->getDepth()
+                    $item->getDepth(),
+                    $item->getLocation()
                 );
             }
         }
@@ -660,7 +660,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
      * Add a parcel with attributes
      *
      */
-    public function addItem($sku, $title, $qty, $price, $weight = 0, $location = null, $length = null, $width = null, $depth = null)
+    public function addItem($sku, $title, $qty, $price, $weight = 0, $length = null, $width = null, $depth = null, $location = null)
     {
         $parcelAttributes = $this->getParcelAttributes();
 

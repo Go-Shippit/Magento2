@@ -39,6 +39,10 @@ class Items extends \Shippit\Shipping\Helper\Sync\Order
         return $this->_scopeConfig->getValue($path, $scope);
     }
 
+    /**
+     * Begin System Configuration Helpers
+     */
+
     public function isProductDimensionActive()
     {
         return $this->getValue('product_dimension_active');
@@ -64,11 +68,25 @@ class Items extends \Shippit\Shipping\Helper\Sync\Order
         return $this->getValue('product_dimension_depth_attribute_code');
     }
 
+    public function isProductLocationActive()
+    {
+        return $this->getValue('product_location_active');
+    }
+
+    public function getProductLocationAttributeCode()
+    {
+        return $this->getValue('product_location_attribute_code');
+    }
+
+    /**
+     * Begin Data Processing Helpers
+     */
+
     public function getDimension($dimension)
     {
         // ensure the dimension is present and not empty
         if (empty($dimension)) {
-            return null;
+            return;
         }
 
         switch ($this->getProductUnitDimension()) {
@@ -90,12 +108,11 @@ class Items extends \Shippit\Shipping\Helper\Sync\Order
     {
         $attributeCode = $this->getProductDimensionWidthAttributeCode();
 
-        if ($attributeCode) {
-            $attributeValue = $this->getAttributeValue($item->getProduct(), $attributeCode);
+        if (empty($attributeCode)) {
+            return;
         }
-        else {
-            $attributeValue = null;
-        }
+
+        $attributeValue = $this->getAttributeValue($item->getProduct(), $attributeCode);
 
         return $this->getDimension($attributeValue);
     }
@@ -104,12 +121,11 @@ class Items extends \Shippit\Shipping\Helper\Sync\Order
     {
         $attributeCode = $this->getProductDimensionLengthAttributeCode();
 
-        if ($attributeCode) {
-            $attributeValue = $this->getAttributeValue($item->getProduct(), $attributeCode);
+        if (empty($attributeCode)) {
+            return;
         }
-        else {
-            $attributeValue = null;
-        }
+
+        $attributeValue = $this->getAttributeValue($item->getProduct(), $attributeCode);
 
         return $this->getDimension($attributeValue);
     }
@@ -118,24 +134,13 @@ class Items extends \Shippit\Shipping\Helper\Sync\Order
     {
         $attributeCode = $this->getProductDimensionDepthAttributeCode();
 
-        if ($attributeCode) {
-            $attributeValue = $this->getAttributeValue($item->getProduct(), $attributeCode);
+        if (empty($attributeCode)) {
+            return;
         }
-        else {
-            $attributeValue = null;
-        }
+
+        $attributeValue = $this->getAttributeValue($item->getProduct(), $attributeCode);
 
         return $this->getDimension($attributeValue);
-    }
-
-    public function isProductLocationActive()
-    {
-        return $this->getValue('product_location_active');
-    }
-
-    public function getProductLocationAttributeCode()
-    {
-        return $this->getValue('product_location_attribute_code');
     }
 
     public function getSkus($items)

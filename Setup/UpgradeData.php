@@ -58,6 +58,11 @@ class UpgradeData implements UpgradeDataInterface
             $this->upgrade_1119($installer);
         }
 
+        if (version_compare($context->getVersion(), '1.2.6') < 0) {
+            //code to upgrade to 1.2.6
+            $this->upgrade_126($installer);
+        }
+
         $installer->endSetup();
     }
 
@@ -72,6 +77,34 @@ class UpgradeData implements UpgradeDataInterface
         $configOptions = [
             'carriers/shippit/product_attribute_code' => 'carriers/shippit/enabled_product_attribute_code',
             'carriers/shippit/product_attribute_value' => 'carriers/shippit/enabled_product_attribute_value'
+        ];
+
+        foreach ($configOptions as $configOptionOldKey => $configOptionNewKey) {
+            $configOptionValue = $this->scopeConfig->getValue($configOptionOldKey);
+
+            if (!empty($configOptionValue)) {
+                $this->config->saveConfig(
+                    $configOptionNewKey,
+                    $configOptionValue,
+                    'default',
+                    0
+                );
+            }
+        }
+    }
+
+    /**
+     * Update config data to v1.2.6
+     */
+    public function upgrade_126($installer)
+    {
+        /**
+         * Migrate settings data to v1.2.6
+         * (new product location configuration area)
+         */
+        $configOptions = [
+            'shippit/sync_order/product_location_attribute_code' => 'shippit/sync_item/product_location_active',
+            'shippit/sync_order/product_location_attribute_code' => 'shippit/sync_item/product_location_attribute_code'
         ];
 
         foreach ($configOptions as $configOptionOldKey => $configOptionNewKey) {

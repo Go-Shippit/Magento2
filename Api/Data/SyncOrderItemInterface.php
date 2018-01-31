@@ -28,10 +28,10 @@ interface SyncOrderItemInterface
     const QTY                   = 'qty';
     const PRICE                 = 'price';
     const WEIGHT                = 'weight';
-    const LOCATION              = 'location';
     const LENGTH                = 'length';
     const WIDTH                 = 'width';
     const DEPTH                 = 'depth';
+    const LOCATION              = 'location';
 
     /**
      * Get the Sync Item Id
@@ -154,26 +154,6 @@ interface SyncOrderItemInterface
     public function setWeight($weight);
 
     /**
-     * Get the Item Location
-     *
-     * @return string|null
-     */
-    public function getLocation();
-
-    /**
-     * Set the Item Location
-     *
-     * @param string $location
-     * @return string|null
-     */
-    public function setLocation($location);
-
-    /**
-     * Add a new item to the sync order item request
-     */
-    public function addItem($item);
-
-    /**
      * Get the Item Length
      *
      * @return string|null
@@ -217,4 +197,24 @@ interface SyncOrderItemInterface
      * @return string|null
      */
     public function setDepth($depth);
+
+    /**
+     * Get the Item Location
+     *
+     * @return string|null
+     */
+    public function getLocation();
+
+    /**
+     * Set the Item Location
+     *
+     * @param string $location
+     * @return string|null
+     */
+    public function setLocation($location);
+
+    /**
+     * Add a new item to the sync order item request
+     */
+    public function addItem($item);
 }
