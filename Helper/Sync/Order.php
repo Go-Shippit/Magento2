@@ -51,16 +51,6 @@ class Order extends \Shippit\Shipping\Helper\Data
         return self::getValue('send_all_orders');
     }
 
-    public function isProductLocationActive()
-    {
-        return self::getValue('product_location_active');
-    }
-
-    public function getProductLocationAttributeCode()
-    {
-        return self::getValue('product_location_attribute_code');
-    }
-
     public function getShippingMethodMapping()
     {
         $values = $this->unserialize(self::getValue('shipping_method_mapping'));

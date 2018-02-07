@@ -162,6 +162,7 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
             'express',
             'priority',
             'click_and_collect',
+            'plain_label'
         ];
 
         // if the shipping method passed is not a standard shippit service class, attempt to get a service class based on the configured mapping
@@ -236,6 +237,9 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
                 $itemQty,
                 $this->getItemPrice($item),
                 $this->getItemWeight($item),
+                $this->getItemLength($item),
+                $this->getItemWidth($item),
+                $this->getItemDepth($item),
                 $this->getItemLocation($item)
             );
 
@@ -261,6 +265,44 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
         }
     }
 
+    /**
+     * Returns the first child item of the item passed
+     * - If the item is a bundle and is being shipped together
+     *   we return the bundle item, as it's the "shipped" product
+     *
+     * @param  Mage_Sales_Model_Order_Item $item
+     * @return Mage_Sales_Model_Order_Item
+     */
+    protected function _getChildItem($item)
+    {
+        if ($item->getHasChildren()) {
+            $rootItem = $this->_getRootItem($item);
+
+            // Get the first child item
+            // - If the root item is a bundle, use the item
+            //   Otherwise, use the root item
+            if ($rootItem->getProductType() == 'bundle') {
+                // if we are sending the bundle together
+                if ($rootItem->getId() == $item->getId()) {
+                    return $rootItem;
+                }
+                else {
+                    $items = $item->getChildrenItems();
+
+                    return reset($items);
+                }
+            }
+            else {
+                $items = $item->getChildrenItems();
+
+                return reset($items);
+            }
+        }
+        else {
+            return $item;
+        }
+    }
+
     protected function getItemSku($item)
     {
         return $item->getSku();
@@ -268,7 +310,9 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
 
     protected function getItemName($item)
     {
-        return $item->getName();
+        $childItem = $this->_getChildItem($item);
+
+        return $childItem->getName();
     }
 
     protected function getItemQty($items, $item)
@@ -338,16 +382,51 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
         return $item->getWeight();
     }
 
+    protected function getItemLength($item)
+    {
+        $childItem = $this->_getChildItem($item);
+
+        if (!$this->_itemsHelper->isProductDimensionActive()) {
+            return;
+        }
+
+        return $this->_itemsHelper->getLength($childItem);
+    }
+
+    protected function getItemWidth($item)
+    {
+        $childItem = $this->_getChildItem($item);
+
+        if (!$this->_itemsHelper->isProductDimensionActive()) {
+            return;
+        }
+
+        return $this->_itemsHelper->getWidth($childItem);
+    }
+
+    protected function getItemDepth($item)
+    {
+        $childItem = $this->_getChildItem($item);
+
+        if (!$this->_itemsHelper->isProductDimensionActive()) {
+            return;
+        }
+
+        return $this->_itemsHelper->getDepth($childItem);
+    }
+
     protected function getItemLocation($item)
     {
-        return $this->_itemsHelper->getLocation($item);
+        $childItem = $this->_getChildItem($item);
+
+        return $this->_itemsHelper->getLocation($childItem);
     }
 
     /**
      * Add a parcel with attributes
      *
      */
-    public function addItem($sku, $title, $qty, $price, $weight = 0, $location = null)
+    public function addItem($sku, $title, $qty, $price, $weight = 0, $length = null, $width = null, $depth = null, $location = null)
     {
         $items = $this->getItems();
 
@@ -363,6 +442,18 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
             'weight' => (float) $weight,
             'location' => $location
         ];
+
+        // for dimensions, ensure the item has values for all dimensions
+        if (!empty($length) && !empty($width) && !empty($depth)) {
+            $newItem = array_merge(
+                $newItem,
+                array(
+                    'length' => (float) $length,
+                    'width' => (float) $width,
+                    'depth' => (float) $depth
+                )
+            );
+        }
 
         $items[] = $newItem;
 

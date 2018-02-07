@@ -14,9 +14,9 @@
  * @license    http://www.shippit.com/terms
  */
 
-namespace Shippit\Shipping\Model\Sync\Order;
+namespace Shippit\Shipping\Model\Sync\Shipment;
 
-class Item extends \Magento\Framework\Model\AbstractModel implements \Shippit\Shipping\Api\Data\SyncOrderItemInterface
+class Item extends \Magento\Framework\Model\AbstractModel implements \Shippit\Shipping\Api\Data\SyncShipmentItemInterface
 {
     /**
      * Initialize resource model
@@ -25,70 +25,70 @@ class Item extends \Magento\Framework\Model\AbstractModel implements \Shippit\Sh
      */
     protected function _construct()
     {
-        $this->_init('Shippit\Shipping\Model\ResourceModel\Sync\Order\Item');
+        $this->_init('Shippit\Shipping\Model\ResourceModel\Sync\Shipment\Item');
     }
 
     /**
-     * Get the Sync Item Id
+     * Get the Sync Shipment Item Id
      *
      * @return string|null
      */
     public function getId()
     {
-        return $this->getData(self::SYNC_ITEM_ID);
+        return $this->getData(self::SYNC_SHIPMENT_ITEM_ID);
     }
 
     /**
-     * Set the Sync Item Id
+     * Set the Sync Shipment Item Id
      *
-     * @param integer $syncItemId
+     * @param integer $syncShipmentItemId
      * @return string|null
      */
-    public function setId($syncItemId)
+    public function setId($syncShipmentItemId)
     {
-        return $this->setData(self::SYNC_ITEM_ID, $syncItemId);
+        return $this->setData(self::SYNC_SHIPMENT_ITEM_ID, $syncShipmentItemId);
     }
 
     /**
-     * Get the Sync Item Id
+     * Get the Sync Shipment Item Id
      *
      * @return string|null
      */
-    public function getSyncItemId()
+    public function getSyncShipmentItemId()
     {
-        return $this->getId();
+        return $this->getData(self::SYNC_SHIPMENT_ITEM_ID);
     }
 
     /**
-     * Set the Sync Item Id
+     * Set the Sync Shipment Item Id
      *
-     * @param integer $syncItemId
+     * @param integer $syncShipmentItemId
      * @return string|null
      */
-    public function setSyncItemId($syncItemId)
+    public function setSyncShipmentItemId($syncShipmentItemId)
     {
-        return $this->setId($syncItemId);
+        return $this->setData(self::SYNC_SHIPMENT_ITEM_ID, $syncShipmentItemId);
     }
 
     /**
-     * Get the Sync Order Id
+     * Get the Sync Shipment Id
      *
      * @return string|null
      */
-    public function getSyncOrderId()
+    public function getSyncShipmentId()
     {
-        return $this->getData(self::SYNC_ORDER_ID);
+        return $this->getData(self::SYNC_SHIPMENT_ID);
     }
 
     /**
-     * Set the Sync Order Id
+     * Set the Sync Shipment Id
      *
-     * @param integer $syncOrderId
+     * @param integer $syncShipmentId
      * @return string|null
      */
-    public function setSyncOrderId($syncOrderId)
+    public function setSyncShipmentId($syncShipmentId)
     {
-        return $this->setData(self::SYNC_ORDER_ID, $syncOrderId);
+        return $this->setData(self::SYNC_SHIPMENT_ID, $syncShipmentId);
     }
 
     /**
@@ -197,69 +197,6 @@ class Item extends \Magento\Framework\Model\AbstractModel implements \Shippit\Sh
     }
 
     /**
-     * Get the Item Length
-     *
-     * @return string|null
-     */
-    public function getLength()
-    {
-        return $this->getData(self::LENGTH);
-    }
-
-    /**
-     * Set the Item Length
-     *
-     * @param string $length
-     * @return string|null
-     */
-    public function setLength($length)
-    {
-        return $this->setData(self::LENGTH, $length);
-    }
-
-    /**
-     * Get the Item Width
-     *
-     * @return string|null
-     */
-    public function getWidth()
-    {
-        return $this->getData(self::WIDTH);
-    }
-
-    /**
-     * Set the Item Width
-     *
-     * @param string $width
-     * @return string|null
-     */
-    public function setWidth($width)
-    {
-        return $this->setData(self::WIDTH, $width);
-    }
-
-    /**
-     * Get the Item Depth
-     *
-     * @return string|null
-     */
-    public function getDepth()
-    {
-        return $this->getData(self::DEPTH);
-    }
-
-    /**
-     * Set the Item Depth
-     *
-     * @param string $depth
-     * @return string|null
-     */
-    public function setDepth($depth)
-    {
-        return $this->setData(self::DEPTH, $depth);
-    }
-
-    /**
      * Get the Item Location
      *
      * @return string|null
@@ -281,7 +218,7 @@ class Item extends \Magento\Framework\Model\AbstractModel implements \Shippit\Sh
     }
 
     /**
-     * Add a new item to the sync order item request
+     * Add a new item to the sync shipment item request
      */
     public function addItem($item)
     {

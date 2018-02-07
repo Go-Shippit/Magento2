@@ -26,6 +26,7 @@ interface OrderInterface
     const DELIVERY_INSTRUCTIONS     = 'delivery_instructions';
     const USER_ATTRIBUTES           = 'user_attributes';
     const COURIER_TYPE              = 'courier_type';
+    const COURIER_ALLOCATION        = 'courier_allocation';
     const DELIVERY_DATE             = 'delivery_date';
     const DELIVERY_WINDOW           = 'delivery_window';
     const RECEIVER_NAME             = 'receiver_name';
@@ -130,6 +131,21 @@ interface OrderInterface
      * @return array|null
      */
     public function getCourierType();
+
+    /**
+     * Set the Courier Allocation
+     *
+     * @param array $courierAllocation
+     * @return array
+     */
+    public function setCourierAllocation($courierAllocation);
+
+    /**
+     * Get the Courier Allocation
+     *
+     * @return array|null
+     */
+    public function getCourierAllocation();
 
     /**
      * Set the Delivery Date

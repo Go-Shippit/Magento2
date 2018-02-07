@@ -216,8 +216,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
                 'header' => __('Sync Status'),
                 'index' => 'sync_status',
                 'type' => 'options',
-                'options' => $this->syncOrderStatus->toArray(),
-                'frame_callback' => [$this, 'decorateStatus'],
+                'options' => $this->syncOrderStatus->toArray()
             ]
         );
 

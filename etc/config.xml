@@ -34,9 +34,16 @@
                 <active>0</active>
                 <mode>realtime</mode>
                 <send_all_orders>no</send_all_orders>
-                <product_location_active>0</product_location_active>
-                <product_location_attribute_code />
             </sync_order>
+
+            <sync_item>
+                <product_dimension_active>0</product_dimension_active>
+                <product_dimension_length_attribute_code/>
+                <product_dimension_width_attribute_code/>
+                <product_dimension_depth_attribute_code/>
+                <product_location_active>0</product_location_active>
+                <product_location_attribute_code/>
+            </sync_item>
 
             <sync_shipping>
                 <active>0</active>

@@ -16,6 +16,8 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <preference for="Shippit\Shipping\Api\Data\SyncOrderInterface" type="Shippit\Shipping\Model\Sync\Order" />
     <preference for="Shippit\Shipping\Api\Data\SyncOrderItemInterface" type="Shippit\Shipping\Model\Sync\Order\Item" />
+    <preference for="Shippit\Shipping\Api\Data\SyncShipmentInterface" type="Shippit\Shipping\Model\Sync\Shipment" />
+    <preference for="Shippit\Shipping\Api\Data\SyncShipmentItemInterface" type="Shippit\Shipping\Model\Sync\Shipment\Item" />
 
     <!-- Requests are used for transient models used in API calls and DB data preparation -->
     <preference for="Shippit\Shipping\Api\Request\SyncOrderInterface" type="Shippit\Shipping\Model\Request\SyncOrder" />

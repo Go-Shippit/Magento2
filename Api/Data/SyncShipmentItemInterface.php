@@ -16,67 +16,65 @@
 
 namespace Shippit\Shipping\Api\Data;
 
-interface SyncOrderItemInterface
+interface SyncShipmentItemInterface
 {
+
     /**
      * Constants for keys of data array. Identical to the name of the getter in snake case
      */
-    const SYNC_ITEM_ID          = 'sync_item_id';
-    const SYNC_ORDER_ID         = 'sync_order_id';
-    const SKU                   = 'sku';
-    const TITLE                 = 'title';
-    const QTY                   = 'qty';
-    const PRICE                 = 'price';
-    const WEIGHT                = 'weight';
-    const LENGTH                = 'length';
-    const WIDTH                 = 'width';
-    const DEPTH                 = 'depth';
-    const LOCATION              = 'location';
+    const SYNC_SHIPMENT_ITEM_ID     = 'sync_shipment_item_id';
+    const SYNC_SHIPMENT_ID          = 'sync_shipment_id';
+    const SKU                       = 'sku';
+    const TITLE                     = 'title';
+    const QTY                       = 'qty';
+    const PRICE                     = 'price';
+    const WEIGHT                    = 'weight';
+    const LOCATION                  = 'location';
 
     /**
-     * Get the Sync Item Id
+     * Get the Sync Shipment Item Id
      *
      * @return string|null
      */
     public function getId();
 
     /**
-     * Set the Sync Item Id
+     * Set the Sync Shipment Item Id
      *
-     * @param integer $syncItemId
+     * @param integer $syncShipmentItemId
      * @return string|null
      */
-    public function setId($syncItemId);
+    public function setId($syncShipmentItemId);
 
     /**
-     * Get the Sync Item Id
+     * Get the Sync Shipment Item Id
      *
      * @return string|null
      */
-    public function getSyncItemId();
+    public function getSyncShipmentItemId();
 
     /**
-     * Set the Sync Item Id
+     * Set the Sync Shipment Item Id
      *
-     * @param integer $syncItemId
+     * @param integer $syncShipmentItemId
      * @return string|null
      */
-    public function setSyncItemId($syncItemId);
+    public function setSyncShipmentItemId($syncShipmentItemId);
 
     /**
-     * Get the Sync Order Id
+     * Get the Sync Shipment Id
      *
      * @return string|null
      */
-    public function getSyncOrderId();
+    public function getSyncShipmentId();
 
     /**
-     * Set the Sync Order Id
+     * Set the Sync Shipment Id
      *
-     * @param integer $syncOrderId
+     * @param integer $syncShipmentId
      * @return string|null
      */
-    public function setSyncOrderId($syncOrderId);
+    public function setSyncShipmentId($syncShipmentId);
 
     /**
      * Get the Item Sku
@@ -154,51 +152,6 @@ interface SyncOrderItemInterface
     public function setWeight($weight);
 
     /**
-     * Get the Item Length
-     *
-     * @return string|null
-     */
-    public function getLength();
-
-    /**
-     * Set the Item Length
-     *
-     * @param string $length
-     * @return string|null
-     */
-    public function setLength($length);
-
-    /**
-     * Get the Item Width
-     *
-     * @return string|null
-     */
-    public function getWidth();
-
-    /**
-     * Set the Item Width
-     *
-     * @param string $width
-     * @return string|null
-     */
-    public function setWidth($width);
-
-    /**
-     * Get the Item Depth
-     *
-     * @return string|null
-     */
-    public function getDepth();
-
-    /**
-     * Set the Item Depth
-     *
-     * @param string $depth
-     * @return string|null
-     */
-    public function setDepth($depth);
-
-    /**
      * Get the Item Location
      *
      * @return string|null
@@ -214,7 +167,7 @@ interface SyncOrderItemInterface
     public function setLocation($location);
 
     /**
-     * Add a new item to the sync order item request
+     * Add a new item to the sync shipment item request
      */
     public function addItem($item);
 }
