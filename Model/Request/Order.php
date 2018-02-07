@@ -397,13 +397,6 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
      */
     public function setShippingMethod($shippingMethod = null)
     {
-        // if the order is a priority delivery,
-        // get the special delivery attributes
-        if ($shippingMethod == self::SHIPPING_SERVICE_PRIORITY) {
-            $deliveryDate = $this->_getOrderDeliveryDate($this->_order);
-            $deliveryWindow = $this->_getOrderDeliveryWindow($this->_order);
-        }
-
         // set the courier details based on the shipping method
         if ($shippingMethod == self::SHIPPING_SERVICE_STANDARD) {
             return $this->setCourierType(self::SHIPPING_SERVICE_STANDARD);
@@ -411,10 +404,18 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
         elseif ($shippingMethod == self::SHIPPING_SERVICE_EXPRESS) {
             return $this->setCourierType(self::SHIPPING_SERVICE_EXPRESS);
         }
-        elseif ($shippingMethod == self::SHIPPING_SERVICE_PRIORITY && isset($deliveryDate) && isset($deliveryWindow)) {
-            return $this->setCourierType(self::SHIPPING_SERVICE_PRIORITY)
-                ->setDeliveryDate($deliveryDate)
-                ->setDeliveryWindow($deliveryWindow);
+        else if ($shippingMethod == self::SHIPPING_SERVICE_PRIORITY) {
+            // if the order is a priority delivery,
+            // get the special delivery attributes
+            $deliveryDate = $this->_getOrderDeliveryDate($this->_order);
+            $deliveryWindow = $this->_getOrderDeliveryWindow($this->_order);
+
+            if (!empty($deliveryDate) && !empty($deliveryWindow)) {
+                $this->setDeliveryDate($deliveryDate);
+                $this->setDeliveryWindow($deliveryWindow);
+            }
+
+            return $this->setCourierType(self::SHIPPING_SERVICE_PRIORITY);
         }
         elseif ($shippingMethod == self::SHIPPING_SERVICE_CC) {
             return $this->setCourierType(self::SHIPPING_SERVICE_CC);
