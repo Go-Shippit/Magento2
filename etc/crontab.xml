@@ -21,5 +21,9 @@
         <job name="shippit_sync_shipments" instance="\Shippit\Shipping\Model\Api\Shipment" method="run">
             <schedule>* * * * *</schedule>
         </job>
+        <job name="shippit_sync_shipments" instance="\Shippit\Shipping\Model\Api\Shipment"
+        method="run">
+            <schedule>* * * * *</schedule>
+        </job>
     </group>
 </config>
