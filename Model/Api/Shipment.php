@@ -235,7 +235,7 @@ class Shipment extends \Magento\Framework\Model\AbstractModel
             );
 
         if (!$shipment) {
-            throw new Exception(self::ERROR_SHIPMENT_FAILED);
+            throw new \Exception(self::ERROR_SHIPMENT_FAILED);
         }
 
         $comment = sprintf(
