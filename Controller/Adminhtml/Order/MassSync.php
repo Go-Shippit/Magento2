@@ -16,9 +16,25 @@
 
 namespace Shippit\Shipping\Controller\Adminhtml\Order;
 
-class MassSync extends \Magento\Backend\App\Action
+use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
+
+class MassSync extends \Magento\Sales\Controller\Adminhtml\Order\AbstractMassAction
 {
     const ADMIN_ACTION = 'Shippit_Shipping::order_sync';
+
+    /**
+     * @param \Magento\Backend\App\Action\Context $context
+     * @param \Magento\Ui\Component\MassAction\Filter $filter
+     * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $collectionFactory
+     */
+    public function __construct(
+        \Magento\Backend\App\Action\Context $context,
+        \Magento\Ui\Component\MassAction\Filter $filter,
+        \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $collectionFactory
+    ) {
+        parent::__construct($context, $filter);
+        $this->collectionFactory = $collectionFactory;
+    }
 
     /**
      * {@inheritdoc}
@@ -31,32 +47,21 @@ class MassSync extends \Magento\Backend\App\Action
     }
 
     /**
-     * Delete action
+     * Mass Sync Action
      *
      * @return \Magento\Backend\Model\View\Result\Redirect
      */
-    public function execute()
+    public function massAction(AbstractCollection $collection)
     {
-        $selected = $this->getRequest()->getParam('selected', null);
-
         /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
         $resultRedirect = $this->resultRedirectFactory->create();
 
-        if (empty($selected)) {
-            $this->messageManager->addError(__('Please select an order to schedule.'));
-
-            return $resultRedirect->setPath('sales/order/index/');
-        }
-
-        $orders = $this->_objectManager
-            ->get('\Magento\Sales\Api\Data\OrderSearchResultInterface');
-
-        $orders->addAttributeToSelect('entity_id')
-            ->addAttributeToSelect('shipping_method')
-            ->addAttributeToFilter('entity_id', ['in' => $selected]);
-
         try {
-            foreach ($orders as $order) {
+            foreach ($collection->getItems() as $order) {
+                if (!$order->getId()) {
+                    continue;
+                }
+
                 $this->_eventManager->dispatch(
                     'shippit_add_order',
                     [
