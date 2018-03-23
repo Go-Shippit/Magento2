@@ -16,6 +16,7 @@
 
 namespace Shippit\Shipping\Controller\Adminhtml\Order;
 
+use Exception;
 use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
 
 class MassSync extends \Magento\Sales\Controller\Adminhtml\Order\AbstractMassAction
@@ -53,30 +54,28 @@ class MassSync extends \Magento\Sales\Controller\Adminhtml\Order\AbstractMassAct
      */
     public function massAction(AbstractCollection $collection)
     {
-        /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
-        $resultRedirect = $this->resultRedirectFactory->create();
-
         try {
             foreach ($collection->getItems() as $order) {
-                if (!$order->getId()) {
-                    continue;
-                }
-
                 $this->_eventManager->dispatch(
                     'shippit_add_order',
                     [
-                        'order' => $order->getId(),
+                        'order' => $order->getEntityId(),
                         'shipping_method' => $order->getShippingMethod()
                     ]
                 );
             }
 
-            // display error message
-            $this->messageManager->addSuccess(__('The selected orders have been scheduled to sync with Shippit'));
-        } catch (\Exception $e) {
-            // display error message
-            $this->messageManager->addError($e->getMessage());
+            $this->messageManager->addSuccess(
+                __('The selected orders have been scheduled to sync with Shippit')
+            );
         }
+        catch (Exception $e) {
+            $this->messageManager->addError(
+                $e->getMessage()
+            );
+        }
+
+        $resultRedirect = $this->resultRedirectFactory->create();
 
         return $resultRedirect->setPath('sales/order/index/');
     }

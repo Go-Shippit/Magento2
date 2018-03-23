@@ -16,6 +16,7 @@
 
 namespace Shippit\Shipping\Model\Api;
 
+use Exception;
 use \Shippit\Shipping\Model\Sync\Shipment as SyncShipment;
 
 class Shipment extends \Magento\Framework\Model\AbstractModel
@@ -191,7 +192,7 @@ class Shipment extends \Magento\Framework\Model\AbstractModel
                 ->save();
 
         }
-        catch (\Exception $e) {
+        catch (Exception $e) {
             $this->_logger->addError('Shipment Sync Request Failed - ' . $e->getMessage());
 
             // Fail the sync item if it's breached the max attempts
@@ -235,7 +236,7 @@ class Shipment extends \Magento\Framework\Model\AbstractModel
             );
 
         if (!$shipment) {
-            throw new \Exception(self::ERROR_SHIPMENT_FAILED);
+            throw new Exception(self::ERROR_SHIPMENT_FAILED);
         }
 
         $comment = sprintf(
