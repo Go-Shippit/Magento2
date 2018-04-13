@@ -14,7 +14,7 @@
  * @license    http://www.shippit.com/terms
 -->
 <listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
-    <listingToolbar name="listing_top">
+    <container name="listing_top">
         <massaction name="listing_massaction">
             <action name="shippit_add_order">
                 <argument name="data" xsi:type="array">
@@ -26,5 +26,5 @@
                 </argument>
             </action>
         </massaction>
-    </listingToolbar>
+    </container>
 </listing>
