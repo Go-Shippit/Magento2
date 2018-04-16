@@ -49,6 +49,11 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
     const SHIPPING_SERVICE_PRIORITY     = 'priority';
     const SHIPPING_SERVICE_CC           = 'click_and_collect';
     const SHIPPING_SERVICE_PLAINLABEL   = 'plain_label';
+    const SHIPPIT_CARRIERS = [
+        'eparcel',
+        'fastway',
+        'couriers_please'
+    ];
 
     /**
      * @param \Magento\Framework\Model\Context $context
@@ -427,6 +432,12 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
             $this->setCourierAllocation('PlainLabel');
 
             return $this;
+        }
+        // If shipping method is in the list of available
+        // carriers then only send courier allocation
+        elseif (in_array($shippingMethod, self::SHIPPIT_CARRIERS)) {
+            $this->setCourierType(null);
+            $this->setCourierAllocation($shippingMethod);
         }
         else {
             return $this->setData(self::COURIER_TYPE, self::SHIPPING_SERVICE_STANDARD);

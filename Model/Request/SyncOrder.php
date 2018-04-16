@@ -165,12 +165,21 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
             'plain_label'
         ];
 
+        $validCarriers = [
+            'eparcel',
+            'fastway',
+            'couriers_please'
+        ];
+
         // if the shipping method passed is not a standard shippit service class, attempt to get a service class based on the configured mapping
         if (!in_array($shippingMethod, $validShippingMethods)) {
             $shippingMethod = $this->_helper->getShippitShippingMethod($shippingMethod);
         }
 
         if (in_array($shippingMethod, $validShippingMethods)) {
+            return $this->setData(self::SHIPPING_METHOD, $shippingMethod);
+        }
+        elseif (in_array($shippingMethod, $validCarriers)) {
             return $this->setData(self::SHIPPING_METHOD, $shippingMethod);
         }
         else {

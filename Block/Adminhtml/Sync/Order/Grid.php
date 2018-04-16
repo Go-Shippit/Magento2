@@ -113,6 +113,10 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
                 'sync_status',
                 'main_table.status'
             )
+            ->addFilterToMap(
+                'shipping_method',
+                'main_table.shipping_method'
+            )
 
             ->addFilterToMap(
                 'order_state',

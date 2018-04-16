@@ -28,25 +28,27 @@ class Methods implements \Magento\Framework\Option\ArrayInterface
     public function toOptionArray()
     {
         return [
+            // Shippit service levels
             [
-                'label' => 'Standard',
-                'value' => 'standard'
+                'optgroup-name' => 'service_level',
+                'label' => 'Service Level',
+                'value' => [
+                    'standard' => 'Standard',
+                    'express' => 'Express',
+                    'priority' => 'Priority',
+                    'click_and_collect' => 'Click and Collect',
+                    'plain_label' => 'Plain Label'
+                ]
             ],
+            // Shippit Carriers
             [
-                'label' => 'Express',
-                'value' => 'express'
-            ],
-            [
-                'label' => 'Priority',
-                'value' => 'priority'
-            ],
-            [
-                'label' => 'Click and Collect',
-                'value' => 'click_and_collect'
-            ],
-            [
-                'label' => 'Plain Label',
-                'value' => 'plain_label'
+                'optgroup-name' => 'carriers',
+                'label' => 'Carriers',
+                'value' => [
+                    'eparcel' => 'eParcel',
+                    'fastway' => 'Fastway',
+                    'couriers_please' => 'Couriers Please'
+                ]
             ]
         ];
     }
@@ -59,11 +61,16 @@ class Methods implements \Magento\Framework\Option\ArrayInterface
     public function toArray()
     {
         return [
+            // Shippit service levels
             'standard' => 'Standard',
             'express' => 'Express',
             'priority' => 'Priority',
             'click_and_collect' => 'Click and Collect',
-            'plain_label' => 'Plain Label'
+            'plain_label' => 'Plain Label',
+            // Shippit Carriers
+            'eparcel' => 'eParcel',
+            'fastway' => 'Fastway',
+            'couriers_please' => 'Couriers Please'
         ];
     }
 }
