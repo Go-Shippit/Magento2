@@ -50,9 +50,20 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
     const SHIPPING_SERVICE_CC           = 'click_and_collect';
     const SHIPPING_SERVICE_PLAINLABEL   = 'plain_label';
     const SHIPPIT_CARRIERS = [
-        'eparcel',
-        'fastway',
-        'couriers_please'
+        'Bonds',
+        'Eparcel',
+        'Fastway',
+        'CouriersPlease',
+        'Tnt',
+        'EparcelInternational',
+        'StarTrack',
+        'DhlEcommerce',
+        'StarTrackPremium',
+        'EparcelExpress',
+        'DhlExpress',
+        'DhlExpressInternational',
+        'EparcelInternationalExpress',
+        'PlainLabelInternational',
     ];
 
     /**

@@ -166,9 +166,20 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
         ];
 
         $validCarriers = [
-            'eparcel',
-            'fastway',
-            'couriers_please'
+            'Bonds',
+            'Eparcel',
+            'Fastway',
+            'CouriersPlease',
+            'Tnt',
+            'EparcelInternational',
+            'StarTrack',
+            'DhlEcommerce',
+            'StarTrackPremium',
+            'EparcelExpress',
+            'DhlExpress',
+            'DhlExpressInternational',
+            'EparcelInternationalExpress',
+            'PlainLabelInternational',
         ];
 
         // if the shipping method passed is not a standard shippit service class, attempt to get a service class based on the configured mapping

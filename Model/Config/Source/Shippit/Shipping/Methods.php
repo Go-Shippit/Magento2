@@ -37,19 +37,44 @@ class Methods implements \Magento\Framework\Option\ArrayInterface
                     'express' => 'Express',
                     'priority' => 'Priority',
                     'click_and_collect' => 'Click and Collect',
-                    'plain_label' => 'Plain Label'
+                    'plain_label' => 'Plain Label',
                 ]
             ],
-            // Shippit Carriers
+            // Standard Carriers
             [
-                'optgroup-name' => 'carriers',
-                'label' => 'Carriers',
+                'optgroup-name' => 'carriers-standard',
+                'label' => 'Standard Couriers',
                 'value' => [
-                    'eparcel' => 'eParcel',
-                    'fastway' => 'Fastway',
-                    'couriers_please' => 'Couriers Please'
+                    'Bonds' => 'Bonds',
+                    'Eparcel' => 'eParcel',
+                    'Fastway' => 'Fastway',
+                    'CouriersPlease' => 'Couriers Please',
+                    'Tnt' => 'TNT',
+                    'EparcelInternational' => 'eParcel International',
+                    'StarTrack' => 'StarTrack',
+                    'DhlEcommerce' => 'DHL eCommerce',
                 ]
-            ]
+            ],
+            // Express Carriers
+            [
+                'optgroup-name' => 'carriers-express',
+                'label' => 'Express Couriers',
+                'value' => [
+                    'StarTrackPremium' => 'StarTrack Premium',
+                    'EparcelExpress' => 'eParcel Express',
+                    'DhlExpress' => 'DHL Express',
+                    'DhlExpressInternational' => 'DHL Express International',
+                    'EparcelInternationalExpress' => 'eParcel International Express',
+                ]
+            ],
+            // Other Carriers
+            [
+                'optgroup-name' => 'carriers-others',
+                'label' => 'Others',
+                'value' => [
+                    'PlainLabelInternational' => 'Plain Label International',
+                ]
+            ],
         ];
     }
 
@@ -68,9 +93,20 @@ class Methods implements \Magento\Framework\Option\ArrayInterface
             'click_and_collect' => 'Click and Collect',
             'plain_label' => 'Plain Label',
             // Shippit Carriers
-            'eparcel' => 'eParcel',
-            'fastway' => 'Fastway',
-            'couriers_please' => 'Couriers Please'
+            'Bonds' => 'Bonds',
+            'Eparcel' => 'eParcel',
+            'Fastway' => 'Fastway',
+            'CouriersPlease' => 'Couriers Please',
+            'Tnt' => 'TNT',
+            'EparcelInternational' => 'eParcel International',
+            'StarTrack' => 'StarTrack',
+            'DhlEcommerce' => 'DHL eCommerce',
+            'StarTrackPremium' => 'StarTrack Premium',
+            'EparcelExpress' => 'eParcel Express',
+            'DhlExpress' => 'DHL Express',
+            'DhlExpressInternational' => 'DHL Express International',
+            'EparcelInternationalExpress' => 'eParcel International Express',
+            'PlainLabelInternational' => 'Plain Label International',
         ];
     }
 }
