@@ -155,8 +155,11 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
      */
     public function setShippingMethod($shippingMethod)
     {
-        // if the shipping method passed is not a standard shippit service class, attempt to get a service class based on the configured mapping
-        if (!array_key_exists($shippingMethod, ShippingMethods::$serviceLevels)) {
+        // if the shipping method passed is not a recognised
+        // service level or courier, attempt to retrive the
+        // shipping method based on the shipping method mapping
+        if (!array_key_exists($shippingMethod, ShippingMethods::$serviceLevels)
+            && !array_key_exists($shippingMethod, ShippingMethods::$couriers)) {
             $shippingMethod = $this->_helper->getShippitShippingMethod($shippingMethod);
         }
 
