@@ -17,7 +17,7 @@
 namespace Shippit\Shipping\Model\Request;
 
 use Magento\Framework\Exception\LocalizedException;
-use Shippit\Shipping\Model\Config\Shippit\Shipping\Methods as ShippingMethods;
+use Shippit\Shipping\Model\Config\Source\Shippit\Shipping\Methods as ShippingMethods;
 
 class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shippit\Shipping\Api\Request\SyncOrderInterface
 {

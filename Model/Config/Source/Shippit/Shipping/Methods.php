@@ -20,14 +20,14 @@ use Shippit\Shipping\Helper\Data;
 
 class Methods implements \Magento\Framework\Option\ArrayInterface
 {
-    public $serviceLevels = [
+    public static $serviceLevels = [
         'standard' => 'Standard',
         'express' => 'Express',
         'priority' => 'Priority',
         'click_and_collect' => 'Click and Collect',
     ];
 
-    public $couriers = [
+    public static $couriers = [
         'Eparcel' => 'Auspost eParcel',
         'EparcelExpress' => 'Auspost eParcel Express',
         'EparcelInternationalExpress' => 'Auspost eParcel International Express',
@@ -57,13 +57,13 @@ class Methods implements \Magento\Framework\Option\ArrayInterface
             [
                 'optgroup-name' => 'service_level',
                 'label' => 'Service Level',
-                'value' => $this->serviceLevels,
+                'value' => self::$serviceLevels,
             ],
             // Couriers
             [
                 'optgroup-name' => 'couriers',
                 'label' => 'Couriers',
-                'value' => $this->couriers,
+                'value' => self::$couriers,
             ],
         ];
     }
@@ -76,8 +76,8 @@ class Methods implements \Magento\Framework\Option\ArrayInterface
     public function toArray()
     {
         return array_merge(
-            preg_filter('/^/', 'Service Level: ', $this->serviceLevels),
-            preg_filter('/^/', 'Carrier: ', $this->couriers)
+            preg_filter('/^/', 'Service Level: ', self::$serviceLevels),
+            preg_filter('/^/', 'Carrier: ', self::$couriers)
         );
     }
 }

@@ -17,7 +17,7 @@
 namespace Shippit\Shipping\Model\Request;
 
 use Shippit\Shipping\Api\Request\OrderInterface;
-use Shippit\Shipping\Model\Config\Source\Shipping\Methods as ShippingMethods;
+use Shippit\Shipping\Model\Config\Source\Shippit\Shipping\Methods as ShippingMethods;
 
 class Order extends \Magento\Framework\Model\AbstractModel implements OrderInterface
 {
