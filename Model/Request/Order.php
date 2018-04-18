@@ -17,6 +17,7 @@
 namespace Shippit\Shipping\Model\Request;
 
 use Shippit\Shipping\Api\Request\OrderInterface;
+use Shippit\Shipping\Model\Config\Source\Shipping\Methods as ShippingMethods;
 
 class Order extends \Magento\Framework\Model\AbstractModel implements OrderInterface
 {
@@ -413,45 +414,32 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
      */
     public function setShippingMethod($shippingMethod = null)
     {
-        // set the courier details based on the shipping method
-        if ($shippingMethod == self::SHIPPING_SERVICE_STANDARD) {
-            return $this->setCourierType(self::SHIPPING_SERVICE_STANDARD);
-        }
-        elseif ($shippingMethod == self::SHIPPING_SERVICE_EXPRESS) {
-            return $this->setCourierType(self::SHIPPING_SERVICE_EXPRESS);
-        }
-        else if ($shippingMethod == self::SHIPPING_SERVICE_PRIORITY) {
-            // if the order is a priority delivery,
-            // get the special delivery attributes
-            $deliveryDate = $this->_getOrderDeliveryDate($this->_order);
-            $deliveryWindow = $this->_getOrderDeliveryWindow($this->_order);
+        // If the shipping method is a service level,
+        // set the courier type attribute
+        if (in_array($shippingMethod, ShippingMethods::$serviceLevels)) {
+            $this->setCourierType($shippingMethod);
 
-            if (!empty($deliveryDate) && !empty($deliveryWindow)) {
-                $this->setDeliveryDate($deliveryDate);
-                $this->setDeliveryWindow($deliveryWindow);
+            // If the shipping method service level is priority,
+            // process the delivery date and delivery window
+            if ($shippingMethod == self::SHIPPING_SERVICE_PRIORITY) {
+                $deliveryDate = $this->_getOrderDeliveryDate($this->_order);
+                $deliveryWindow = $this->_getOrderDeliveryWindow($this->_order);
+
+                if (!empty($deliveryDate) && !empty($deliveryWindow)) {
+                    $this->setDeliveryDate($deliveryDate);
+                    $this->setDeliveryWindow($deliveryWindow);
+                }
             }
-
-            return $this->setCourierType(self::SHIPPING_SERVICE_PRIORITY);
-        }
-        elseif ($shippingMethod == self::SHIPPING_SERVICE_CC) {
-            return $this->setCourierType(self::SHIPPING_SERVICE_CC);
-        }
-        elseif ($shippingMethod == self::SHIPPING_SERVICE_PLAINLABEL) {
-            // For the plain labelling service, there is no courier type
-            // but a courier allocation of plain label is required
-            $this->setCourierType(null);
-            $this->setCourierAllocation('PlainLabel');
-
-            return $this;
         }
         // If shipping method is in the list of available
-        // carriers then only send courier allocation
-        elseif (in_array($shippingMethod, self::SHIPPIT_CARRIERS)) {
-            $this->setCourierType(null);
+        // couriers then set a courier allocation
+        elseif (in_array($shippingMethod, ShippingMethods::$couriers)) {
             $this->setCourierAllocation($shippingMethod);
         }
+        // Otherwise, if no matches are found, send
+        // the order as a standard service level
         else {
-            return $this->setData(self::COURIER_TYPE, self::SHIPPING_SERVICE_STANDARD);
+            return $this->setCourierType(self::SHIPPING_SERVICE_STANDARD);
         }
     }
 

@@ -20,6 +20,31 @@ use Shippit\Shipping\Helper\Data;
 
 class Methods implements \Magento\Framework\Option\ArrayInterface
 {
+    public $serviceLevels = [
+        'standard' => 'Standard',
+        'express' => 'Express',
+        'priority' => 'Priority',
+        'click_and_collect' => 'Click and Collect',
+    ];
+
+    public $couriers = [
+        'Eparcel' => 'Auspost eParcel',
+        'EparcelExpress' => 'Auspost eParcel Express',
+        'EparcelInternationalExpress' => 'Auspost eParcel International Express',
+        'EparcelInternational' => 'Auspost eParcel International',
+        'CouriersPlease' => 'Couriers Please',
+        'Fastway' => 'Fastway',
+        'StarTrack' => 'StarTrack',
+        'StarTrackPremium' => 'StarTrackPremium',
+        'Tnt' => 'TNT',
+        'DhlEcommerce' => 'DHL',
+        'DhlExpress' => 'DHL Express',
+        'DhlExpressInternational' => 'DHL Express International',
+        'PlainLabel' => 'Plain Label',
+        'PlainLabelInternational' => 'Plain Label International',
+        'Bonds' => 'Bonds',
+    ];
+
     /**
      * Options getter
      *
@@ -28,52 +53,17 @@ class Methods implements \Magento\Framework\Option\ArrayInterface
     public function toOptionArray()
     {
         return [
-            // Shippit service levels
+            // Service levels
             [
                 'optgroup-name' => 'service_level',
                 'label' => 'Service Level',
-                'value' => [
-                    'standard' => 'Standard',
-                    'express' => 'Express',
-                    'priority' => 'Priority',
-                    'click_and_collect' => 'Click and Collect',
-                    'plain_label' => 'Plain Label',
-                ]
+                'value' => $this->serviceLevels,
             ],
-            // Standard Carriers
+            // Couriers
             [
-                'optgroup-name' => 'carriers-standard',
-                'label' => 'Standard Couriers',
-                'value' => [
-                    'Bonds' => 'Bonds',
-                    'Eparcel' => 'eParcel',
-                    'Fastway' => 'Fastway',
-                    'CouriersPlease' => 'Couriers Please',
-                    'Tnt' => 'TNT',
-                    'EparcelInternational' => 'eParcel International',
-                    'StarTrack' => 'StarTrack',
-                    'DhlEcommerce' => 'DHL eCommerce',
-                ]
-            ],
-            // Express Carriers
-            [
-                'optgroup-name' => 'carriers-express',
-                'label' => 'Express Couriers',
-                'value' => [
-                    'StarTrackPremium' => 'StarTrack Premium',
-                    'EparcelExpress' => 'eParcel Express',
-                    'DhlExpress' => 'DHL Express',
-                    'DhlExpressInternational' => 'DHL Express International',
-                    'EparcelInternationalExpress' => 'eParcel International Express',
-                ]
-            ],
-            // Other Carriers
-            [
-                'optgroup-name' => 'carriers-others',
-                'label' => 'Others',
-                'value' => [
-                    'PlainLabelInternational' => 'Plain Label International',
-                ]
+                'optgroup-name' => 'couriers',
+                'label' => 'Couriers',
+                'value' => $this->couriers,
             ],
         ];
     }
@@ -85,28 +75,9 @@ class Methods implements \Magento\Framework\Option\ArrayInterface
      */
     public function toArray()
     {
-        return [
-            // Shippit service levels
-            'standard' => 'Standard',
-            'express' => 'Express',
-            'priority' => 'Priority',
-            'click_and_collect' => 'Click and Collect',
-            'plain_label' => 'Plain Label',
-            // Shippit Carriers
-            'Bonds' => 'Bonds',
-            'Eparcel' => 'eParcel',
-            'Fastway' => 'Fastway',
-            'CouriersPlease' => 'Couriers Please',
-            'Tnt' => 'TNT',
-            'EparcelInternational' => 'eParcel International',
-            'StarTrack' => 'StarTrack',
-            'DhlEcommerce' => 'DHL eCommerce',
-            'StarTrackPremium' => 'StarTrack Premium',
-            'EparcelExpress' => 'eParcel Express',
-            'DhlExpress' => 'DHL Express',
-            'DhlExpressInternational' => 'DHL Express International',
-            'EparcelInternationalExpress' => 'eParcel International Express',
-            'PlainLabelInternational' => 'Plain Label International',
-        ];
+        return array_merge(
+            preg_filter('/^/', 'Service Level: ', $this->serviceLevels),
+            preg_filter('/^/', 'Carrier: ', $this->couriers)
+        );
     }
 }

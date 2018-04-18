@@ -16,7 +16,8 @@
 
 namespace Shippit\Shipping\Model\Request;
 
-use \Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\LocalizedException;
+use Shippit\Shipping\Model\Config\Shippit\Shipping\Methods as ShippingMethods;
 
 class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shippit\Shipping\Api\Request\SyncOrderInterface
 {
@@ -154,43 +155,15 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
      */
     public function setShippingMethod($shippingMethod)
     {
-        // Standard, express Standard, express, priority and click_and_collect options are available
-        // Priority services requires the use of live quoting to determine
-        // booking availability
-        $validShippingMethods = [
-            'standard',
-            'express',
-            'priority',
-            'click_and_collect',
-            'plain_label'
-        ];
-
-        $validCarriers = [
-            'Bonds',
-            'Eparcel',
-            'Fastway',
-            'CouriersPlease',
-            'Tnt',
-            'EparcelInternational',
-            'StarTrack',
-            'DhlEcommerce',
-            'StarTrackPremium',
-            'EparcelExpress',
-            'DhlExpress',
-            'DhlExpressInternational',
-            'EparcelInternationalExpress',
-            'PlainLabelInternational',
-        ];
-
         // if the shipping method passed is not a standard shippit service class, attempt to get a service class based on the configured mapping
-        if (!in_array($shippingMethod, $validShippingMethods)) {
+        if (!array_key_exists($shippingMethod, ShippingMethods::$serviceLevels)) {
             $shippingMethod = $this->_helper->getShippitShippingMethod($shippingMethod);
         }
 
-        if (in_array($shippingMethod, $validShippingMethods)) {
-            return $this->setData(self::SHIPPING_METHOD, $shippingMethod);
-        }
-        elseif (in_array($shippingMethod, $validCarriers)) {
+        // Process the shipping method using the Shippit
+        // Service Level / Carrier List
+        if (array_key_exists($shippingMethod, ShippingMethods::$serviceLevels)
+            || array_key_exists($shippingMethod, ShippingMethods::$couriers)) {
             return $this->setData(self::SHIPPING_METHOD, $shippingMethod);
         }
         else {
