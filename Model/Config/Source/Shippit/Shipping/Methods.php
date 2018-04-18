@@ -20,6 +20,11 @@ use Shippit\Shipping\Helper\Data;
 
 class Methods implements \Magento\Framework\Option\ArrayInterface
 {
+    const SERVICE_LEVEL_STANDARD = 'standard';
+    const SERVICE_LEVEL_EXPRESS = 'express';
+    const SERVICE_LEVEL_PRIORITY = 'priority';
+    const SERVICE_LEVEL_CC = 'click_and_collect';
+
     public static $serviceLevels = [
         'standard' => 'Standard',
         'express' => 'Express',
