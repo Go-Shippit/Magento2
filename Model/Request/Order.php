@@ -44,29 +44,6 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
      */
     protected $_syncOrder;
 
-    // Shippit Service Class API Mappings
-    const SHIPPING_SERVICE_STANDARD     = 'standard';
-    const SHIPPING_SERVICE_EXPRESS      = 'express';
-    const SHIPPING_SERVICE_PRIORITY     = 'priority';
-    const SHIPPING_SERVICE_CC           = 'click_and_collect';
-    const SHIPPING_SERVICE_PLAINLABEL   = 'plain_label';
-    const SHIPPIT_CARRIERS = [
-        'Bonds',
-        'Eparcel',
-        'Fastway',
-        'CouriersPlease',
-        'Tnt',
-        'EparcelInternational',
-        'StarTrack',
-        'DhlEcommerce',
-        'StarTrackPremium',
-        'EparcelExpress',
-        'DhlExpress',
-        'DhlExpressInternational',
-        'EparcelInternationalExpress',
-        'PlainLabelInternational',
-    ];
-
     /**
      * @param \Magento\Framework\Model\Context $context
      * @param \Magento\Framework\Registry $registry
@@ -421,7 +398,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
 
             // If the shipping method service level is priority,
             // process the delivery date and delivery window
-            if ($shippingMethod == self::SHIPPING_SERVICE_PRIORITY) {
+            if ($shippingMethod == ShippingMethods::SERVICE_LEVEL_PRIORITY) {
                 $deliveryDate = $this->_getOrderDeliveryDate($this->_order);
                 $deliveryWindow = $this->_getOrderDeliveryWindow($this->_order);
 
@@ -439,7 +416,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
         // Otherwise, if no matches are found, send
         // the order as a standard service level
         else {
-            return $this->setCourierType(self::SHIPPING_SERVICE_STANDARD);
+            return $this->setCourierType(ShippingMethods::SERVICE_LEVEL_STANDARD);
         }
     }
 

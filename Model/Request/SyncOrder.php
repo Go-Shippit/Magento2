@@ -167,7 +167,7 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
             return $this->setData(self::SHIPPING_METHOD, $shippingMethod);
         }
         else {
-            return $this->setData(self::SHIPPING_METHOD, 'standard');
+            return $this->setData(self::SHIPPING_METHOD, ShippingMethods::SERVICE_LEVEL_STANDARD);
         }
     }
 
