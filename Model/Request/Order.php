@@ -416,7 +416,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
     {
         // If the shipping method is a service level,
         // set the courier type attribute
-        if (in_array($shippingMethod, ShippingMethods::$serviceLevels)) {
+        if (array_key_exists($shippingMethod, ShippingMethods::$serviceLevels)) {
             $this->setCourierType($shippingMethod);
 
             // If the shipping method service level is priority,
@@ -433,7 +433,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
         }
         // If shipping method is in the list of available
         // couriers then set a courier allocation
-        elseif (in_array($shippingMethod, ShippingMethods::$couriers)) {
+        elseif (array_key_exists($shippingMethod, ShippingMethods::$couriers)) {
             $this->setCourierAllocation($shippingMethod);
         }
         // Otherwise, if no matches are found, send
