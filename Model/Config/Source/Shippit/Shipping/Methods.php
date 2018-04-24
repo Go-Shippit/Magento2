@@ -33,21 +33,22 @@ class Methods implements \Magento\Framework\Option\ArrayInterface
     ];
 
     public static $couriers = [
-        'Eparcel' => 'Auspost eParcel',
-        'EparcelExpress' => 'Auspost eParcel Express',
-        'EparcelInternationalExpress' => 'Auspost eParcel International Express',
-        'EparcelInternational' => 'Auspost eParcel International',
-        'CouriersPlease' => 'Couriers Please',
-        'Fastway' => 'Fastway',
-        'StarTrack' => 'StarTrack',
-        'StarTrackPremium' => 'StarTrackPremium',
-        'Tnt' => 'TNT',
-        'DhlEcommerce' => 'DHL',
-        'DhlExpress' => 'DHL Express',
-        'DhlExpressInternational' => 'DHL Express International',
-        'PlainLabel' => 'Plain Label',
-        'PlainLabelInternational' => 'Plain Label International',
-        'Bonds' => 'Bonds',
+        'eparcel' => 'Auspost eParcel',
+        'eparcelexpress' => 'Auspost eParcel Express',
+        'eparcelinternationalexpress' => 'Auspost eParcel International Express',
+        'eparcelinternational' => 'Auspost eParcel International',
+        'couriersplease' => 'Couriers Please',
+        'fastway' => 'Fastway',
+        'startrack' => 'StarTrack',
+        'startrackpremium' => 'StarTrackPremium',
+        'tnt' => 'TNT',
+        'dhl' => 'DHL Express',
+        'dhlexpress' => 'DHL Express Domestic',
+        'dhlexpressinternational' => 'DHL Express International',
+        'dhlecommerce' => 'DHL eCommerce',
+        'plainlabel' => 'Plain Label',
+        'plainlabelinternational' => 'Plain Label International',
+        'bonds' => 'Bonds Couriers',
     ];
 
     /**
