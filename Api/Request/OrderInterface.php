@@ -38,6 +38,8 @@ interface OrderInterface
     const DELIVERY_STATE            = 'delivery_state';
     const DELIVERY_COUNTRY          = 'delivery_country_code';
     const PARCEL_ATTRIBUTES         = 'parcel_attributes';
+    const RETAILER_SOURCE           = 'retailer_source';
+    const PRODUCT_CURRENCY          = 'product_currency';
 
     /**
      * Set the order to be sent to the api request
@@ -304,4 +306,34 @@ interface OrderInterface
      * @return string|null
      */
     public function setParcelAttributes($parcelAttributes);
+
+    /**
+     * Get the Retailer Source
+     *
+     * @return string|null
+     */
+    public function getRetailerSource();
+
+    /**
+     * Set the Retailer Source
+     *
+     * @param string $retailer_source
+     * @return string
+     */
+    public function setRetailerSource();
+
+    /**
+     * Get the Product Currency
+     *
+     * @return string|null
+     */
+    public function getProductCurrency();
+
+    /**
+     * Set the Product Currency
+     *
+     * @param string product_currency
+     * @return string
+     */
+    public function setProductCurrency($currencyCode);
 }

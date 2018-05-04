@@ -120,7 +120,9 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
             ->setDeliverySuburb($shippingAddress->getCity())
             ->setDeliveryPostcode($shippingAddress->getPostcode())
             ->setDeliveryState($shippingAddress->getRegionCode())
-            ->setDeliveryCountry($shippingAddress->getCountryId());
+            ->setDeliveryCountry($shippingAddress->getCountryId())
+            ->setRetailerSource()
+            ->setProductCurrency($order->getOrderCurrencyCode());
 
         $this->setOrderAfter($order);
 
@@ -723,5 +725,45 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
         $parcelAttributes[] = $newParcel;
 
         return $this->setParcelAttributes($parcelAttributes);
+    }
+
+    /**
+     * Set the Retailer Source
+     * @return string
+     */
+    public function setRetailerSource()
+    {
+        return $this->setData(self::RETAILER_SOURCE, 'magento2');
+    }
+
+    /**
+     * Get the Retailer Source
+     * @return string
+     */
+    public function getRetailerSource()
+    {
+        return $this->getData(self::RETAILER_SOURCE);
+    }
+
+    /**
+     * Set the Product Currency
+     *
+     * @param string $orderDate
+     * @return string
+     */
+    public function setProductCurrency($currencyCode)
+    {
+        return $this->setData(self::PRODUCT_CURRENCY, $currencyCode);
+    }
+
+    /**
+     * Set the Product Currency
+     *
+     * @param string $orderDate
+     * @return string
+     */
+    public function getProductCurrency()
+    {
+        return $this->getData(self::PRODUCT_CURRENCY);
     }
 }
