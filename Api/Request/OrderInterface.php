@@ -317,10 +317,10 @@ interface OrderInterface
     /**
      * Set the Retailer Source
      *
-     * @param string $retailer_source
+     * @param string $retailerSource
      * @return string
      */
-    public function setRetailerSource();
+    public function setRetailerSource($retailerSource);
 
     /**
      * Get the Product Currency
@@ -332,8 +332,8 @@ interface OrderInterface
     /**
      * Set the Product Currency
      *
-     * @param string product_currency
+     * @param string $productCurrency
      * @return string
      */
-    public function setProductCurrency($currencyCode);
+    public function setProductCurrency($productCurrency);
 }
