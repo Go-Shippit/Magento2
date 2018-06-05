@@ -20,6 +20,37 @@ use Shippit\Shipping\Helper\Data;
 
 class Methods implements \Magento\Framework\Option\ArrayInterface
 {
+    const SERVICE_LEVEL_STANDARD = 'standard';
+    const SERVICE_LEVEL_EXPRESS = 'express';
+    const SERVICE_LEVEL_PRIORITY = 'priority';
+    const SERVICE_LEVEL_CC = 'click_and_collect';
+
+    public static $serviceLevels = [
+        'standard' => 'Standard',
+        'express' => 'Express',
+        'priority' => 'Priority',
+        'click_and_collect' => 'Click and Collect',
+    ];
+
+    public static $couriers = [
+        'eparcel' => 'Auspost eParcel',
+        'eparcelexpress' => 'Auspost eParcel Express',
+        'eparcelinternational' => 'Auspost eParcel International',
+        'eparcelinternationalexpress' => 'Auspost eParcel International Express',
+        'couriersplease' => 'Couriers Please',
+        'fastway' => 'Fastway',
+        'startrack' => 'StarTrack',
+        'startrackpremium' => 'StarTrackPremium',
+        'tnt' => 'TNT',
+        'dhlecommerce' => 'DHL eCommerce',
+        'dhl' => 'DHL Express',
+        'dhlexpress' => 'DHL Express Domestic',
+        'dhlexpressinternational' => 'DHL Express International',
+        'plainlabel' => 'Plain Label',
+        'plainlabelinternational' => 'Plain Label International',
+        'bonds' => 'Bonds Couriers',
+    ];
+
     /**
      * Options getter
      *
@@ -28,26 +59,18 @@ class Methods implements \Magento\Framework\Option\ArrayInterface
     public function toOptionArray()
     {
         return [
+            // Service levels
             [
-                'label' => 'Standard',
-                'value' => 'standard'
+                'optgroup-name' => 'service_level',
+                'label' => 'Service Level',
+                'value' => self::$serviceLevels,
             ],
+            // Couriers
             [
-                'label' => 'Express',
-                'value' => 'express'
+                'optgroup-name' => 'couriers',
+                'label' => 'Couriers',
+                'value' => self::$couriers,
             ],
-            [
-                'label' => 'Priority',
-                'value' => 'priority'
-            ],
-            [
-                'label' => 'Click and Collect',
-                'value' => 'click_and_collect'
-            ],
-            [
-                'label' => 'Plain Label',
-                'value' => 'plain_label'
-            ]
         ];
     }
 
@@ -58,12 +81,9 @@ class Methods implements \Magento\Framework\Option\ArrayInterface
      */
     public function toArray()
     {
-        return [
-            'standard' => 'Standard',
-            'express' => 'Express',
-            'priority' => 'Priority',
-            'click_and_collect' => 'Click and Collect',
-            'plain_label' => 'Plain Label'
-        ];
+        return array_merge(
+            preg_filter('/^/', 'Service Level: ', self::$serviceLevels),
+            preg_filter('/^/', 'Carrier: ', self::$couriers)
+        );
     }
 }
