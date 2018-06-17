@@ -40,7 +40,7 @@ class Shippit extends AbstractCarrierOnline implements
     /**
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      * @param \Magento\Quote\Model\Quote\Address\RateResult\ErrorFactory $rateErrorFactory
-     * @param \Shippit\Shipping\Logger\Logger $logger
+     * @param \Magento\Framework\Logger\Monolog $logger
      * @param \Magento\Framework\Xml\Security $xmlSecurity
      * @param \Magento\Shipping\Model\Simplexml\ElementFactory $xmlElFactory
      * @param \Magento\Quote\Model\Quote\Address\RateResult\MethodFactory $rateMethodFactory
@@ -62,7 +62,7 @@ class Shippit extends AbstractCarrierOnline implements
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Quote\Model\Quote\Address\RateResult\ErrorFactory $rateErrorFactory,
-        \Shippit\Shipping\Logger\Logger $logger,
+        \Magento\Framework\Logger\Monolog $logger,
         \Magento\Framework\Xml\Security $xmlSecurity,
         \Magento\Shipping\Model\Simplexml\ElementFactory $xmlElFactory,
         \Magento\Shipping\Model\Rate\ResultFactory $rateFactory,
