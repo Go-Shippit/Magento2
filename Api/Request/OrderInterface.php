@@ -38,7 +38,7 @@ interface OrderInterface
     const DELIVERY_STATE            = 'delivery_state';
     const DELIVERY_COUNTRY          = 'delivery_country_code';
     const PARCEL_ATTRIBUTES         = 'parcel_attributes';
-    const RETAILER_SOURCE           = 'retailer_source';
+    const SOURCE_PLATFORM           = 'source_platform';
     const PRODUCT_CURRENCY          = 'product_currency';
 
     /**
@@ -308,19 +308,19 @@ interface OrderInterface
     public function setParcelAttributes($parcelAttributes);
 
     /**
-     * Get the Retailer Source
+     * Get the Source Platform
      *
      * @return string|null
      */
-    public function getRetailerSource();
+    public function getSourcePlatform();
 
     /**
-     * Set the Retailer Source
+     * Set the Source Platform
      *
-     * @param string $retailerSource
+     * @param string $sourcePlatform
      * @return string
      */
-    public function setRetailerSource($retailerSource);
+    public function setSourcePlatform($sourcePlatform);
 
     /**
      * Get the Product Currency

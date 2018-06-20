@@ -115,7 +115,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
             ->setDeliveryPostcode($shippingAddress->getPostcode())
             ->setDeliveryState($shippingAddress->getRegionCode())
             ->setDeliveryCountry($shippingAddress->getCountryId())
-            ->setRetailerSource('magento2')
+            ->setSourcePlatform('magento2')
             ->setProductCurrency($order->getOrderCurrencyCode());
 
         $this->setOrderAfter($order);
@@ -715,24 +715,24 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
     }
 
     /**
-     * Set the Retailer Source
+     * Set the Source Platform
      *
-     * @param string $retailerSource
+     * @param string $sourcePlatform
      * @return string
      */
-    public function setRetailerSource($retailerSource)
+    public function setSourcePlatform($sourcePlatform)
     {
-        return $this->setData(self::RETAILER_SOURCE, $retailerSource);
+        return $this->setData(self::SOURCE_PLATFORM, $sourcePlatform);
     }
 
     /**
-     * Get the Retailer Source
+     * Get the Source Platform
      *
      * @return string
      */
-    public function getRetailerSource()
+    public function getSourcePlatform()
     {
-        return $this->getData(self::RETAILER_SOURCE);
+        return $this->getData(self::SOURCE_PLATFORM);
     }
 
     /**
