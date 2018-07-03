@@ -32,6 +32,7 @@ interface SyncOrderItemInterface
     const WIDTH                 = 'width';
     const DEPTH                 = 'depth';
     const LOCATION              = 'location';
+    const TARIFF_CODE           = 'tariff_code';
 
     /**
      * Get the Sync Item Id
@@ -217,4 +218,19 @@ interface SyncOrderItemInterface
      * Add a new item to the sync order item request
      */
     public function addItem($item);
+
+    /**
+     * Get the Item Tariffcode
+     *
+     * @return string|null
+     */
+    public function getTariffCode();
+
+    /**
+     * Set the Item Tariffcode
+     *
+     * @param string $tariffCode
+     * @return string|null
+     */
+    public function setTariffCode($tariffCode);
 }
