@@ -215,11 +215,6 @@ interface SyncOrderItemInterface
     public function setLocation($location);
 
     /**
-     * Add a new item to the sync order item request
-     */
-    public function addItem($item);
-
-    /**
      * Get the Item Tariffcode
      *
      * @return string|null
@@ -233,4 +228,9 @@ interface SyncOrderItemInterface
      * @return string|null
      */
     public function setTariffCode($tariffCode);
+
+    /**
+     * Add a new item to the sync order item request
+     */
+    public function addItem($item);
 }

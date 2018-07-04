@@ -696,11 +696,8 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
             // if a 0 weight is provided, stub the weight to 0.2kg
             'weight' => (float) ($weight == 0 ? 0.2 : $weight),
             'location' => $location,
+            'tariff_code' => $tariffcode,
         ];
-
-        if (!empty($tariffcode)) {
-            $newParcel['tariff_code'] = $tariffcode;
-        }
 
         // for dimensions, ensure the item has values for all dimensions
         if (!empty($length) && !empty($width) && !empty($depth)) {

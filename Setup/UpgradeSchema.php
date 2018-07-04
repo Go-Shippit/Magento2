@@ -669,8 +669,14 @@ class UpgradeSchema implements UpgradeSchemaInterface
         $installer->endSetup();
     }
 
-    // @TODO: Upgrade to v
-    // Add tariff_code column to shippit_sync_order_item table
+    /**
+     * Upgrade schema to v1.4.5
+     *
+     * - Adds the tariff_code column to the shippit_sync_order_item table
+     *
+     * @param $installer
+     * @return void
+     */
     public function upgrade_145($installer)
     {
         $installer->startSetup();
@@ -682,7 +688,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
             'tariff_code',
             [
                 'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
-                'length' => '60',
+                'length' => '255',
                 'nullable' => true,
                 'after' => 'location',
                 'comment' => 'Item Tariff Code',
@@ -691,5 +697,4 @@ class UpgradeSchema implements UpgradeSchemaInterface
 
         $installer->endSetup();
     }
-    // End: Add tariff_code column
 }
