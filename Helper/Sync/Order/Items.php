@@ -78,6 +78,11 @@ class Items extends \Shippit\Shipping\Helper\Sync\Order
         return $this->getValue('product_location_attribute_code');
     }
 
+    public function getProductTariffAttributeCode()
+    {
+        return $this->getValue('product_tariff_code');
+    }
+
     /**
      * Begin Data Processing Helpers
      */
@@ -141,6 +146,17 @@ class Items extends \Shippit\Shipping\Helper\Sync\Order
         $attributeValue = $this->getAttributeValue($item->getProduct(), $attributeCode);
 
         return $this->getDimension($attributeValue);
+    }
+
+    public function getTariffCode($item)
+    {
+        $attributeCode = $this->getProductTariffAttributeCode();
+
+        if (empty($attributeCode)) {
+            return;
+        }
+
+        return $this->getAttributeValue($item->getProduct(), $attributeCode);
     }
 
     public function getSkus($items)

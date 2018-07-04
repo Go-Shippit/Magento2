@@ -281,6 +281,27 @@ class Item extends \Magento\Framework\Model\AbstractModel implements \Shippit\Sh
     }
 
     /**
+     * Get the Item Tariffcode
+     *
+     * @return string|null
+     */
+    public function getTariffCode()
+    {
+        return $this->getData(self::TARIFF_CODE);
+    }
+
+    /**
+     * Set the Item Tariffcode
+     *
+     * @param string $tariffCode
+     * @return string|null
+     */
+    public function setTariffCode($tariffCode)
+    {
+        return $this->setData(self::TARIFF_CODE, $tariffCode);
+    }
+
+    /**
      * Add a new item to the sync order item request
      */
     public function addItem($item)

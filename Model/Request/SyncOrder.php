@@ -236,7 +236,8 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
                 $this->getItemLength($item),
                 $this->getItemWidth($item),
                 $this->getItemDepth($item),
-                $this->getItemLocation($item)
+                $this->getItemLocation($item),
+                $this->getItemTariffCode($item)
             );
 
             $itemsAdded++;
@@ -418,11 +419,18 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
         return $this->_itemsHelper->getLocation($childItem);
     }
 
+    protected function getItemTariffCode($item)
+    {
+        $childItem = $this->_getChildItem($item);
+
+        return $this->_itemsHelper->getTariffCode($childItem);
+    }
+
     /**
      * Add a parcel with attributes
      *
      */
-    public function addItem($sku, $title, $qty, $price, $weight = 0, $length = null, $width = null, $depth = null, $location = null)
+    public function addItem($sku, $title, $qty, $price, $weight = 0, $length = null, $width = null, $depth = null, $location = null, $tariffCode = null)
     {
         $items = $this->getItems();
 
@@ -436,7 +444,8 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
             'qty' => (float) $qty,
             'price' => (float) $price,
             'weight' => (float) $weight,
-            'location' => $location
+            'location' => $location,
+            'tariff_code' => $tariffCode,
         ];
 
         // for dimensions, ensure the item has values for all dimensions

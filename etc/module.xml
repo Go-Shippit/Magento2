@@ -14,9 +14,9 @@
  * @license    http://www.shippit.com/terms
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
-    <module name="Shippit_Shipping" setup_version="1.4.2.2">
-    	<sequence>
-    		<module name="Magento_Shipping" />
-    	</sequence>
+    <module name="Shippit_Shipping" setup_version="1.4.5-beta">
+        <sequence>
+            <module name="Magento_Shipping" />
+        </sequence>
     </module>
 </config>

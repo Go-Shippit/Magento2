@@ -58,9 +58,21 @@
     <type name="Shippit\Shipping\Logger\Logger">
         <arguments>
             <argument name="name" xsi:type="string">shippit_shipping</argument>
-            <argument name="handlers"  xsi:type="array">
+            <argument name="handlers" xsi:type="array">
                 <item name="system" xsi:type="object">Shippit\Shipping\Logger\Handler</item>
             </argument>
+        </arguments>
+    </type>
+
+    <type name="Shippit\Shipping\Model\Carrier\Shippit">
+        <arguments>
+            <argument name="logger" xsi:type="object">Shippit\Shipping\Logger\Logger</argument>
+        </arguments>
+    </type>
+
+    <type name="Shippit\Shipping\Model\Carrier\ClickAndCollect">
+        <arguments>
+            <argument name="logger" xsi:type="object">Shippit\Shipping\Logger\Logger</argument>
         </arguments>
     </type>
 
