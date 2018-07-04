@@ -33,6 +33,7 @@ class Shippit extends AbstractCarrierOnline implements
     protected $_code = \Shippit\Shipping\Helper\Data::CARRIER_CODE;
 
     protected $_helper;
+    protected $_itemsHelper;
     protected $_api;
     protected $_methods;
     protected $_quote;
@@ -77,6 +78,7 @@ class Shippit extends AbstractCarrierOnline implements
         \Magento\CatalogInventory\Api\StockRegistryInterface $stockRegistry,
         \Shippit\Shipping\Helper\Carrier\Shippit $helper,
         \Shippit\Shipping\Helper\Api $api,
+        \Shippit\Shipping\Helper\Sync\Order\Items $itemsHelper,
         \Shippit\Shipping\Model\Config\Source\Shippit\Shipping\QuoteMethods $methods,
         \Shippit\Shipping\Api\Request\QuoteInterface $quote,
         \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $productCollectionFactory,
@@ -84,6 +86,7 @@ class Shippit extends AbstractCarrierOnline implements
         array $data = []
     ) {
         $this->_helper = $helper;
+        $this->_itemsHelper = $itemsHelper;
         $this->_api = $api;
         $this->_methods = $methods;
         $this->_quote = $quote;
@@ -570,15 +573,124 @@ class Shippit extends AbstractCarrierOnline implements
         $parcelAttributes = [];
 
         foreach ($items as $item) {
-            // Skip special product types
-            if ($item->getProduct()->getTypeId() == \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE) {
-                $parcelAttributes[] = [
-                    'qty' => $item->getQty(),
-                    'weight' => ($item->getWeight() ? $item->getWeight() : 0.2)
-                ];
+            if (!$this->canAddItemToQuote($item)) {
+                continue;
             }
+
+            $newParcel = [
+                'qty' => $item->getQty(),
+                'weight' => ($item->getWeight() ? $item->getWeight() : 0.2),
+            ];
+
+            $length = $width = $depth = null;
+            $length = $this->getItemLength($item);
+            $width = $this->getItemWidth($item);
+            $depth = $this->getItemDepth($item);
+
+            // for dimensions, ensure the item has values for all dimensions
+            if (!empty($length) && !empty($width) && !empty($depth)) {
+                $newParcel['length'] = (float) $length;
+                $newParcel['width'] = (float) $width;
+                $newParcel['depth'] = (float) $depth;
+            }
+
+            $parcelAttributes[] = $newParcel;
         }
 
         return $parcelAttributes;
+    }
+
+    /*
+        Check if item is elligible to be added for the quote request
+        based on various product type and option conditions
+     */
+    protected function canAddItemToQuote($item)
+    {
+        // If item is virtual return early
+        if ($item->getIsVirtual()) {
+            return false;
+        }
+
+        $rootItem = $this->_getRootItem($item);
+
+        // Always true if item product type is simple with no parent
+        // or if it is a grouped product
+        if ((empty($item->getParentItemId()) && $item->getProductType() == \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE) || $item->getProductType() == \Magento\GroupedProduct\Model\Product\Type\Grouped::TYPE_CODE) {
+            return true;
+        }
+        // Check special product types
+        // If the product is a bundle, check if it's shipped together or seperately...
+        elseif ($rootItem->getProductType() == \Magento\Catalog\Model\Product\Type::TYPE_BUNDLE) {
+            // If the bundle is being shipped seperately
+            if ($rootItem->getProduct()->getShipmentType() == \Magento\Catalog\Model\Product\Type\AbstractType::SHIPMENT_SEPARATELY) {
+                // Check if this is the bundle item, or the item within the bundle
+                // If it's the bundle item
+                if ($item->getId() == $rootItem->getId()) {
+                    return false;
+                }
+                // Otherewise, if it's the child item of a shipped seperately bundle
+                else {
+                    return true;
+                }
+            }
+            else {
+                // Check if this is the bundle item, or the item within the bundle
+                // If it's the bundle item
+                if ($item->getId() == $rootItem->getId()) {
+                    return true;
+                }
+                // Otherewise, if it's the child item of a shipped together bundle
+                else {
+                    return false;
+                }
+            }
+        }
+        else {
+            // Handle configurable products
+            // Otherwise, check if the item is a parent / child and return accordingly
+            if ($item->getId() == $rootItem->getId()) {
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+    }
+
+    protected function getItemLength($item)
+    {
+        if (!$this->_itemsHelper->isProductDimensionActive()) {
+            return;
+        }
+
+        return $this->_helper->getLength($item);
+    }
+
+    protected function getItemWidth($item)
+    {
+        if (!$this->_itemsHelper->isProductDimensionActive()) {
+            return;
+        }
+
+        return $this->_helper->getWidth($item);
+    }
+
+    protected function getItemDepth($item)
+    {
+        if (!$this->_itemsHelper->isProductDimensionActive()) {
+            return;
+        }
+
+        return $this->_helper->getDepth($item);
+    }
+
+    protected function _getRootItem($item)
+    {
+        if ($item->getParentItem()) {
+            return $item->getParentItem();
+        }
+        else {
+            return $item;
+        }
     }
 }
