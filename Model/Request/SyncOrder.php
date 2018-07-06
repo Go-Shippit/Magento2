@@ -165,8 +165,11 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
 
         // Process the shipping method using the Shippit
         // Service Level / Carrier List
-        if (array_key_exists($shippingMethod, ShippingMethods::$serviceLevels)
-            || array_key_exists($shippingMethod, ShippingMethods::$couriers)) {
+        if (!empty($shippingMethod)
+            &&
+            (array_key_exists($shippingMethod, ShippingMethods::$serviceLevels)
+            || array_key_exists($shippingMethod, ShippingMethods::$couriers))
+        ) {
             return $this->setData(self::SHIPPING_METHOD, $shippingMethod);
         }
         else {
