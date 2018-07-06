@@ -55,6 +55,11 @@ class QuoteAuthorityToLeavePlugin
         }
 
         $extensionAttributes = $addressInformation->getExtensionAttributes();
+
+        if (empty($extensionAttributes)) {
+            return;
+        }
+
         $authorityToLeave = $extensionAttributes->getShippitAuthorityToLeave();
 
         $quote = $this->quoteRepository->getActive($cartId);

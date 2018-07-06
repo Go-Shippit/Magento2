@@ -55,6 +55,11 @@ class QuoteDeliveryInstructionsPlugin
         }
 
         $extensionAttributes = $addressInformation->getExtensionAttributes();
+
+        if (empty($extensionAttributes)) {
+            return;
+        }
+
         $deliveryInstructions = $extensionAttributes->getShippitDeliveryInstructions();
 
         $quote = $this->quoteRepository->getActive($cartId);
