@@ -60,10 +60,26 @@ class UpgradeSchema implements UpgradeSchemaInterface
             $this->upgrade_140($installer);
         }
 
+        if (version_compare($context->getVersion(), '1.4.5') < 0) {
+            //code to upgrade to 1.4.5
+            $this->upgrade_145($installer);
+        }
+
         $installer->endSetup();
     }
 
-    // Upgrade to v 1.0.4
+    /**
+     * Upgrade the db schema to v1.0.4
+     *
+     * - Fix the shippit_sync_order field sync_order_id type + length
+     * - Fix the shippit_sync_order field order_id type + length
+     * - Update the shippit_sync_order field order_id index
+     * - Update the shippit_sync_order fields attempt_count and status
+     * - Add a new shippit_sync_order_items table
+     *
+     * @param $installer
+     * @return void
+     */
     public function upgrade_104($installer)
     {
         // Update Order Schema
@@ -287,7 +303,17 @@ class UpgradeSchema implements UpgradeSchemaInterface
         $installer->getConnection()->createTable($orderItemTable);
     }
 
-    // Upgrade to v 1.0.5
+    /**
+     * Upgrade the db schema to v1.0.5
+     *
+     * - Add the api_key to the shippit_sync_order table
+     *   (used for custom implementations where a specific
+     *    api key must be used for some orders)
+     * - Update the defaults for the attempt_count and status columns
+     *
+     * @param $installer
+     * @return void
+     */
     public function upgrade_105($installer)
     {
         // Update Order Schema
@@ -334,7 +360,15 @@ class UpgradeSchema implements UpgradeSchemaInterface
             );
     }
 
-    // Upgrade to v 1.1.21
+    /**
+     * Upgrade the db schema to v1.1.21
+     *
+     * - Add authority to leaved and delivery instructions
+     *   to the quotes and sales orders tables
+     *
+     * @param $installer
+     * @return void
+     */
     public function upgrade_1121($installer)
     {
         $installer->startSetup();
@@ -386,7 +420,14 @@ class UpgradeSchema implements UpgradeSchemaInterface
         $installer->endSetup();
     }
 
-    // Upgrade to v 1.2.6
+    /**
+     * Upgrade the db schema to v1.2.6
+     *
+     * - Add dimensions fields to the shippit_sync_order_item table
+     *
+     * @param $installer
+     * @return void
+     */
     public function upgrade_126($installer)
     {
         $installer->startSetup();
@@ -432,7 +473,15 @@ class UpgradeSchema implements UpgradeSchemaInterface
         $installer->endSetup();
     }
 
-    // Upgrade to v 1.4.0
+    /**
+     * Upgrade the db schema to v1.4.0
+     *
+     * - Create the shippit_sync_shipment and shippit_sync_shipment_item
+     *   processing queue tables for shipments webhook processing
+     *
+     * @param $installer
+     * @return void
+     */
     public function upgrade_140($installer)
     {
 
@@ -659,6 +708,35 @@ class UpgradeSchema implements UpgradeSchemaInterface
 
         $installer->getConnection()->createTable($shipmentItemTable);
         //end of create shipment items table
+
+        $installer->endSetup();
+    }
+
+    /**
+     * Upgrade schema to v1.4.5
+     *
+     * - Adds the tariff_code column to the shippit_sync_order_item table
+     *
+     * @param $installer
+     * @return void
+     */
+    public function upgrade_145($installer)
+    {
+        $installer->startSetup();
+
+        $table = $installer->getTable('shippit_sync_order_item');
+
+        $installer->getConnection()->addColumn(
+            $table,
+            'tariff_code',
+            [
+                'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                'length' => '255',
+                'nullable' => true,
+                'after' => 'location',
+                'comment' => 'Item Tariff Code',
+            ]
+        );
 
         $installer->endSetup();
     }
