@@ -1,25 +1,8 @@
 <?php
-/**
- * Shippit Pty Ltd
- *
- * NOTICE OF LICENSE
- *
- * This source file is subject to the terms
- * that is available through the world-wide-web at this URL:
- * http://www.shippit.com/terms
- *
- * @category   Shippit
- * @copyright  Copyright (c) by Shippit Pty Ltd (http://www.shippit.com)
- * @author     Matthew Muscat <matthew@mamis.com.au>
- * @license    http://www.shippit.com/terms
- */
 
-namespace Shippit\Shipping\Observer;
+namespace Shippit\Shipping\Model\Config\Backend\Shippit;
 
-use Magento\Framework\Event\Observer;
-use Magento\Framework\Event\ObserverInterface;
-
-class ValidateMerchantObserver implements ObserverInterface
+class ApiKey extends \Magento\Framework\App\Config\Value
 {
     const ERROR_API_KEY = 'Shippit configuration error: Please check the API Key';
     const ERROR_API_COMMUNICATION = 'Shippit API error: An error occured while communicating with the Shippit API';
@@ -38,30 +21,57 @@ class ValidateMerchantObserver implements ObserverInterface
     protected $_dataObjectFactory;
     protected $_storeManager;
 
-    protected $_hasAttemptedSync = false;
-
-    public function __construct (
-        \Shippit\Shipping\Helper\Data $helper,
-        \Shippit\Shipping\Helper\Sync\Shipping $syncShippingHelper,
-        \Shippit\Shipping\Helper\Api $api,
-        \Magento\Framework\UrlInterface $urlInterface,
+    /**
+     * @param \Magento\Framework\Model\Context $context
+     * @param \Magento\Framework\Registry $registry
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $config
+     * @param \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList
+     * @param \Magento\Framework\Model\ResourceModel\AbstractResource $resource
+     * @param \Magento\Framework\Data\Collection\AbstractDb $resourceCollection
+     * @param string $runModelPath
+     * @param array $data
+     */
+    public function __construct(
+        \Magento\Framework\Model\Context $context,
+        \Magento\Framework\Registry $registry,
+        \Magento\Framework\App\Config\ScopeConfigInterface $config,
+        \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList,
+        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
+        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
+        \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Framework\Message\ManagerInterface $messageManager,
         \Magento\Framework\DataObjectFactory $dataObjectFactory,
-        \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Shippit\Shipping\Logger\Logger $logger
+        \Shippit\Shipping\Helper\Api $api,
+        \Shippit\Shipping\Logger\Logger $logger,
+        \Shippit\Shipping\Helper\Data $helper,
+        \Shippit\Shipping\Helper\Sync\Shipping $syncShippingHelper,
+        array $data = []
     ) {
         $this->_helper = $helper;
         $this->_syncShippingHelper = $syncShippingHelper;
         $this->_api = $api;
-        $this->_urlInterface = $urlInterface;
         $this->_messageManager = $messageManager;
         $this->_dataObjectFactory = $dataObjectFactory;
         $this->_storeManager = $storeManager;
         $this->_logger = $logger;
+
+        parent::__construct(
+            $context,
+            $registry,
+            $config,
+            $cacheTypeList,
+            $resource,
+            $resourceCollection,
+            $data
+        );
     }
 
-    public function execute(Observer $observer)
+    public function afterSave()
     {
+        if (!$this->isValueChanged()) {
+            return $this;
+        }
+
         try {
             $apiKeyValid = false;
 
@@ -92,6 +102,8 @@ class ValidateMerchantObserver implements ObserverInterface
         if ($apiKeyValid) {
             $this->_registerWebhook();
         }
+
+        return parent::afterSave();
     }
 
     protected function _registerWebhook()
@@ -132,5 +144,7 @@ class ValidateMerchantObserver implements ObserverInterface
             $this->_logger->addError(self::ERROR_WEBHOOK_REGISTRATION_UNKNOWN . ' ' . $e->getMessage());
             $this->_messageManager->addError(self::ERROR_WEBHOOK_REGISTRATION_UNKNOWN . ' ' . $e->getMessage());
         }
+
+        return parent::afterSave();
     }
 }

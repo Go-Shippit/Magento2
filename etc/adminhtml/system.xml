@@ -35,6 +35,7 @@
 
                 <field id="api_key" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>API Key</label>
+                    <backend_model>Shippit\Shipping\Model\Config\Backend\Shippit\ApiKey</backend_model>
                 </field>
 
                 <field id="environment" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="0">

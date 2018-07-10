@@ -20,6 +20,20 @@ class Sync extends \Magento\Backend\App\Action
 {
     const ADMIN_ACTION = 'Shippit_Shipping::order_sync';
 
+    protected $_logger;
+    protected $_appEmulation;
+
+    public function __construct (
+        \Magento\Backend\App\Action\Context $context,
+        \Magento\Store\Model\App\Emulation $emulation,
+        \Shippit\Shipping\Logger\Logger $logger
+    ) {
+        $this->_appEmulation = $emulation;
+        $this->_logger = $logger;
+
+        parent::__construct($context);
+    }
+
     /**
      * {@inheritdoc}
      *
@@ -59,6 +73,8 @@ class Sync extends \Magento\Backend\App\Action
         }
 
         try {
+            $environment = $this->_appEmulation->startEnvironmentEmulation($order->getStoreId(), \Magento\Framework\App\Area::AREA_ADMINHTML, true);
+
             $this->_eventManager->dispatch(
                 'shippit_add_order',
                 [
@@ -71,6 +87,8 @@ class Sync extends \Magento\Backend\App\Action
         } catch (\Exception $e) {
             // display error message
             $this->messageManager->addError($e->getMessage());
+        } finally {
+            $this->_appEmulation->stopEnvironmentEmulation();
         }
 
         return $resultRedirect->setPath('sales/order/view/', ['order_id' => $orderId]);
