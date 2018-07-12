@@ -16,20 +16,25 @@
 
 namespace Shippit\Shipping\Controller\Adminhtml\Sync\Order;
 
+use Exception;
+
 class Sync extends \Magento\Backend\App\Action
 {
     const ADMIN_ACTION = 'Shippit_Shipping::sync_order_sync';
 
-    protected $_logger;
+    protected $_syncOrderInterface;
+    protected $_apiOrderFactory;
     protected $_appEmulation;
 
     public function __construct (
         \Magento\Backend\App\Action\Context $context,
-        \Magento\Store\Model\App\Emulation $emulation,
-        \Shippit\Shipping\Logger\Logger $logger
+        \Shippit\Shipping\Api\Data\SyncOrderInterface $syncOrderInterface,
+        \Shippit\Shipping\Model\Api\OrderFactory $apiOrderFactory,
+        \Magento\Store\Model\App\Emulation $emulation
     ) {
+        $this->_syncOrderInterface = $syncOrderInterface;
+        $this->_apiOrderFactory = $apiOrderFactory;
         $this->_appEmulation = $emulation;
-        $this->_logger = $logger;
 
         parent::__construct($context);
     }
@@ -45,47 +50,55 @@ class Sync extends \Magento\Backend\App\Action
     }
 
     /**
-     * Delete action
+     * {@inheritdoc}
      *
      * @return \Magento\Backend\Model\View\Result\Redirect
      */
     public function execute()
     {
-        $id = $this->getRequest()->getParam('id');
+        $syncOrderId = $this->getRequest()->getParam('id');
 
         /** @var \Magento\Backend\Model\View\Result\Redirect $resultRedirect */
         $resultRedirect = $this->resultRedirectFactory->create();
 
-        if ($id) {
-            try {
-                $syncOrder = $this->_objectManager
-                    ->create('Shippit\Shipping\Api\Data\SyncOrderInterface')
-                    ->load($id);
-
-                $syncOrder->setStatus(\Shippit\Shipping\Model\Sync\Order::STATUS_PENDING)
-                    ->setAttemptCount(0)
-                    ->setTrackingNumber(null)
-                    ->setSyncedAt(null)
-                    ->save();
-
-                $storeId = $syncOrder->getOrder()->getStoreId();
-                $environment = $this->_appEmulation->startEnvironmentEmulation($storeId, \Magento\Framework\App\Area::AREA_ADMINHTML, true);
-
-                $request = $this->_objectManager
-                    ->create('Shippit\Shipping\Model\Api\Order')
-                    ->sync($syncOrder, true);
-            } catch (\Exception $e) {
-                // display error message
-                $this->messageManager->addError($e->getMessage());
-            } finally {
-                $this->_appEmulation->stopEnvironmentEmulation();
-            }
+        if (empty($syncOrderId)) {
+            $this->messageManager->addError(__('The sync order could not be found.'));
 
             return $resultRedirect->setPath('*/*/');
         }
 
-        // display error message
-        $this->messageManager->addError(__('We can\'t find a Order Sync to schedule.'));
+        $syncOrder = $this->_syncOrderInterface->load($syncOrderId);
+
+        if (!$syncOrder) {
+            $this->messageManager->addError(__('The sync order could not be found.'));
+
+            return $resultRedirect->setPath('*/*/');
+        }
+
+        try {
+            $syncOrder->setStatus(\Shippit\Shipping\Model\Sync\Order::STATUS_PENDING)
+                ->setAttemptCount(0)
+                ->setTrackingNumber(null)
+                ->setSyncedAt(null)
+                ->save();
+
+            $storeId = $syncOrder->getOrder()->getStoreId();
+            $environment = $this->_appEmulation->startEnvironmentEmulation(
+                $storeId,
+                \Magento\Framework\App\Area::AREA_ADMINHTML
+            );
+
+            $request = $this->_apiOrderFactory
+                ->create()
+                ->sync($syncOrder, true);
+        }
+        catch (Exception $e) {
+            // display error message
+            $this->messageManager->addError($e->getMessage());
+        }
+        finally {
+            $this->_appEmulation->stopEnvironmentEmulation();
+        }
 
         return $resultRedirect->setPath('*/*/');
     }
