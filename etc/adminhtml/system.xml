@@ -35,7 +35,7 @@
 
                 <field id="api_key" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>API Key</label>
-                    <backend_model>Shippit\Shipping\Model\Config\Backend\Shippit\ApiKey</backend_model>
+                    <backend_model>Shippit\Shipping\Model\Config\Backend\Shippit\General\ApiKey</backend_model>
                 </field>
 
                 <field id="environment" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="0">
@@ -167,6 +167,7 @@
                 <field id="active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <backend_model>Shippit\Shipping\Model\Config\Backend\Shippit\SyncShipping\Active</backend_model>
                 </field>
             </group>
         </section>
