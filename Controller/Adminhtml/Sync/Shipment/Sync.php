@@ -16,7 +16,7 @@
 
 namespace Shippit\Shipping\Controller\Adminhtml\Sync\Shipment;
 
-use \Shippit\Shipping\Model\Sync\Shipment as SyncShipment;
+use Shippit\Shipping\Model\Sync\Shipment as SyncShipment;
 
 class Sync extends \Magento\Backend\App\Action
 {

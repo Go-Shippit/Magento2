@@ -17,6 +17,7 @@
 namespace Shippit\Shipping\Controller\Adminhtml\Order;
 
 use Exception;
+use Magento\Framework\App\Area as AppArea;
 
 class Sync extends \Magento\Backend\App\Action
 {
@@ -73,7 +74,7 @@ class Sync extends \Magento\Backend\App\Action
         }
 
         try {
-            $environment = $this->_appEmulation->startEnvironmentEmulation($order->getStoreId(), \Magento\Framework\App\Area::AREA_ADMINHTML, true);
+            $environment = $this->_appEmulation->startEnvironmentEmulation($order->getStoreId(), AppArea::AREA_ADMINHTML, true);
 
             $this->_eventManager->dispatch(
                 'shippit_add_order',

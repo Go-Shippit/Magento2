@@ -17,6 +17,8 @@
 namespace Shippit\Shipping\Controller\Adminhtml\Sync\Order;
 
 use Exception;
+use Magento\Framework\App\Area as AppArea;
+use Shippit\Shipping\Model\Sync\Order as SyncOrder;
 
 class Sync extends \Magento\Backend\App\Action
 {
@@ -76,7 +78,7 @@ class Sync extends \Magento\Backend\App\Action
         }
 
         try {
-            $syncOrder->setStatus(\Shippit\Shipping\Model\Sync\Order::STATUS_PENDING)
+            $syncOrder->setStatus(SyncOrder::STATUS_PENDING)
                 ->setAttemptCount(0)
                 ->setTrackingNumber(null)
                 ->setSyncedAt(null)
@@ -85,7 +87,7 @@ class Sync extends \Magento\Backend\App\Action
             $storeId = $syncOrder->getOrder()->getStoreId();
             $environment = $this->_appEmulation->startEnvironmentEmulation(
                 $storeId,
-                \Magento\Framework\App\Area::AREA_ADMINHTML
+                AppArea::AREA_ADMINHTML
             );
 
             $request = $this->_apiOrderFactory

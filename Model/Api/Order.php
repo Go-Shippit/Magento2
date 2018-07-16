@@ -16,7 +16,7 @@
 
 namespace Shippit\Shipping\Model\Api;
 
-use \Shippit\Shipping\Model\Sync\Order as SyncOrder;
+use Shippit\Shipping\Model\Sync\Order as SyncOrder;
 
 class Order extends \Magento\Framework\Model\AbstractModel
 {

@@ -16,7 +16,7 @@
 
 namespace Shippit\Shipping\Helper;
 
-use \Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
