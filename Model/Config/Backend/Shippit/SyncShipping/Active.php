@@ -16,11 +16,17 @@
 
 namespace Shippit\Shipping\Model\Config\Backend\Shippit\SyncShipping;
 
+use Exception;
+use Magento\Framework\App\Area as AppArea;
+use Magento\Framework\UrlInterface;
+use Magento\Store\Model\ScopeInterface;
+
 class Active extends \Magento\Framework\App\Config\Value
 {
-    const ERROR_WEBHOOK_REGISTRATION = 'Shippit Webhook Registration Error: An error occured while registering the webhook with Shippit';
-    const ERROR_WEBHOOK_REGISTRATION_UNKNOWN = 'Shippit Webhook Registration Error: An unknown error occured while registering the webhook with Shippit';
-    const NOTICE_WEBHOOK_REGISTRATION_SUCCESS = '';
+    const ERROR_WEBHOOK_REGISTRATION = 'Shippit Webhook Registration Error - An error occured while registering the webhook with Shippit';
+    const ERROR_WEBHOOK_REGISTRATION_UNKNOWN = 'Shippit Webhook Registration Error - An unknown error occured while registering the webhook with Shippit';
+    const NOTICE_WEBHOOK_REGISTRATION_SUCCESS = 'The Shippit Fulfillment Webhook was successfully registered';
+
     const VALUE_YES = 1;
     const VALUE_NO = 0;
 
@@ -41,7 +47,15 @@ class Active extends \Magento\Framework\App\Config\Value
      * @param \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource $resource
      * @param \Magento\Framework\Data\Collection\AbstractDb $resourceCollection
-     * @param string $runModelPath
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager,
+     * @param \Magento\Framework\Message\ManagerInterface $messageManager,
+     * @param \Magento\Framework\App\Config\ReinitableConfigInterface $configInterface,
+     * @param \Magento\Framework\DataObjectFactory $dataObjectFactory,
+     * @param \Magento\Store\Model\App\Emulation $appEmulation,
+     * @param \Shippit\Shipping\Helper\Api $api,
+     * @param \Shippit\Shipping\Logger\Logger $logger,
+     * @param \Shippit\Shipping\Helper\Data $helper,
+     * @param \Shippit\Shipping\Helper\Sync\Shipping $syncShippingHelper,
      * @param array $data
      */
     public function __construct(
@@ -55,14 +69,14 @@ class Active extends \Magento\Framework\App\Config\Value
         \Magento\Framework\Message\ManagerInterface $messageManager,
         \Magento\Framework\App\Config\ReinitableConfigInterface $configInterface,
         \Magento\Framework\DataObjectFactory $dataObjectFactory,
-        \Magento\Store\Model\App\Emulation $emulation,
+        \Magento\Store\Model\App\Emulation $appEmulation,
         \Shippit\Shipping\Helper\Api $api,
         \Shippit\Shipping\Logger\Logger $logger,
         \Shippit\Shipping\Helper\Data $helper,
         \Shippit\Shipping\Helper\Sync\Shipping $syncShippingHelper,
         array $data = []
     ) {
-        $this->_appEmulation = $emulation;
+        $this->_appEmulation = $appEmulation;
         $this->_storeManager = $storeManager;
         $this->_messageManager = $messageManager;
         $this->_configInterface = $configInterface;
@@ -90,7 +104,7 @@ class Active extends \Magento\Framework\App\Config\Value
         }
 
         $storeId = $this->getStoreId();
-        $environment = $this->_appEmulation->startEnvironmentEmulation($storeId, \Magento\Framework\App\Area::AREA_ADMINHTML);
+        $environment = $this->_appEmulation->startEnvironmentEmulation($storeId, AppArea::AREA_ADMINHTML);
 
         // re-init configuration
         $this->_configInterface->reinit();
@@ -99,12 +113,12 @@ class Active extends \Magento\Framework\App\Config\Value
             $apiKey = $this->_helper->getApiKey();
 
             $webhookUrl = $this->_storeManager->getStore()
-                ->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_LINK)
-                . 'shippit/order/update/api_key/' . $apiKey;
+                ->getBaseUrl(UrlInterface::URL_TYPE_WEB, true) . 'shippit/order/update/api_key/' . $apiKey;
 
             $requestData = $this->_dataObjectFactory->create();
+
             // if value is yes then create the webhook else delete the webhook
-            if ($this->getValue() == self::VALUE_YES && $this->_helper->isActive()) {
+            if ($this->_helper->isActive() && $this->getValue() == self::VALUE_YES) {
                 $requestData->setWebhookUrl($webhookUrl);
             }
             else {
@@ -114,14 +128,16 @@ class Active extends \Magento\Framework\App\Config\Value
             $merchant = $this->_api->putMerchant($requestData, true);
 
             if (property_exists($merchant, 'error')) {
-                $this->_messageManager->addError(self::ERROR_WEBHOOK_REGISTRATION_ERROR . ' ' . $merchant->error);
-            } else {
-                $this->_logger->addNotice(self::NOTICE_WEBHOOK_REGISTRATION_SUCCESS . ' ' . $webhookUrl);
-                $this->_messageManager->addSuccess(self::NOTICE_WEBHOOK_REGISTRATION_SUCCESS . ' ' . $webhookUrl);
+                $this->_messageManager->addError(self::ERROR_WEBHOOK_REGISTRATION_ERROR . ' - ' . $merchant->error);
             }
-        } catch (\Exception $e) {
-            $this->_logger->addError(self::ERROR_WEBHOOK_REGISTRATION_UNKNOWN . ' ' . $e->getMessage());
-            $this->_messageManager->addError(self::ERROR_WEBHOOK_REGISTRATION_UNKNOWN . ' ' . $e->getMessage());
+            else {
+                $this->_logger->addNotice(self::NOTICE_WEBHOOK_REGISTRATION_SUCCESS . ' - ' . $webhookUrl);
+                $this->_messageManager->addSuccess(self::NOTICE_WEBHOOK_REGISTRATION_SUCCESS . ' - ' . $webhookUrl);
+            }
+        }
+        catch (Exception $e) {
+            $this->_logger->addError(self::ERROR_WEBHOOK_REGISTRATION_UNKNOWN . ' - ' . $e->getMessage());
+            $this->_messageManager->addError(self::ERROR_WEBHOOK_REGISTRATION_UNKNOWN . ' - ' . $e->getMessage());
         }
         finally {
             $this->_appEmulation->stopEnvironmentEmulation();
@@ -142,13 +158,13 @@ class Active extends \Magento\Framework\App\Config\Value
         }
         // If the current scope is a website, get
         // the default store id for the website
-        elseif ($this->getScope() == \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES) {
+        elseif ($this->getScope() == ScopeInterface::SCOPE_WEBSITES) {
             $websiteId = $this->getScopeId();
             $website = $this->_storeManager->getWebsite($websiteId);
 
             return $website->getDefaultStore()->getStoreId();
         }
-        elseif ($this->getScope() == Magento\Store\Model\ScopeInterface::SCOPE_STORES) {
+        elseif ($this->getScope() == ScopeInterface::SCOPE_STORES) {
             return $this->getScopeId();
         }
     }

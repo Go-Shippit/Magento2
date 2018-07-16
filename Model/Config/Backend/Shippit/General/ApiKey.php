@@ -16,14 +16,17 @@
 
 namespace Shippit\Shipping\Model\Config\Backend\Shippit\General;
 
+use Exception;
+use Magento\Framework\App\Area as AppArea;
+use Magento\Store\Model\ScopeInterface;
+
 class ApiKey extends \Magento\Framework\App\Config\Value
 {
-    const ERROR_API_KEY = 'Shippit configuration error: Please check the API Key';
-    const ERROR_API_COMMUNICATION = 'Shippit API error: An error occured while communicating with the Shippit API';
-    const NOTICE_API_KEY_VALID = 'Shippit API Key Validated';
+    const ERROR_API_COMMUNICATION = 'Shippit API Error — An error occured while communicating with the Shippit API';
+    const ERROR_API_KEY = 'Shippit API Key Validation Error - Please check the API Key';
+    const NOTICE_API_KEY_VALID = 'Shippit API Key Validation was successful';
 
     protected $_helper;
-    protected $_syncShippingHelper;
     protected $_api;
     protected $_logger;
     protected $_messageManager;
@@ -55,7 +58,6 @@ class ApiKey extends \Magento\Framework\App\Config\Value
         \Shippit\Shipping\Helper\Api $api,
         \Shippit\Shipping\Logger\Logger $logger,
         \Shippit\Shipping\Helper\Data $helper,
-        \Shippit\Shipping\Helper\Sync\Shipping $syncShippingHelper,
         array $data = []
     ) {
         $this->_appEmulation = $emulation;
@@ -65,7 +67,6 @@ class ApiKey extends \Magento\Framework\App\Config\Value
         $this->_api = $api;
         $this->_logger = $logger;
         $this->_helper = $helper;
-        $this->_syncShippingHelper = $syncShippingHelper;
 
         parent::__construct(
             $context,
@@ -85,19 +86,18 @@ class ApiKey extends \Magento\Framework\App\Config\Value
         }
 
         $storeId = $this->getStoreId();
-        $environment = $this->_appEmulation->startEnvironmentEmulation($storeId, \Magento\Framework\App\Area::AREA_ADMINHTML);
+        $environment = $this->_appEmulation->startEnvironmentEmulation($storeId, AppArea::AREA_ADMINHTML);
 
-        // re-init configuration
+        // re-init the system configuration to retrieve the latest values after save
         $this->_configInterface->reinit();
 
         if (!$this->_helper->isActive()) {
             $this->_appEmulation->stopEnvironmentEmulation();
+
             return $this;
         }
 
         try {
-            $apiKeyValid = false;
-
             $merchant = $this->_api->getMerchant();
 
             if (property_exists($merchant, 'error')) {
@@ -113,11 +113,9 @@ class ApiKey extends \Magento\Framework\App\Config\Value
             else {
                 $this->_logger->addNotice(self::NOTICE_API_KEY_VALID);
                 $this->_messageManager->addSuccess(self::NOTICE_API_KEY_VALID);
-
-                $apiKeyValid = true;
             }
         }
-        catch (\Exception $e) {
+        catch (Exception $e) {
             $this->_logger->addError(self::ERROR_API_COMMUNICATION);
             $this->_messageManager->addError(self::ERROR_API_COMMUNICATION);
         }
@@ -140,13 +138,13 @@ class ApiKey extends \Magento\Framework\App\Config\Value
         }
         // If the current scope is a website, get
         // the default store id for the website
-        elseif ($this->getScope() == \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITES) {
+        elseif ($this->getScope() == ScopeInterface::SCOPE_WEBSITES) {
             $websiteId = $this->getScopeId();
             $website = $this->_storeManager->getWebsite($websiteId);
 
             return $website->getDefaultStore()->getStoreId();
         }
-        elseif ($this->getScope() == Magento\Store\Model\ScopeInterface::SCOPE_STORES) {
+        elseif ($this->getScope() == ScopeInterface::SCOPE_STORES) {
             return $this->getScopeId();
         }
     }
