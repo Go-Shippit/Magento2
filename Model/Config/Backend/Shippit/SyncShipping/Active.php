@@ -106,7 +106,7 @@ class Active extends \Magento\Framework\App\Config\Value
         $storeId = $this->getStoreId();
         $environment = $this->_appEmulation->startEnvironmentEmulation($storeId, AppArea::AREA_ADMINHTML);
 
-        // re-init configuration
+        // re-init the system configuration to retrieve the latest values after save
         $this->_configInterface->reinit();
 
         try {
