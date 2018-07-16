@@ -16,7 +16,7 @@
 
 namespace Shippit\Shipping\Helper\Carrier;
 
-use \Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 
 class ClickAndCollect extends \Shippit\Shipping\Helper\Data
 {

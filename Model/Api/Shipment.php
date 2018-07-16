@@ -17,7 +17,7 @@
 namespace Shippit\Shipping\Model\Api;
 
 use Exception;
-use \Shippit\Shipping\Model\Sync\Shipment as SyncShipment;
+use Shippit\Shipping\Model\Sync\Shipment as SyncShipment;
 
 class Shipment extends \Magento\Framework\Model\AbstractModel
 {
