@@ -74,7 +74,10 @@ class Sync extends \Magento\Backend\App\Action
         }
 
         try {
-            $environment = $this->_appEmulation->startEnvironmentEmulation($order->getStoreId(), AppArea::AREA_ADMINHTML, true);
+            $this->_appEmulation->startEnvironmentEmulation(
+                $order->getStoreId(),
+                AppArea::AREA_ADMINHTML
+            );
 
             $this->_eventManager->dispatch(
                 'shippit_add_order',

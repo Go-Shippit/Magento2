@@ -16,6 +16,7 @@
 
 namespace Shippit\Shipping\Model\Api;
 
+use Magento\Framework\App\Area as AppArea;
 use Shippit\Shipping\Model\Sync\Order as SyncOrder;
 
 class Order extends \Magento\Framework\Model\AbstractModel
@@ -114,7 +115,10 @@ class Order extends \Magento\Framework\Model\AbstractModel
             $storeId = $store->getStoreId();
 
             // Start Store Emulation
-            $environment = $this->_appEmulation->startEnvironmentEmulation($storeId);
+            $this->_appEmulation->startEnvironmentEmulation(
+                $storeId,
+                AppArea::AREA_ADMINHTML
+            );
 
             $syncOrders = $this->getSyncOrders($storeId);
 
@@ -123,7 +127,7 @@ class Order extends \Magento\Framework\Model\AbstractModel
             }
 
             // Stop Store Emulation
-            $this->_appEmulation->stopEnvironmentEmulation($environment);
+            $this->_appEmulation->stopEnvironmentEmulation();
         }
     }
 

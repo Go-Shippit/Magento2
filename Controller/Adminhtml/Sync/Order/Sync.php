@@ -85,7 +85,8 @@ class Sync extends \Magento\Backend\App\Action
                 ->save();
 
             $storeId = $syncOrder->getOrder()->getStoreId();
-            $environment = $this->_appEmulation->startEnvironmentEmulation(
+
+            $this->_appEmulation->startEnvironmentEmulation(
                 $storeId,
                 AppArea::AREA_ADMINHTML
             );
