@@ -16,6 +16,7 @@
 
 namespace Shippit\Shipping\Model\Api;
 
+use Exception;
 use Magento\Framework\App\Area as AppArea;
 use Shippit\Shipping\Model\Sync\Order as SyncOrder;
 
@@ -205,7 +206,7 @@ class Order extends \Magento\Framework\Model\AbstractModel
                     );
             }
         }
-        catch (\Exception $e) {
+        catch (Exception $e) {
             $this->_logger->addError('API - Order Sync Request Failed - ' . $e->getMessage());
 
             // Fail the sync item if it's breached the max attempts
