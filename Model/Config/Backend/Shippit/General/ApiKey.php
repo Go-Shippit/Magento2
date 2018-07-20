@@ -81,23 +81,23 @@ class ApiKey extends \Magento\Framework\App\Config\Value
 
     public function afterSave()
     {
-        if (!$this->isValueChanged()) {
-            return $this;
-        }
-
-        $storeId = $this->getStoreId();
-        $environment = $this->_appEmulation->startEnvironmentEmulation($storeId, AppArea::AREA_ADMINHTML);
-
-        // re-init the system configuration to retrieve the latest values after save
-        $this->_configInterface->reinit();
-
-        if (!$this->_helper->isActive()) {
-            $this->_appEmulation->stopEnvironmentEmulation();
-
-            return $this;
-        }
-
         try {
+            $storeId = $this->getStoreId();
+
+            $this->_appEmulation->startEnvironmentEmulation(
+                $storeId,
+                AppArea::AREA_ADMINHTML
+            );
+
+            // re-init the system configuration to retrieve the latest values after save
+            $this->_configInterface->reinit();
+
+            if (!$this->_helper->isActive()) {
+                $this->_appEmulation->stopEnvironmentEmulation();
+
+                return $this;
+            }
+
             $merchant = $this->_api->getMerchant();
 
             if (property_exists($merchant, 'error')) {

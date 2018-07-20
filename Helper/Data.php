@@ -17,6 +17,7 @@
 namespace Shippit\Shipping\Helper;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Store\Model\ScopeInterface;
 
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
@@ -44,7 +45,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * @param   string $key
      * @return  string
      */
-    public function getValue($key, $scope = 'website')
+    public function getValue($key, $scope = ScopeInterface::SCOPE_STORES)
     {
         $path = self::XML_PATH_SETTINGS . $key;
 
