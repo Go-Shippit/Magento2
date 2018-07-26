@@ -359,7 +359,7 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
             foreach ($childItems as $childItem) {
                 // Get the number of items in the bundle per bundle package purchased
                 $childItemQty = ($childItem->getQtyOrdered() / $rootItem->getQtyOrdered());
-                $rowTotalAfterDiscounts = $childItem->getRowTotal() - $childItem->getDiscountAmount();
+                $rowTotalAfterDiscounts = $childItem->getRowTotalInclTax() - $childItem->getDiscountAmount();
                 $rowUnitPrice = $rowTotalAfterDiscounts / $childItem->getQtyOrdered();
                 $bundleItemUnitPrice = $rowUnitPrice * $childItemQty;
 
@@ -376,7 +376,7 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
 
     protected function getBasicItemPrice($item)
     {
-        $rowTotalAfterDiscounts = $item->getRowTotal() - $item->getDiscountAmount();
+        $rowTotalAfterDiscounts = $item->getRowTotalInclTax() - $item->getDiscountAmount();
         $itemPrice = $rowTotalAfterDiscounts / $item->getQtyOrdered();
 
         return round($itemPrice, 2);
