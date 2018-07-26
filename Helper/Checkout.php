@@ -16,6 +16,8 @@
 
 namespace Shippit\Shipping\Helper;
 
+use Magento\Store\Model\ScopeInterface;
+
 class Checkout extends \Shippit\Shipping\Helper\Data
 {
     const XML_PATH_SETTINGS = 'shippit/checkout/';
@@ -26,7 +28,7 @@ class Checkout extends \Shippit\Shipping\Helper\Data
      * @param   string $key
      * @return  string
      */
-    public function getValue($key, $scope = 'website')
+    public function getValue($key, $scope = ScopeInterface::SCOPE_STORES)
     {
         $path = self::XML_PATH_SETTINGS . $key;
 

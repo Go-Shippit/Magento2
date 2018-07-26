@@ -16,7 +16,8 @@
 
 namespace Shippit\Shipping\Controller\Adminhtml\Sync\Shipment;
 
-use \Shippit\Shipping\Model\Sync\Shipment as SyncShipment;
+use Magento\Framework\App\Area as AppArea;
+use Shippit\Shipping\Model\Sync\Shipment as SyncShipment;
 
 class Sync extends \Magento\Backend\App\Action
 {
@@ -113,14 +114,20 @@ class Sync extends \Magento\Backend\App\Action
         foreach ($syncShipments as $syncShipment) {
             $storeId = $syncShipment->getStoreId();
 
-            // Start Store Emulation
-            $environment = $this->_appEmulation->startEnvironmentEmulation($storeId);
+            try {
+                // Start Store Emulation
+                $this->_appEmulation->startEnvironmentEmulation(
+                    $storeId,
+                    AppArea::AREA_ADMINHTML
+                );
 
-            // Sync the order
-            $this->_shipment->sync($syncShipment, true);
-
-            // Stop Store Emulation
-            $this->_appEmulation->stopEnvironmentEmulation($environment);
+                // Sync the order
+                $this->_shipment->sync($syncShipment, true);
+            }
+            finally {
+                // Stop Store Emulation
+                $this->_appEmulation->stopEnvironmentEmulation();
+            }
         }
 
         $this->_redirect('*/*/index');

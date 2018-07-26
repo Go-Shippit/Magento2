@@ -16,6 +16,8 @@
 
 namespace Shippit\Shipping\Helper\Sync\Order;
 
+use Magento\Store\Model\ScopeInterface;
+
 class Items extends \Shippit\Shipping\Helper\Sync\Order
 {
     const UNIT_DIMENSION_MILLIMETRES = 'millimetres';
@@ -32,7 +34,7 @@ class Items extends \Shippit\Shipping\Helper\Sync\Order
      * @param   string $key
      * @return  string
      */
-    public function getValue($key, $scope = 'website')
+    public function getValue($key, $scope = ScopeInterface::SCOPE_STORES)
     {
         $path = self::XML_PATH_SETTINGS . $key;
 

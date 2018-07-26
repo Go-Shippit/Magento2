@@ -17,7 +17,8 @@
 namespace Shippit\Shipping\Model\Api;
 
 use Exception;
-use \Shippit\Shipping\Model\Sync\Shipment as SyncShipment;
+use Magento\Framework\App\Area as AppArea;
+use Shippit\Shipping\Model\Sync\Shipment as SyncShipment;
 
 class Shipment extends \Magento\Framework\Model\AbstractModel
 {
@@ -116,8 +117,11 @@ class Shipment extends \Magento\Framework\Model\AbstractModel
         foreach ($stores as $store) {
             $storeId = $store->getStoreId();
 
-            // // Start Store Emulation
-            $environment = $this->_appEmulation->startEnvironmentEmulation($storeId);
+            // Start Store Emulation
+            $this->_appEmulation->startEnvironmentEmulation(
+                $storeId,
+                AppArea::AREA_ADMINHTML
+            );
 
             if (!$this->_helper->isActive()) {
                 return $this;
@@ -126,16 +130,12 @@ class Shipment extends \Magento\Framework\Model\AbstractModel
             // get shipments to sync
             $syncShipments = $this->getSyncShipments($storeId);
 
-            if (empty($syncShipments)) {
-                return $this;
-            }
-
             foreach ($syncShipments as $syncShipment) {
                 $this->sync($syncShipment);
             }
 
             // // Stop Store Emulation
-            $this->_appEmulation->stopEnvironmentEmulation($environment);
+            $this->_appEmulation->stopEnvironmentEmulation();
         }
     }
 
