@@ -154,6 +154,11 @@ class Shippit extends AbstractCarrierOnline implements
             return false;
         }
 
+        // Prevent quotes for destinations outside of AU (currently not supported)
+        if ($request->getDestCountryId() != 'AU') {
+            return false;
+        }
+
         // check if we have any methods allowed before proceeding
         $allowedMethods = $this->_helper->getAllowedMethods();
         if (count($allowedMethods) == 0) {

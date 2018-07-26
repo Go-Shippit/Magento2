@@ -133,17 +133,8 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
             $postcodeState = $this->_helper->getStateFromPostcode($this->getDeliveryPostcode());
 
             if ($postcodeState) {
-                $this->setData(self::DELIVERY_STATE, $postcodeState);
+                $this->setDeliveryState($postcodeState);
             }
-        }
-
-        $deliveryState = $this->getDeliveryState();
-        $deliverySuburb = $this->getDeliverySuburb();
-
-        // If the delivery state is empty
-        // Copy the suburb field to the state field
-        if (empty($deliveryState) && !empty($deliverySuburb)) {
-            $this->setData(self::DELIVERY_STATE, $deliverySuburb);
         }
 
         return $this;
@@ -627,10 +618,6 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
      */
     public function setDeliveryState($deliveryState)
     {
-        if (empty($deliveryState)) {
-            $deliveryState = $this->_helper->getStateFromPostcode($this->getDeliveryPostcode());
-        }
-
         return $this->setData(self::DELIVERY_STATE, $deliveryState);
     }
 
