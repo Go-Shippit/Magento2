@@ -17,7 +17,7 @@
 namespace Shippit\Shipping\Model\Request;
 
 use Shippit\Shipping\Api\Request\ShipmentInterface;
-use \Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\LocalizedException;
 
 // Read the Shippit webhook request and provides
 // a summary of the available item actions in Magento

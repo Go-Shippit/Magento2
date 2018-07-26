@@ -16,9 +16,26 @@
 
 namespace Shippit\Shipping\Controller\Adminhtml\Order;
 
+use Exception;
+use Magento\Framework\App\Area as AppArea;
+
 class Sync extends \Magento\Backend\App\Action
 {
     const ADMIN_ACTION = 'Shippit_Shipping::order_sync';
+
+    protected $_appEmulation;
+    protected $_orderInterface;
+
+    public function __construct (
+        \Magento\Backend\App\Action\Context $context,
+        \Magento\Sales\Api\Data\OrderInterface $orderInterface,
+        \Magento\Store\Model\App\Emulation $emulation
+    ) {
+        $this->_orderInterface = $orderInterface;
+        $this->_appEmulation = $emulation;
+
+        parent::__construct($context);
+    }
 
     /**
      * {@inheritdoc}
@@ -43,22 +60,25 @@ class Sync extends \Magento\Backend\App\Action
         $resultRedirect = $this->resultRedirectFactory->create();
 
         if (empty($orderId)) {
-            $this->messageManager->addError(__('We can\'t find the Order to schedule.'));
+            $this->messageManager->addError(__('The order to be synced could not be found.'));
 
-            return $resultRedirect->setPath('sales/order/view/', ['order_id' => $orderId]);
+            return $resultRedirect->setPath('sales/order/index/');
         }
 
-        $order = $this->_objectManager
-            ->get('\Magento\Sales\Api\Data\OrderInterface')
-            ->load($orderId);
+        $order = $this->_orderInterface->load($orderId);
 
         if (!$order) {
-            $this->messageManager->addError(__('We can\'t find the Order to schedule.'));
+            $this->messageManager->addError(__('The order to be synced could not be found.'));
 
             return $resultRedirect->setPath('sales/order/view/', ['order_id' => $orderId]);
         }
 
         try {
+            $this->_appEmulation->startEnvironmentEmulation(
+                $order->getStoreId(),
+                AppArea::AREA_ADMINHTML
+            );
+
             $this->_eventManager->dispatch(
                 'shippit_add_order',
                 [
@@ -68,9 +88,13 @@ class Sync extends \Magento\Backend\App\Action
                     'display_notifications' => true
                 ]
             );
-        } catch (\Exception $e) {
+        }
+        catch (Exception $e) {
             // display error message
             $this->messageManager->addError($e->getMessage());
+        }
+        finally {
+            $this->_appEmulation->stopEnvironmentEmulation();
         }
 
         return $resultRedirect->setPath('sales/order/view/', ['order_id' => $orderId]);

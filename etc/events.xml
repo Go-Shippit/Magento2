@@ -14,10 +14,6 @@
  * @license    http://www.shippit.com/terms
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
-    <event name="admin_system_config_changed_section_shippit">
-        <observer name="shippit_validate_merchant" instance="Shippit\Shipping\Observer\ValidateMerchantObserver" />
-    </event>
-
     <event name="shippit_add_order">
         <observer name="shippit_add_order" instance="Shippit\Shipping\Observer\Shippit" />
     </event>
