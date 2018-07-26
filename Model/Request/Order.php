@@ -137,15 +137,6 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
             }
         }
 
-        $deliveryState = $this->getDeliveryState();
-        $deliverySuburb = $this->getDeliverySuburb();
-
-        // If the delivery state is empty
-        // Copy the suburb field to the state field
-        if (empty($deliveryState) && !empty($deliverySuburb)) {
-            $this->setData(self::DELIVERY_STATE, $deliverySuburb);
-        }
-
         return $this;
     }
 
