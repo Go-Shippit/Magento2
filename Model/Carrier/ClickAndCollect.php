@@ -18,10 +18,10 @@ namespace Shippit\Shipping\Model\Carrier;
 
 use Magento\Quote\Model\Quote\Address\RateRequest;
 use Magento\Shipping\Model\Carrier\AbstractCarrier;
+use Magento\Shipping\Model\Carrier\CarrierInterface;
 use Magento\Shipping\Model\Rate\Result;
 
-class ClickAndCollect extends AbstractCarrier implements
-    \Magento\Shipping\Model\Carrier\CarrierInterface
+class ClickAndCollect extends AbstractCarrier implements CarrierInterface
 {
     /**
      * @var string

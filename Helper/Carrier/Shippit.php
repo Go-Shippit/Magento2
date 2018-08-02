@@ -22,6 +22,30 @@ class Shippit extends \Shippit\Shipping\Helper\Data
 {
     const XML_PATH_SETTINGS = 'carriers/shippit/';
 
+    protected $_itemsHelper;
+    protected $_productRepository;
+
+    /**
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param \Magento\Framework\Module\ModuleList $moduleList
+     * @param \Shippit\Shipping\Helper\Sync\Order\Items $itemsHelper
+     * @param \Magento\Catalog\Model\ProductRepository $productRepository
+     */
+    public function __construct(
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        \Magento\Framework\Module\ModuleList $moduleList,
+        \Shippit\Shipping\Helper\Sync\Order\Items $itemsHelper,
+        \Magento\Catalog\Model\ProductRepository $productRepository
+    ) {
+        $this->_itemsHelper = $itemsHelper;
+        $this->_productRepository = $productRepository;
+
+        parent::__construct(
+            $scopeConfig,
+            $moduleList
+        );
+    }
+
     /**
      * Return store config value for key
      *
@@ -91,5 +115,55 @@ class Shippit extends \Shippit\Shipping\Helper\Data
     public function getEnabledProductAttributeValue()
     {
         return self::getValue('enabled_product_attribute_value');
+    }
+
+    public function getProductById($id)
+    {
+        return $this->_productRepository->getById($id);
+    }
+
+    public function getWidth($item)
+    {
+        $attributeCode = $this->_itemsHelper->getProductDimensionWidthAttributeCode();
+
+        if (empty($attributeCode)) {
+            return;
+        }
+
+        $product = $this->getProductById($item->getProductId());
+
+        $attributeValue = $this->_itemsHelper->getAttributeValue($product, $attributeCode);
+
+        return $this->_itemsHelper->getDimension($attributeValue);
+    }
+
+    public function getLength($item)
+    {
+        $attributeCode = $this->_itemsHelper->getProductDimensionLengthAttributeCode();
+
+        if (empty($attributeCode)) {
+            return;
+        }
+
+        $product = $this->getProductById($item->getProductId());
+
+        $attributeValue = $this->_itemsHelper->getAttributeValue($product, $attributeCode);
+
+        return $this->_itemsHelper->getDimension($attributeValue);
+    }
+
+    public function getDepth($item)
+    {
+        $attributeCode = $this->_itemsHelper->getProductDimensionDepthAttributeCode();
+
+        if (empty($attributeCode)) {
+            return;
+        }
+
+        $product = $this->getProductById($item->getProductId());
+
+        $attributeValue = $this->_itemsHelper->getAttributeValue($product, $attributeCode);
+
+        return $this->_itemsHelper->getDimension($attributeValue);
     }
 }
