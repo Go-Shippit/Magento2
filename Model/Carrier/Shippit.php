@@ -16,12 +16,17 @@
 
 namespace Shippit\Shipping\Model\Carrier;
 
+use Magento\Framework\DataObject;
+use Magento\Catalog\Model\Product\Type as ProductType;
+use Magento\Catalog\Model\Product\Type\AbstractType as ProductTypeAbstract;
+use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableProductType;
+use Magento\GroupedProduct\Model\Product\Type\Grouped as GroupedProductType;
 use Magento\Quote\Model\Quote\Address\RateRequest;
 use Magento\Shipping\Model\Carrier\AbstractCarrierOnline;
+use Magento\Shipping\Model\Carrier\CarrierInterface;
 use Magento\Shipping\Model\Rate\Result;
 
-class Shippit extends AbstractCarrierOnline implements
-    \Magento\Shipping\Model\Carrier\CarrierInterface
+class Shippit extends AbstractCarrierOnline implements CarrierInterface
 {
     const NOTICE_MODULE_DISABLED = 'Skipping Live Quote - The Module is not enabled';
     const NOTICE_NOMETHODS_SELECTED = 'Skipping Live Quote - No Shipping Methods are selected';
@@ -33,6 +38,7 @@ class Shippit extends AbstractCarrierOnline implements
     protected $_code = \Shippit\Shipping\Helper\Data::CARRIER_CODE;
 
     protected $_helper;
+    protected $_itemsHelper;
     protected $_api;
     protected $_methods;
     protected $_quote;
@@ -77,6 +83,7 @@ class Shippit extends AbstractCarrierOnline implements
         \Magento\CatalogInventory\Api\StockRegistryInterface $stockRegistry,
         \Shippit\Shipping\Helper\Carrier\Shippit $helper,
         \Shippit\Shipping\Helper\Api $api,
+        \Shippit\Shipping\Helper\Sync\Order\Items $itemsHelper,
         \Shippit\Shipping\Model\Config\Source\Shippit\Shipping\QuoteMethods $methods,
         \Shippit\Shipping\Api\Request\QuoteInterface $quote,
         \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $productCollectionFactory,
@@ -84,6 +91,7 @@ class Shippit extends AbstractCarrierOnline implements
         array $data = []
     ) {
         $this->_helper = $helper;
+        $this->_itemsHelper = $itemsHelper;
         $this->_api = $api;
         $this->_methods = $methods;
         $this->_quote = $quote;
@@ -120,7 +128,7 @@ class Shippit extends AbstractCarrierOnline implements
      * @param \Magento\Framework\DataObject $request
      * @return $this|bool|\Magento\Framework\DataObject
      */
-    public function proccessAdditionalValidation(\Magento\Framework\DataObject $request)
+    public function proccessAdditionalValidation(DataObject $request)
     {
         $postcode = $request->getDestPostcode();
         $state = $request->getDestRegionCode();
@@ -134,9 +142,9 @@ class Shippit extends AbstractCarrierOnline implements
         }
     }
 
-    protected function _doShipmentRequest(\Magento\Framework\DataObject $request)
+    protected function _doShipmentRequest(DataObject $request)
     {
-        $result = new \Magento\Framework\DataObject();
+        $result = new DataObject();
 
         return $result;
     }
@@ -425,10 +433,10 @@ class Shippit extends AbstractCarrierOnline implements
 
         foreach ($items as $item) {
             // Skip special product types
-            if ($item->getProduct()->getTypeId() == \Magento\ConfigurableProduct\Model\Product\Type\Configurable::TYPE_CODE
-                || $item->getProduct()->getTypeId() == \Magento\GroupedProduct\Model\Product\Type\Grouped::TYPE_CODE
-                || $item->getProduct()->getTypeId() == \Magento\Catalog\Model\Product\Type::TYPE_BUNDLE
-                || $item->getProduct()->getTypeId() == \Magento\Catalog\Model\Product\Type::TYPE_VIRTUAL) {
+            if ($item->getProduct()->getTypeId() == ConfigurableProductType::TYPE_CODE
+                || $item->getProduct()->getTypeId() == GroupedProductType::TYPE_CODE
+                || $item->getProduct()->getTypeId() == ProductType::TYPE_BUNDLE
+                || $item->getProduct()->getTypeId() == ProductType::TYPE_VIRTUAL) {
                 continue;
             }
 
@@ -570,15 +578,125 @@ class Shippit extends AbstractCarrierOnline implements
         $parcelAttributes = [];
 
         foreach ($items as $item) {
-            // Skip special product types
-            if ($item->getProduct()->getTypeId() == \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE) {
-                $parcelAttributes[] = [
-                    'qty' => $item->getQty(),
-                    'weight' => ($item->getWeight() ? $item->getWeight() : 0.2)
-                ];
+            if (!$this->canAddItemToQuote($item)) {
+                continue;
             }
+
+            $newParcel = [
+                'qty' => $item->getQty(),
+                'weight' => ($item->getWeight() ? $item->getWeight() : 0.2),
+            ];
+
+            $length = $this->getItemLength($item);
+            $width = $this->getItemWidth($item);
+            $depth = $this->getItemDepth($item);
+
+            // for dimensions, ensure the item has values for all dimensions
+            if (!empty($length) && !empty($width) && !empty($depth)) {
+                $newParcel['length'] = (float) $length;
+                $newParcel['width'] = (float) $width;
+                $newParcel['depth'] = (float) $depth;
+            }
+
+            $parcelAttributes[] = $newParcel;
         }
 
         return $parcelAttributes;
+    }
+
+    /*
+        Check if item is elligible to be added for the quote request
+        based on various product type and option conditions
+     */
+    protected function canAddItemToQuote($item)
+    {
+        // If item is virtual return early
+        if ($item->getIsVirtual()) {
+            return false;
+        }
+
+        $rootItem = $this->_getRootItem($item);
+
+        // Always true if item product type is simple with no parent
+        if (empty($item->getParentItemId()) && $item->getProductType() == ProductType::TYPE_SIMPLE) {
+            return true;
+        }
+        // Always true if item product type is a grouped product
+        elseif ($rootItem->getProductType() == GroupedProductType::TYPE_CODE) {
+            return true;
+        }
+        // If the product is a bundle, check if it's shipped together or seperately...
+        elseif ($rootItem->getProductType() == ProductType::TYPE_BUNDLE) {
+            // If the bundle is being shipped seperately
+            if ($rootItem->getProduct()->getShipmentType() == ProductTypeAbstract::SHIPMENT_SEPARATELY) {
+                // Check if this is the bundle item, or the item within the bundle
+                // If it's the bundle item
+                if ($item->getId() == $rootItem->getId()) {
+                    return false;
+                }
+                // Otherewise, if it's the child item of a shipped seperately bundle
+                else {
+                    return true;
+                }
+            }
+            else {
+                // Check if this is the bundle item, or the item within the bundle
+                // If it's the bundle item
+                if ($item->getId() == $rootItem->getId()) {
+                    return true;
+                }
+                // Otherewise, if it's the child item of a shipped together bundle
+                else {
+                    return false;
+                }
+            }
+        }
+        // If the product is a configurable product
+        elseif ($rootItem->getProductType() == ConfigurableProductType::TYPE_CODE) {
+            // Check if the item is a parent / child and return accordingly
+            if ($item->getId() == $rootItem->getId()) {
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+    }
+
+    protected function getItemLength($item)
+    {
+        if (!$this->_itemsHelper->isProductDimensionActive()) {
+            return;
+        }
+
+        return $this->_helper->getLength($item);
+    }
+
+    protected function getItemWidth($item)
+    {
+        if (!$this->_itemsHelper->isProductDimensionActive()) {
+            return;
+        }
+
+        return $this->_helper->getWidth($item);
+    }
+
+    protected function getItemDepth($item)
+    {
+        if (!$this->_itemsHelper->isProductDimensionActive()) {
+            return;
+        }
+
+        return $this->_helper->getDepth($item);
+    }
+
+    protected function _getRootItem($item)
+    {
+        if ($item->getParentItem()) {
+            return $item->getParentItem();
+        }
+        else {
+            return $item;
+        }
     }
 }
