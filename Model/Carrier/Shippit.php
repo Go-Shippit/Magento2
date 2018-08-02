@@ -16,12 +16,17 @@
 
 namespace Shippit\Shipping\Model\Carrier;
 
+use Magento\Framework\DataObject;
+use Magento\Catalog\Model\Product\Type as ProductType;
+use Magento\Catalog\Model\Product\Type\AbstractType as ProductTypeAbstract;
+use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableProductType;
+use Magento\GroupedProduct\Model\Product\Type\Grouped as GroupedProductType;
 use Magento\Quote\Model\Quote\Address\RateRequest;
 use Magento\Shipping\Model\Carrier\AbstractCarrierOnline;
+use Magento\Shipping\Model\Carrier\CarrierInterface;
 use Magento\Shipping\Model\Rate\Result;
 
-class Shippit extends AbstractCarrierOnline implements
-    \Magento\Shipping\Model\Carrier\CarrierInterface
+class Shippit extends AbstractCarrierOnline implements CarrierInterface
 {
     const NOTICE_MODULE_DISABLED = 'Skipping Live Quote - The Module is not enabled';
     const NOTICE_NOMETHODS_SELECTED = 'Skipping Live Quote - No Shipping Methods are selected';
@@ -123,7 +128,7 @@ class Shippit extends AbstractCarrierOnline implements
      * @param \Magento\Framework\DataObject $request
      * @return $this|bool|\Magento\Framework\DataObject
      */
-    public function proccessAdditionalValidation(\Magento\Framework\DataObject $request)
+    public function proccessAdditionalValidation(DataObject $request)
     {
         $postcode = $request->getDestPostcode();
         $state = $request->getDestRegionCode();
@@ -137,9 +142,9 @@ class Shippit extends AbstractCarrierOnline implements
         }
     }
 
-    protected function _doShipmentRequest(\Magento\Framework\DataObject $request)
+    protected function _doShipmentRequest(DataObject $request)
     {
-        $result = new \Magento\Framework\DataObject();
+        $result = new DataObject();
 
         return $result;
     }
@@ -428,10 +433,10 @@ class Shippit extends AbstractCarrierOnline implements
 
         foreach ($items as $item) {
             // Skip special product types
-            if ($item->getProduct()->getTypeId() == \Magento\ConfigurableProduct\Model\Product\Type\Configurable::TYPE_CODE
-                || $item->getProduct()->getTypeId() == \Magento\GroupedProduct\Model\Product\Type\Grouped::TYPE_CODE
-                || $item->getProduct()->getTypeId() == \Magento\Catalog\Model\Product\Type::TYPE_BUNDLE
-                || $item->getProduct()->getTypeId() == \Magento\Catalog\Model\Product\Type::TYPE_VIRTUAL) {
+            if ($item->getProduct()->getTypeId() == ConfigurableProductType::TYPE_CODE
+                || $item->getProduct()->getTypeId() == GroupedProductType::TYPE_CODE
+                || $item->getProduct()->getTypeId() == ProductType::TYPE_BUNDLE
+                || $item->getProduct()->getTypeId() == ProductType::TYPE_VIRTUAL) {
                 continue;
             }
 
@@ -582,7 +587,6 @@ class Shippit extends AbstractCarrierOnline implements
                 'weight' => ($item->getWeight() ? $item->getWeight() : 0.2),
             ];
 
-            $length = $width = $depth = null;
             $length = $this->getItemLength($item);
             $width = $this->getItemWidth($item);
             $depth = $this->getItemDepth($item);
@@ -614,15 +618,17 @@ class Shippit extends AbstractCarrierOnline implements
         $rootItem = $this->_getRootItem($item);
 
         // Always true if item product type is simple with no parent
-        // or if it is a grouped product
-        if ((empty($item->getParentItemId()) && $item->getProductType() == \Magento\Catalog\Model\Product\Type::TYPE_SIMPLE) || $item->getProductType() == \Magento\GroupedProduct\Model\Product\Type\Grouped::TYPE_CODE) {
+        if (empty($item->getParentItemId()) && $item->getProductType() == ProductType::TYPE_SIMPLE) {
             return true;
         }
-        // Check special product types
+        // Always true if item product type is a grouped product
+        elseif ($rootItem->getProductType() == GroupedProductType::TYPE_CODE) {
+            return true;
+        }
         // If the product is a bundle, check if it's shipped together or seperately...
-        elseif ($rootItem->getProductType() == \Magento\Catalog\Model\Product\Type::TYPE_BUNDLE) {
+        elseif ($rootItem->getProductType() == ProductType::TYPE_BUNDLE) {
             // If the bundle is being shipped seperately
-            if ($rootItem->getProduct()->getShipmentType() == \Magento\Catalog\Model\Product\Type\AbstractType::SHIPMENT_SEPARATELY) {
+            if ($rootItem->getProduct()->getShipmentType() == ProductTypeAbstract::SHIPMENT_SEPARATELY) {
                 // Check if this is the bundle item, or the item within the bundle
                 // If it's the bundle item
                 if ($item->getId() == $rootItem->getId()) {
@@ -645,9 +651,9 @@ class Shippit extends AbstractCarrierOnline implements
                 }
             }
         }
-        else {
-            // Handle configurable products
-            // Otherwise, check if the item is a parent / child and return accordingly
+        // If the product is a configurable product
+        elseif ($rootItem->getProductType() == ConfigurableProductType::TYPE_CODE) {
+            // Check if the item is a parent / child and return accordingly
             if ($item->getId() == $rootItem->getId()) {
                 return false;
             }
