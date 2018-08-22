@@ -85,6 +85,11 @@ class Items extends \Shippit\Shipping\Helper\Sync\Order
         return $this->getValue('product_tariff_code');
     }
 
+    public function getOriginCountryAttributeCode()
+    {
+        return $this->getValue('product_country_of_origin');
+    }
+
     /**
      * Begin Data Processing Helpers
      */
@@ -153,6 +158,17 @@ class Items extends \Shippit\Shipping\Helper\Sync\Order
     public function getTariffCode($item)
     {
         $attributeCode = $this->getProductTariffAttributeCode();
+
+        if (empty($attributeCode)) {
+            return;
+        }
+
+        return $this->getAttributeValue($item->getProduct(), $attributeCode);
+    }
+
+    public function getOriginCountryCode($item)
+    {
+        $attributeCode = $this->getOriginCountryAttributeCode();
 
         if (empty($attributeCode)) {
             return;

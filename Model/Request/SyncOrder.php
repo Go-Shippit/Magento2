@@ -245,7 +245,8 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
                 $this->getItemWidth($item),
                 $this->getItemDepth($item),
                 $this->getItemLocation($item),
-                $this->getItemTariffCode($item)
+                $this->getItemTariffCode($item),
+                $this->getOriginCountryCode($item)
             );
 
             $itemsAdded++;
@@ -434,12 +435,42 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
         return $this->_itemsHelper->getTariffCode($childItem);
     }
 
+    protected function getOriginCountryCode($item)
+    {
+        $childItem = $this->_getChildItem($item);
+
+        $originCountryCode = $this->_itemsHelper->getOriginCountryCode($childItem);
+
+        // If product is configurable and 
+        // child item does not have origin_country_code value set 
+        // then we fallback to parent product's origin_country_code value
+        if ($item->getProductType() == \Magento\ConfigurableProduct\Model\Product\Type\Configurable::TYPE_CODE 
+            && empty(trim($originCountryCode))
+        ) {
+            $parentItem = $this->_getRootItem($item);
+            $originCountryCode =  $this->_itemsHelper->getOriginCountryCode($parentItem);
+        }
+
+        return $originCountryCode;
+    }
+
     /**
      * Add a parcel with attributes
      *
      */
-    public function addItem($sku, $title, $qty, $price, $weight = 0, $length = null, $width = null, $depth = null, $location = null, $tariffCode = null)
-    {
+    public function addItem(
+        $sku,
+        $title,
+        $qty,
+        $price,
+        $weight = 0,
+        $length = null,
+        $width = null,
+        $depth = null, 
+        $location = null,
+        $tariffCode = null,
+        $originCountryCode = null
+    ) {
         $items = $this->getItems();
 
         if (empty($items)) {
@@ -454,6 +485,7 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
             'weight' => (float) $weight,
             'location' => $location,
             'tariff_code' => $tariffCode,
+            'origin_country_code' => $originCountryCode,
         ];
 
         // for dimensions, ensure the item has values for all dimensions

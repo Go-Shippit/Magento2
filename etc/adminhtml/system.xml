@@ -159,6 +159,11 @@
                     <source_model>Shippit\Shipping\Model\Config\Source\Catalog\Attributes</source_model>
                     <comment>The Product Attribute to be used for tariff code information sent to Shippit.</comment>
                 </field>
+
+                <field id="product_country_of_origin" translate="label comment" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Product Country of Origin</label>
+                    <source_model>Shippit\Shipping\Model\Config\Source\Catalog\Attributes</source_model>
+                </field>
             </group>
 
             <group id="sync_shipping" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
