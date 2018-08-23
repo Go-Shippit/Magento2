@@ -41,6 +41,8 @@ class Products implements \Magento\Framework\Option\ArrayInterface
             ->addAttributeToSelect('name')
             ->setOrder('name', 'ASC');
 
+        // Initialize product array see https://github.com/Go-Shippit/Magento2/issues/8
+        $productArray = [];
         foreach ($products as $product) {
             $productArray[] = [
                 'label' => $product->getName(),
