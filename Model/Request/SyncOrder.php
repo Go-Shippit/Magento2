@@ -38,6 +38,8 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
      */
     protected $_orderItemInterface;
 
+    protected $_countryFactory;
+
     /**
      * @param \Magento\Framework\Model\Context $context
      * @param \Magento\Framework\Registry $registry
@@ -54,6 +56,7 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
         \Shippit\Shipping\Helper\Sync\Order $helper,
         \Shippit\Shipping\Helper\Sync\Order\Items $itemsHelper,
         \Magento\Sales\Api\Data\OrderItemInterface $orderItemInterface,
+        \Magento\Directory\Model\CountryFactory $countryFactory,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
@@ -61,6 +64,7 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
         $this->_helper = $helper;
         $this->_itemsHelper = $itemsHelper;
         $this->_orderItemInterface = $orderItemInterface;
+        $this->_countryFactory = $countryFactory;
 
         parent::__construct($context, $registry, $resource, $resourceCollection, $data);
     }
@@ -439,19 +443,40 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
     {
         $childItem = $this->_getChildItem($item);
 
-        $originCountryCode = $this->_itemsHelper->getOriginCountryCode($childItem);
+        $originCountry = $this->_itemsHelper->getOriginCountryCode($childItem);
 
-        // If product is configurable and 
-        // child item does not have origin_country_code value set 
+        // If product is configurable and
+        // child item does not have origin_country_code value set
         // then we fallback to parent product's origin_country_code value
-        if ($item->getProductType() == \Magento\ConfigurableProduct\Model\Product\Type\Configurable::TYPE_CODE 
-            && empty(trim($originCountryCode))
+        if ($item->getProductType() == \Magento\ConfigurableProduct\Model\Product\Type\Configurable::TYPE_CODE
+            && empty(trim($originCountry))
         ) {
             $parentItem = $this->_getRootItem($item);
-            $originCountryCode =  $this->_itemsHelper->getOriginCountryCode($parentItem);
+            $originCountry =  $this->_itemsHelper->getOriginCountryCode($parentItem);
         }
 
-        return $originCountryCode;
+        // @TODO: Do the look up based on country name
+
+        $countryCollection = $this->_countryFactory
+            ->create()
+            ->getCollection();
+
+        // Retrieve ISO2 code value based on attribute value i.e. $originCountry
+        // Lookup based on ISO2 code, ISO3 code & country ID
+        $countryData = $countryCollection
+            ->addFieldToFilter(
+                ['country_id', 'iso2_code', 'iso3_code'],
+                    [
+                        ['eq' => $originCountry],
+                        ['eq' => $originCountry],
+                        ['eq' => $originCountry],
+                    ]
+            )
+            ->getFirstItem();
+
+        if (count($countryData) > 0) {
+            return $countryData['iso2_code'];
+        }
     }
 
     /**
@@ -466,7 +491,7 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
         $weight = 0,
         $length = null,
         $width = null,
-        $depth = null, 
+        $depth = null,
         $location = null,
         $tariffCode = null,
         $originCountryCode = null
