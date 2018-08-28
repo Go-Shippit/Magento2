@@ -38,7 +38,7 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
      */
     protected $_orderItemInterface;
 
-    protected $_countryFactory;
+    protected $_directoryHelper;
 
     /**
      * @param \Magento\Framework\Model\Context $context
@@ -56,7 +56,7 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
         \Shippit\Shipping\Helper\Sync\Order $helper,
         \Shippit\Shipping\Helper\Sync\Order\Items $itemsHelper,
         \Magento\Sales\Api\Data\OrderItemInterface $orderItemInterface,
-        \Magento\Directory\Model\CountryFactory $countryFactory,
+        \Magento\Directory\Helper\Data $directoryHelper,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
@@ -64,7 +64,7 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
         $this->_helper = $helper;
         $this->_itemsHelper = $itemsHelper;
         $this->_orderItemInterface = $orderItemInterface;
-        $this->_countryFactory = $countryFactory;
+        $this->_directoryHelper = $directoryHelper;
 
         parent::__construct($context, $registry, $resource, $resourceCollection, $data);
     }
@@ -455,27 +455,28 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
             $originCountry =  $this->_itemsHelper->getOriginCountryCode($parentItem);
         }
 
-        // @TODO: Do the look up based on country name
+        // if we have 2 characters then we send value as it is (assume ISO2)
+        // else do the lookup based on attribute value i.e. name / ISO3 code
+        if (strlen($originCountry) == 2) {
+            return $originCountry;
+        }
+        else {
+            $countryCollection = $this->_directoryHelper->getCountryCollection();
+            $countryData = [];
+            foreach ($countryCollection as $country) {
+                $countryData[] = [
+                    'name' => $country->getName(),
+                    'code' => $country->getData('iso2_code'),
+                ];
+            }
 
-        $countryCollection = $this->_countryFactory
-            ->create()
-            ->getCollection();
+            $key = array_search($originCountry,
+                array_column($countryData, 'name')
+            );
 
-        // Retrieve ISO2 code value based on attribute value i.e. $originCountry
-        // Lookup based on ISO2 code, ISO3 code & country ID
-        $countryData = $countryCollection
-            ->addFieldToFilter(
-                ['country_id', 'iso2_code', 'iso3_code'],
-                    [
-                        ['eq' => $originCountry],
-                        ['eq' => $originCountry],
-                        ['eq' => $originCountry],
-                    ]
-            )
-            ->getFirstItem();
-
-        if (count($countryData) > 0) {
-            return $countryData['iso2_code'];
+            if ($key != false) {
+                return $countryData[$key]['code'];
+            }
         }
     }
 
