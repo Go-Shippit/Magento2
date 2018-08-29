@@ -389,39 +389,43 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
 
     protected function getItemLength($item)
     {
-        $childItem = $this->_getChildItem($item);
-
         if (!$this->_itemsHelper->isProductDimensionActive()) {
             return;
         }
+
+        $childItem = $this->_getChildItem($item);
 
         return $this->_itemsHelper->getLength($childItem);
     }
 
     protected function getItemWidth($item)
     {
-        $childItem = $this->_getChildItem($item);
-
         if (!$this->_itemsHelper->isProductDimensionActive()) {
             return;
         }
+
+        $childItem = $this->_getChildItem($item);
 
         return $this->_itemsHelper->getWidth($childItem);
     }
 
     protected function getItemDepth($item)
     {
-        $childItem = $this->_getChildItem($item);
-
         if (!$this->_itemsHelper->isProductDimensionActive()) {
             return;
         }
+
+        $childItem = $this->_getChildItem($item);
 
         return $this->_itemsHelper->getDepth($childItem);
     }
 
     protected function getItemLocation($item)
     {
+        if (!$this->_itemsHelper->isProductLocationActive()) {
+            return;
+        }
+
         $childItem = $this->_getChildItem($item);
 
         return $this->_itemsHelper->getLocation($childItem);
@@ -429,6 +433,10 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
 
     protected function getItemTariffCode($item)
     {
+        if (!$this->_itemsHelper->isProductTariffCodeActive()) {
+            return;
+        }
+
         $rootItem = $this->_getRootItem($item);
         $childItem = $this->_getChildItem($item);
 
