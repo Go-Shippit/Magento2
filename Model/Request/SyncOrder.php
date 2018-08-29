@@ -429,17 +429,20 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
 
     protected function getItemTariffCode($item)
     {
+        $rootItem = $this->_getRootItem($item);
         $childItem = $this->_getChildItem($item);
-        $tariffCode =  $this->_itemsHelper->getTariffCode($childItem);
 
-        // If product is configurable and 
-        // child item does not have tariffcode value set 
-        // then we fallback to parent product's tariffcode value
-        if ($item->getProductType() == \Magento\ConfigurableProduct\Model\Product\Type\Configurable::TYPE_CODE 
-            && empty(trim($tariffCode))
+        // Attempt to retrieve the tariff code from the child item
+        $tariffCode = $this->_itemsHelper->getTariffCode($childItem);
+
+        // If product has a parent product and the child item
+        // does not have tariff code value set, attempt to
+        // use the root product tariff code value
+        if (
+            $rootItem != $childItem
+            && empty($tariffCode)
         ) {
-            $parentItem = $this->_getRootItem($item);
-            $tariffCode =  $this->_itemsHelper->getTariffCode($parentItem);
+            $tariffCode = $this->_itemsHelper->getTariffCode($rootItem);
         }
 
         return $tariffCode;
