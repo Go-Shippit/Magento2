@@ -167,6 +167,20 @@
                     </depends>
                     <comment>The Product Attribute to be used for Tariff Code information sent to Shippit.</comment>
                 </field>
+
+                <field id="product_origin_country_code_active" translate="label" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Send Product Country Of Origin to Shippit</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+
+                <field id="product_origin_country_code_attribute_code" translate="label comment" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Product Country of Origin Attribute Code</label>
+                    <source_model>Shippit\Shipping\Model\Config\Source\Catalog\Attributes</source_model>
+                    <depends>
+                        <field id="product_origin_country_code_active">1</field>
+                    </depends>
+                    <comment>The Product Attribute to be used for Country Of Origin information sent to Shippit.</comment>
+                </field>
             </group>
 
             <group id="sync_shipping" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">

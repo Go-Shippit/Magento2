@@ -65,6 +65,11 @@ class UpgradeSchema implements UpgradeSchemaInterface
             $this->upgrade_145($installer);
         }
 
+        if (version_compare($context->getVersion(), '1.4.8') < 0) {
+            // code to upgrade to 1.4.8
+            $this->upgrade_148($installer);
+        }
+
         $installer->endSetup();
     }
 
@@ -735,6 +740,35 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 'nullable' => true,
                 'after' => 'location',
                 'comment' => 'Item Tariff Code',
+            ]
+        );
+
+        $installer->endSetup();
+    }
+
+    /**
+     * Upgrade schema to v1.4.8
+     *
+     * - Adds the origin_country_code column to the shippit_sync_order_item table
+     *
+     * @param $installer
+     * @return void
+     */
+    public function upgrade_148($installer)
+    {
+        $installer->startSetup();
+
+        $table = $installer->getTable('shippit_sync_order_item');
+
+        $installer->getConnection()->addColumn(
+            $table,
+            'origin_country_code',
+            [
+                'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                'length' => '255',
+                'nullable' => true,
+                'after' => 'tariff_code',
+                'comment' => 'Item Origin Country Code',
             ]
         );
 

@@ -302,6 +302,27 @@ class Item extends \Magento\Framework\Model\AbstractModel implements \Shippit\Sh
     }
 
     /**
+     * Get the Item OriginCountryCode
+     *
+     * @return string|null
+     */
+    public function getOriginCountryCode()
+    {
+        return $this->getData(self::ORIGIN_COUNTRY_CODE);
+    }
+
+    /**
+     * Set the Item OriginCountryCode
+     *
+     * @param string $originCountryCode
+     * @return string|null
+     */
+    public function setOriginCountryCode($originCountryCode)
+    {
+        return $this->setData(self::ORIGIN_COUNTRY_CODE, $originCountryCode);
+    }
+
+    /**
      * Add a new item to the sync order item request
      */
     public function addItem($item)

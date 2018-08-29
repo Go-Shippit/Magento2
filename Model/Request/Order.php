@@ -168,7 +168,8 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
                     $item->getWidth(),
                     $item->getDepth(),
                     $item->getLocation(),
-                    $item->getTariffCode()
+                    $item->getTariffCode(),
+                    $item->getOriginCountryCode()
                 );
             }
         }
@@ -671,8 +672,19 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
      * Add a parcel with attributes
      *
      */
-    public function addItem($sku, $title, $qty, $price, $weight = 0, $length = null, $width = null, $depth = null, $location = null, $tariffcode = null)
-    {
+    public function addItem(
+        $sku,
+        $title,
+        $qty,
+        $price,
+        $weight = 0,
+        $length = null,
+        $width = null,
+        $depth = null,
+        $location = null,
+        $tariffcode = null,
+        $originCountryCode = null
+    ) {
         $parcelAttributes = $this->getParcelAttributes();
 
         if (empty($parcelAttributes)) {
@@ -688,6 +700,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
             'weight' => (float) ($weight == 0 ? 0.2 : $weight),
             'location' => $location,
             'tariff_code' => $tariffcode,
+            'origin_country_code' => $originCountryCode,
         ];
 
         // for dimensions, ensure the item has values for all dimensions
