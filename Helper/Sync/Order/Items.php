@@ -85,9 +85,14 @@ class Items extends \Shippit\Shipping\Helper\Sync\Order
         return $this->getValue('product_tariff_code');
     }
 
-    public function getOriginCountryAttributeCode()
+    public function isProductOriginCountryCodeActive()
     {
-        return $this->getValue('product_country_of_origin');
+        return $this->getValue('product_origin_country_code_active');
+    }
+
+    public function getProductOriginCountryCodeAttributeCode()
+    {
+        return $this->getValue('product_origin_country_code_attribute_code');
     }
 
     /**
@@ -168,13 +173,23 @@ class Items extends \Shippit\Shipping\Helper\Sync\Order
 
     public function getOriginCountryCode($item)
     {
-        $attributeCode = $this->getOriginCountryAttributeCode();
+        $attributeCode = $this->getProductOriginCountryCodeAttributeCode();
 
         if (empty($attributeCode)) {
             return;
         }
 
-        return $this->getAttributeValue($item->getProduct(), $attributeCode);
+        $originCountryCode = $this->getAttributeValue($item->getProduct(), $attributeCode);
+
+        // Trim the value, as some attributes can introduce a space character when it's empty
+        $originCountryCode = trim($originCountryCode);
+
+        // If an empty value is provided, return null
+        if (empty($originCountryCode)) {
+            return;
+        }
+
+        return $originCountryCode;
     }
 
     public function getSkus($items)

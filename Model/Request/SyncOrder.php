@@ -441,43 +441,57 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
 
     protected function getOriginCountryCode($item)
     {
+        if (!$this->_itemsHelper->isProductOriginCountryCodeActive()) {
+            return;
+        }
+
+        $rootItem = $this->_getRootItem($item);
         $childItem = $this->_getChildItem($item);
 
-        $originCountry = $this->_itemsHelper->getOriginCountryCode($childItem);
+        // Attempt to retrieve the origin country from the child item
+        $originCountryCode = $this->_itemsHelper->getOriginCountryCode($childItem);
 
-        // If product is configurable and
-        // child item does not have origin_country_code value set
-        // then we fallback to parent product's origin_country_code value
-        if ($item->getProductType() == \Magento\ConfigurableProduct\Model\Product\Type\Configurable::TYPE_CODE
-            && empty(trim($originCountry))
+        // If product has a parent product and the child item
+        // does not have origin country code value set,
+        // attempt to use the root product origin
+        // country code value
+        if (
+            $rootItem != $childItem
+            && empty($originCountryCode)
         ) {
-            $parentItem = $this->_getRootItem($item);
-            $originCountry =  $this->_itemsHelper->getOriginCountryCode($parentItem);
+            $originCountryCode = $this->_itemsHelper->getOriginCountryCode($rootItem);
         }
 
-        // if we have 2 characters then we send value as it is (assume ISO2)
-        // else do the lookup based on attribute value i.e. name / ISO3 code
-        if (strlen($originCountry) == 2) {
-            return $originCountry;
-        }
-        else {
+        // If the value is 2 characters, assume this is a valid ISO2 code standard
+        // Otherwise, attempt to lookup the country by name / ISO3 code and
+        // convert this value into ISO2
+        if (strlen($originCountryCode) > 2) {
             $countryCollection = $this->_directoryHelper->getCountryCollection();
             $countryData = [];
+
             foreach ($countryCollection as $country) {
                 $countryData[] = [
                     'name' => $country->getName(),
-                    'code' => $country->getData('iso2_code'),
+                    'iso2_code' => $country->getData('iso2_code'),
+                    'iso3_code' => $country->getData('iso3_code'),
                 ];
             }
 
-            $key = array_search($originCountry,
-                array_column($countryData, 'name')
-            );
+            // Attempt to lookup using the name or iso3 code
+            $countriesFound = array_filter($countryData, function($country) use ($originCountryCode) {
+                return (
+                    $country['iso3_code'] == $originCountryCode
+                    || $country['name'] == $originCountryCode
+                );
+            });
 
-            if ($key != false) {
-                return $countryData[$key]['code'];
+            // If we have at least 1 country match, set this as the origin country code
+            if (!empty($countriesFound)) {
+                $originCountryCode = reset($countriesFound)['iso2_code'];
             }
         }
+
+        return $originCountryCode;
     }
 
     /**

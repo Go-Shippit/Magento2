@@ -64,7 +64,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
             //code to upgrade to 1.4.5
             $this->upgrade_145($installer);
         }
-        
+
         if (version_compare($context->getVersion(), '1.4.8') < 0) {
             // code to upgrade to 1.4.8
             $this->upgrade_148($installer);
@@ -765,7 +765,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
             'origin_country_code',
             [
                 'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
-                'length' => '32',
+                'length' => '255',
                 'nullable' => true,
                 'after' => 'tariff_code',
                 'comment' => 'Item Origin Country Code',
