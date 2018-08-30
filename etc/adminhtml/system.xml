@@ -163,7 +163,7 @@
                     <label>Product Tariff Code Attribute Code</label>
                     <source_model>Shippit\Shipping\Model\Config\Source\Catalog\Attributes</source_model>
                     <depends>
-                        <field id="product_location_active">1</field>
+                        <field id="product_tariff_code_active">1</field>
                     </depends>
                     <comment>The Product Attribute to be used for Tariff Code information sent to Shippit.</comment>
                 </field>
