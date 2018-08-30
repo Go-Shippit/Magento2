@@ -154,10 +154,18 @@
                     <comment>The Product Attribute to be used for location information on Shippit Pick Slips</comment>
                 </field>
 
-                <field id="product_tariff_code" translate="label comment" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>Product Tariff Code</label>
+                <field id="product_tariff_code_active" translate="label" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Send Product Tariff Codes to Shippit</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+
+                <field id="product_tariff_code_attribute_code" translate="label comment" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Product Tariff Code Attribute Code</label>
                     <source_model>Shippit\Shipping\Model\Config\Source\Catalog\Attributes</source_model>
-                    <comment>The Product Attribute to be used for tariff code information sent to Shippit.</comment>
+                    <depends>
+                        <field id="product_tariff_code_active">1</field>
+                    </depends>
+                    <comment>The Product Attribute to be used for Tariff Code information sent to Shippit.</comment>
                 </field>
 
                 <field id="product_origin_country_code_active" translate="label" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0">
