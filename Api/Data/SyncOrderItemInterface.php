@@ -33,6 +33,7 @@ interface SyncOrderItemInterface
     const DEPTH                 = 'depth';
     const LOCATION              = 'location';
     const TARIFF_CODE           = 'tariff_code';
+    const ORIGIN_COUNTRY_CODE   = 'origin_country_code';
 
     /**
      * Get the Sync Item Id
@@ -228,6 +229,21 @@ interface SyncOrderItemInterface
      * @return string|null
      */
     public function setTariffCode($tariffCode);
+
+    /**
+     * Get the Item Origin Country Code
+     *
+     * @return string|null
+     */
+    public function getOriginCountryCode();
+
+    /**
+     * Set the Item Origin Country Code
+     *
+     * @param string $originCountryCode
+     * @return string|null
+     */
+    public function setOriginCountryCode($originCountryCode);
 
     /**
      * Add a new item to the sync order item request

@@ -38,6 +38,8 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
      */
     protected $_orderItemInterface;
 
+    protected $_directoryHelper;
+
     /**
      * @param \Magento\Framework\Model\Context $context
      * @param \Magento\Framework\Registry $registry
@@ -54,6 +56,7 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
         \Shippit\Shipping\Helper\Sync\Order $helper,
         \Shippit\Shipping\Helper\Sync\Order\Items $itemsHelper,
         \Magento\Sales\Api\Data\OrderItemInterface $orderItemInterface,
+        \Magento\Directory\Helper\Data $directoryHelper,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
@@ -61,6 +64,7 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
         $this->_helper = $helper;
         $this->_itemsHelper = $itemsHelper;
         $this->_orderItemInterface = $orderItemInterface;
+        $this->_directoryHelper = $directoryHelper;
 
         parent::__construct($context, $registry, $resource, $resourceCollection, $data);
     }
@@ -245,7 +249,8 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
                 $this->getItemWidth($item),
                 $this->getItemDepth($item),
                 $this->getItemLocation($item),
-                $this->getItemTariffCode($item)
+                $this->getItemTariffCode($item),
+                $this->getOriginCountryCode($item)
             );
 
             $itemsAdded++;
@@ -445,12 +450,78 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
         return $tariffCode;
     }
 
+    protected function getOriginCountryCode($item)
+    {
+        if (!$this->_itemsHelper->isProductOriginCountryCodeActive()) {
+            return;
+        }
+
+        $rootItem = $this->_getRootItem($item);
+        $childItem = $this->_getChildItem($item);
+
+        // Attempt to retrieve the origin country from the child item
+        $originCountryCode = $this->_itemsHelper->getOriginCountryCode($childItem);
+
+        // If product has a parent product and the child item
+        // does not have origin country code value set,
+        // attempt to use the root product origin
+        // country code value
+        if (
+            $rootItem != $childItem
+            && empty($originCountryCode)
+        ) {
+            $originCountryCode = $this->_itemsHelper->getOriginCountryCode($rootItem);
+        }
+
+        // If the value is 2 characters, assume this is a valid ISO2 code standard
+        // Otherwise, attempt to lookup the country by name / ISO3 code and
+        // convert this value into ISO2
+        if (strlen($originCountryCode) > 2) {
+            $countryCollection = $this->_directoryHelper->getCountryCollection();
+            $countryData = [];
+
+            foreach ($countryCollection as $country) {
+                $countryData[] = [
+                    'name' => $country->getName(),
+                    'iso2_code' => $country->getData('iso2_code'),
+                    'iso3_code' => $country->getData('iso3_code'),
+                ];
+            }
+
+            // Attempt to lookup using the name or iso3 code
+            $countriesFound = array_filter($countryData, function($country) use ($originCountryCode) {
+                return (
+                    $country['iso3_code'] == $originCountryCode
+                    || $country['name'] == $originCountryCode
+                );
+            });
+
+            // If we have at least 1 country match, set this as the origin country code
+            if (!empty($countriesFound)) {
+                $originCountryCode = reset($countriesFound)['iso2_code'];
+            }
+        }
+
+        return $originCountryCode;
+    }
+
     /**
      * Add a parcel with attributes
      *
      */
-    public function addItem($sku, $title, $qty, $price, $weight = 0, $length = null, $width = null, $depth = null, $location = null, $tariffCode = null)
-    {
+    public function addItem(
+        $sku,
+        $title,
+        $qty,
+        $price,
+        $weight = 0,
+        $length = null,
+        $width = null,
+        $depth = null,
+        $location = null,
+        $tariffCode = null,
+        $originCountryCode = null
+    ) {
         $items = $this->getItems();
 
         if (empty($items)) {
@@ -465,6 +536,7 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
             'weight' => (float) $weight,
             'location' => $location,
             'tariff_code' => $tariffCode,
+            'origin_country_code' => $originCountryCode,
         ];
 
         // for dimensions, ensure the item has values for all dimensions
