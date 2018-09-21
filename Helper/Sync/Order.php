@@ -58,10 +58,13 @@ class Order extends \Shippit\Shipping\Helper\Data
         $values = $this->unserialize(self::getValue('shipping_method_mapping'));
         $mappings = [];
 
-        if (!empty($values)) {
-            foreach ($values as $value) {
-                $mappings[$value['shipping_method']] = $value['shippit_service_class'];
-            }
+        // If the values are empty / not set, return early
+        if (empty($values)) {
+            return $mappings;
+        }
+
+        foreach ($values as $value) {
+            $mappings[$value['shipping_method']] = $value['shippit_service_class'];
         }
 
         return $mappings;
