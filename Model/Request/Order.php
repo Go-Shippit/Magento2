@@ -149,7 +149,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
             // If we don't have specific items in the request, build
             // the request dynamically from the order object
             $items = $this->_syncOrder
-                ->setOrder($this->order)
+                ->setOrder($this->_order)
                 ->setItems()
                 ->getItems();
 
