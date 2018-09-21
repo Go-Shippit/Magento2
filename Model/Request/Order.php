@@ -116,9 +116,9 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
             ->setDeliveryState($shippingAddress->getRegionCode())
             ->setDeliveryCountry($shippingAddress->getCountryId())
             ->setSourcePlatform('magento2')
-            ->setProductCurrency($order->getOrderCurrencyCode());
+            ->setProductCurrency($this->_order->getOrderCurrencyCode());
 
-        $this->setOrderAfter($order);
+        $this->setOrderAfter($this->_order);
 
         return $this;
     }
