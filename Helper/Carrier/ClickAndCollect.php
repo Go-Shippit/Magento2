@@ -20,7 +20,7 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 
 class ClickAndCollect extends \Shippit\Shipping\Helper\Data
 {
-    const XML_PATH_SETTINGS = 'carriers/shippit_cc/';
+    const XML_PATH_SETTINGS = 'carriers/shippitcc/';
 
     /**
      * Return store config value for key

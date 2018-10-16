@@ -295,7 +295,7 @@
                 </field>
             </group>
 
-            <group id="shippit_cc" translate="label" type="text" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="shippitcc" translate="label" type="text" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Shippit - Click and Collect</label>
 
                 <field id="active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
