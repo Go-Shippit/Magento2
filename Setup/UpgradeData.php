@@ -16,29 +16,39 @@
 
 namespace Shippit\Shipping\Setup;
 
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\App\Config\ConfigResource\ConfigInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
 use Magento\Framework\Setup\UpgradeDataInterface;
+use Magento\Config\Model\ResourceModel\Config\Data\CollectionFactory;
 
 class UpgradeData implements UpgradeDataInterface
 {
     /**
-     * @var \Magento\Framework\App\Config\ConfigResource\ConfigInterface
+     * @var ConfigInterface
      */
     protected $config;
 
     /**
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     * @var ScopeConfigInterface
      */
-    protected $scopeConfig;
+    protected $configScope;
+
+    /**
+     * @var CollectionFactory
+     */
+    protected $configCollectionFactory;
 
     public function __construct(
-        \Magento\Framework\App\Config\ConfigResource\ConfigInterface $config,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+        ConfigInterface $config,
+        ScopeConfigInterface $configScope,
+        CollectionFactory $configCollectionFactory
     )
     {
         $this->config = $config;
-        $this->scopeConfig = $scopeConfig;
+        $this->configScope = $configScope;
+        $this->configCollectionFactory = $configCollectionFactory;
     }
 
     /**
@@ -54,13 +64,15 @@ class UpgradeData implements UpgradeDataInterface
         $installer->startSetup();
 
         if (version_compare($context->getVersion(), '1.1.19') < 0) {
-            //code to upgrade to 1.1.19
             $this->upgrade_1119($installer);
         }
 
         if (version_compare($context->getVersion(), '1.2.6') < 0) {
-            //code to upgrade to 1.2.6
             $this->upgrade_126($installer);
+        }
+
+        if (version_compare($context->getVersion(), '1.4.10') < 0) {
+            $this->upgrade_1410($installer);
         }
 
         $installer->endSetup();
@@ -80,7 +92,7 @@ class UpgradeData implements UpgradeDataInterface
         ];
 
         foreach ($configOptions as $configOptionOldKey => $configOptionNewKey) {
-            $configOptionValue = $this->scopeConfig->getValue($configOptionOldKey);
+            $configOptionValue = $this->configScope->getValue($configOptionOldKey);
 
             if (!empty($configOptionValue)) {
                 $this->config->saveConfig(
@@ -108,7 +120,7 @@ class UpgradeData implements UpgradeDataInterface
         ];
 
         foreach ($configOptions as $configOptionOldKey => $configOptionNewKey) {
-            $configOptionValue = $this->scopeConfig->getValue($configOptionOldKey);
+            $configOptionValue = $this->configScope->getValue($configOptionOldKey);
 
             if (!empty($configOptionValue)) {
                 $this->config->saveConfig(
@@ -118,6 +130,40 @@ class UpgradeData implements UpgradeDataInterface
                     0
                 );
             }
+        }
+    }
+
+    /**
+     * Update config data to v1.4.10
+     */
+    public function upgrade_1410($installer)
+    {
+        /**
+         * Migrate settings data to v1.4.10
+         * (new shipping method carrier path for click and collect)
+         */
+        $configOptions = $this->configCollectionFactory
+            ->create()
+            ->addFieldToFilter('path', array('like' => 'carriers/shippit_cc/%'))
+            ->load();
+
+        if ($configOptions->getSize() <= 0) {
+            return;
+        }
+
+        foreach ($configOptions->getItems() as $configOption) {
+            $newConfigPath = str_replace(
+                'shippit_cc',
+                'shippitcc',
+                $configOption->getPath()
+            );
+
+            $this->config->saveConfig(
+                $newConfigPath,
+                $configOption->getValue(),
+                $configOption->getScope(),
+                $configOption->getScopeId()
+            );
         }
     }
 }

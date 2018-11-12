@@ -73,7 +73,9 @@ class Order extends \Shippit\Shipping\Helper\Data
     // Helper Methods
     public function getShippitShippingMethod($shippingMethod)
     {
-        if (strpos($shippingMethod, self::CARRIER_CODE_CC) !== FALSE) {
+        if (strpos($shippingMethod, self::CARRIER_CODE_CC) !== FALSE ||
+            strpos($shippingMethod, self::CARRIER_CODE_CC_LEGACY) !== FALSE
+        ) {
             return 'click_and_collect';
         }
 

@@ -2,6 +2,7 @@
 
 namespace Shippit\Shipping\Model\Config\Source\Shipping;
 
+use Shippit\Shipping\Helper\Data as ShippitHelper;
 use Magento\Store\Model\ScopeInterface;
 
 class Methods implements \Magento\Framework\Option\ArrayInterface
@@ -52,8 +53,13 @@ class Methods implements \Magento\Framework\Option\ArrayInterface
 
             // if the carrier is shippit, exclude
             // it from the returned results
-            if ($excludeShippit && ($carrierCode == 'shippit' || $carrierCode == 'shippit_cc')
-                ) {
+            if ($excludeShippit &&
+                (
+                    $carrierCode == ShippitHelper::CARRIER_CODE ||
+                    $carrierCode == ShippitHelper::CARRIER_CODE_CC ||
+                    $carrierCode == ShippitHelper::CARRIER_CODE_CC_LEGACY
+                )
+            ) {
                 continue;
             }
 
