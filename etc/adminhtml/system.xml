@@ -66,6 +66,7 @@
                     <label>Hide Checkout Options for Shipping Methods</label>
                     <source_model>Shippit\Shipping\Model\Config\Source\Shipping\Methods</source_model>
                     <comment>Select the Shipping Methods that should hide the "Authority To Leave" and "Delivery Instructions" options during checkout.</comment>
+                    <can_be_empty>1</can_be_empty>
                 </field>
             </group>
 
