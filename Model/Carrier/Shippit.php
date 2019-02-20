@@ -121,12 +121,13 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
     /**
      * Processing additional validation to check is carrier applicable.
      *
-     * Workaround and handling for a Magento Core Bugs (MAGETWO-42591 & MAGETWO-55117)
-     * @url https://github.com/magento/magento2/issues/1779
-     * @url https://github.com/magento/magento2/issues/3789
+     * Adds backwards compatability for v2.2.5 and earlier
+     * @url https://github.com/magento/magento2/issues/19592
+     * @url https://github.com/magento/magento2/pull/16414
      *
      * @param \Magento\Framework\DataObject $request
      * @return $this|bool|\Magento\Framework\DataObject
+     * @deprecated
      */
     public function proccessAdditionalValidation(DataObject $request)
     {
@@ -134,11 +135,11 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
     }
 
     /**
-     * Actual method that is processing additional validation
-     * to check is carrier applicable.
+     * Processing additional validation to check is carrier applicable.
      *
-     * Fixing a Mistype Error
-     * @url https://github.com/magento/magento2/pull/16414
+     * Workaround and handling for a Magento Core Bugs (MAGETWO-42591 & MAGETWO-55117)
+     * @url https://github.com/magento/magento2/issues/1779
+     * @url https://github.com/magento/magento2/issues/3789
      *
      * @param \Magento\Framework\DataObject $request
      * @return $this|bool|\Magento\Framework\DataObject
