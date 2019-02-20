@@ -121,6 +121,22 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
     /**
      * Processing additional validation to check is carrier applicable.
      *
+     * Adds backwards compatability for v2.2.5 and earlier
+     * @url https://github.com/magento/magento2/issues/19592
+     * @url https://github.com/magento/magento2/pull/16414
+     *
+     * @param \Magento\Framework\DataObject $request
+     * @return $this|bool|\Magento\Framework\DataObject
+     * @deprecated
+     */
+    public function proccessAdditionalValidation(DataObject $request)
+    {
+        return $this->processAdditionalValidation($request);
+    }
+
+    /**
+     * Processing additional validation to check is carrier applicable.
+     *
      * Workaround and handling for a Magento Core Bugs (MAGETWO-42591 & MAGETWO-55117)
      * @url https://github.com/magento/magento2/issues/1779
      * @url https://github.com/magento/magento2/issues/3789
@@ -128,7 +144,7 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
      * @param \Magento\Framework\DataObject $request
      * @return $this|bool|\Magento\Framework\DataObject
      */
-    public function proccessAdditionalValidation(DataObject $request)
+    public function processAdditionalValidation(DataObject $request)
     {
         $postcode = $request->getDestPostcode();
         $state = $request->getDestRegionCode();
