@@ -178,11 +178,6 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
             return false;
         }
 
-        // Prevent quotes for destinations outside of AU (currently not supported)
-        if ($request->getDestCountryId() != 'AU') {
-            return false;
-        }
-
         // check if we have any methods allowed before proceeding
         $allowedMethods = $this->_helper->getAllowedMethods();
         if (count($allowedMethods) == 0) {
@@ -201,6 +196,10 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
 
         // Get the first available dates based on the customer's shippit profile settings
         $quoteRequest->setOrderDate('');
+
+        if ($request->getDestCountryId()) {
+            $quoteRequest->setDropoffCountryCode($request->getDestCountryId());
+        }
 
         if ($request->getShipperAddressStreet()) {
             $quoteRequest->setDropoffStreet($request->getShipperAddressStreet());
