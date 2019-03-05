@@ -133,8 +133,14 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
         $postcode = $request->getDestPostcode();
         $state = $request->getDestRegionCode();
         $suburb = $request->getDestCity();
+        $country = $request->getDestCountryId();
 
-        if (!empty($postcode) && !empty($state) && !empty($suburb)) {
+        if ($country == 'AU' && !empty($postcode) &&
+            !empty($suburb) && !empty($state)
+        ) {
+            return $this;
+        }
+        if ($country != 'AU' && !empty($postcode) && !empty($suburb)) {
             return $this;
         }
         else {
