@@ -146,16 +146,31 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
      */
     public function processAdditionalValidation(DataObject $request)
     {
-        $postcode = $request->getDestPostcode();
+        $country = $request->getDestCountryId();
         $state = $request->getDestRegionCode();
+        $postcode = $request->getDestPostcode();
         $suburb = $request->getDestCity();
 
-        if (!empty($postcode) && !empty($state) && !empty($suburb)) {
-            return $this;
-        }
-        else {
+        // If the country is AU, state + postcode + suburb are required
+        if (
+            $country == 'AU'
+            && (
+                empty($state) || empty($postcode) || empty($suburb)
+            )
+        ) {
             return false;
         }
+        // Otherwise, for non-AU destinations, postcode and suburb are required
+        elseif (
+            $country != 'AU'
+            && (
+                empty($postcode) || empty($suburb)
+            )
+        ) {
+            return false;
+        }
+        
+        return $this;
     }
 
     protected function _doShipmentRequest(DataObject $request)
