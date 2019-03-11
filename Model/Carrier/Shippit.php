@@ -146,16 +146,31 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
      */
     public function processAdditionalValidation(DataObject $request)
     {
-        $postcode = $request->getDestPostcode();
+        $country = $request->getDestCountryId();
         $state = $request->getDestRegionCode();
+        $postcode = $request->getDestPostcode();
         $suburb = $request->getDestCity();
 
-        if (!empty($postcode) && !empty($state) && !empty($suburb)) {
-            return $this;
-        }
-        else {
+        // If the country is AU, state + postcode + suburb are required
+        if (
+            $country == 'AU'
+            && (
+                empty($state) || empty($postcode) || empty($suburb)
+            )
+        ) {
             return false;
         }
+        // Otherwise, for non-AU destinations, postcode and suburb are required
+        elseif (
+            $country != 'AU'
+            && (
+                empty($postcode) || empty($suburb)
+            )
+        ) {
+            return false;
+        }
+        
+        return $this;
     }
 
     protected function _doShipmentRequest(DataObject $request)
@@ -178,11 +193,6 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
             return false;
         }
 
-        // Prevent quotes for destinations outside of AU (currently not supported)
-        if ($request->getDestCountryId() != 'AU') {
-            return false;
-        }
-
         // check if we have any methods allowed before proceeding
         $allowedMethods = $this->_helper->getAllowedMethods();
         if (count($allowedMethods) == 0) {
@@ -201,6 +211,10 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
 
         // Get the first available dates based on the customer's shippit profile settings
         $quoteRequest->setOrderDate('');
+
+        if ($request->getDestCountryId()) {
+            $quoteRequest->setDropoffCountryCode($request->getDestCountryId());
+        }
 
         if ($request->getShipperAddressStreet()) {
             $quoteRequest->setDropoffStreet($request->getShipperAddressStreet());
