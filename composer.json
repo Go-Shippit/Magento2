@@ -2,7 +2,7 @@
     "name": "shippit/shipping",
     "description": "Shippit Integration Module",
     "type": "magento2-module",
-    "version": "1.4.13",
+    "version": "1.4.14",
     "require": {
         "magento/module-backend": "^100.0.2|^101.0.0",
         "magento/module-config": "^100.0.2|^101.0.0",
@@ -13,7 +13,7 @@
         "php": "^5.5|^5.6|^7.0|^7.1"
     },
     "replace": {
-        "shippit/shipping": "1.4.13"
+        "shippit/shipping": "1.4.14"
     },
     "autoload": {
         "files": [
