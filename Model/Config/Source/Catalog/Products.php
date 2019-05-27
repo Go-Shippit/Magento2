@@ -41,6 +41,8 @@ class Products implements \Magento\Framework\Option\ArrayInterface
             ->addAttributeToSelect('name')
             ->setOrder('name', 'ASC');
 
+        $productArray = [];
+
         foreach ($products as $product) {
             $productArray[] = [
                 'label' => $product->getName(),
