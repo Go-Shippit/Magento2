@@ -1,5 +1,5 @@
 {
-    "name": "shippit/shipping",
+    "name": "shippit/magento2",
     "description": "Shippit Integration Module",
     "type": "magento2-module",
     "version": "1.4.15",
