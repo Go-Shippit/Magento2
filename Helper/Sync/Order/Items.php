@@ -318,14 +318,15 @@ class Items extends \Shippit\Shipping\Helper\Sync\Order
         return $attributeValue;
     }
 
-    protected function getFunctionName($attributeCode, $prefix = 'get', $capitaliseFirstChar = true)
+    protected function getFunctionName($attributeCode, $prefix = 'get')
     {
-        if ($capitaliseFirstChar) {
-            $attributeCode[0] = strtoupper($attributeCode[0]);
-        }
-
-        $function = create_function('$c', 'return strtoupper($c[1]);');
-        $functionName = preg_replace_callback('/_([a-z])/', $function, $attributeCode);
+        $functionName = ucwords(
+            str_replace(
+                ['-', '_'],
+                ' ',
+                $attributeCode
+            )
+        );
 
         return $prefix . $functionName;
     }
