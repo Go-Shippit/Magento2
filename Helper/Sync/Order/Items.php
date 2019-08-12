@@ -328,6 +328,6 @@ class Items extends \Shippit\Shipping\Helper\Sync\Order
             )
         );
 
-        return $prefix . $functionName;
+        return $prefix . str_replace(' ', '', $functionName);
     }
 }
