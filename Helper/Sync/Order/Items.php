@@ -320,14 +320,23 @@ class Items extends \Shippit\Shipping\Helper\Sync\Order
 
     protected function getFunctionName($attributeCode, $prefix = 'get')
     {
-        $functionName = ucwords(
-            str_replace(
-                ['-', '_'],
-                ' ',
-                $attributeCode
-            )
+        // Convert attributes code from "attribute_code" into "attribute code"
+        $attributeCode = str_replace(
+            ['-', '_'],
+            ' ',
+            $attributeCode
         );
 
-        return $prefix . $functionName;
+        // Convert attribute code from "attribute code" into "Attribute Code"
+        $attributeCode = ucwords($attributeCode);
+
+        // Convert attribute code from "Attribute Code" into "AttributeCode"
+        $attributeCode = str_replace(
+            ' ',
+            '',
+            $attributeCode
+        );
+
+        return $prefix . $attributeCode;
     }
 }
