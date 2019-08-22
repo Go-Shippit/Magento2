@@ -84,4 +84,8 @@
     <type name="Magento\Checkout\Model\ShippingInformationManagement">
         <plugin name="shippit-quote-delivery-instructions" type="Shippit\Shipping\Plugin\Checkout\QuoteDeliveryInstructionsPlugin" sortOrder="1000"/>
     </type>
+
+    <type name="Magento\Framework\App\Request\CsrfValidator">
+        <plugin name="shippit-webhook-csrf-validator-skip" type="Shippit\Shipping\Plugin\Sales\Shipment\WebhookCsrfValidatorSkip" />
+    </type>
 </config>
