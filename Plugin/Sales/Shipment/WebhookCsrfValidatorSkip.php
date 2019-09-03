@@ -34,12 +34,11 @@ class WebhookCsrfValidatorSkip
         $controllerName = $request->getControllerName();
         $actionName = $request->getActionName();
 
+        // If the shippit webhook is being called, skip the CSRF validation check
         if ($moduleName == 'shippit' && $controllerName == 'order' && $actionName == 'update') {
-            // Skip CSRF check
-            return;
+            return null;
         }
 
-        // Proceed Magento 2 core functionalities
         $proceed($request, $action);
     }
 }
