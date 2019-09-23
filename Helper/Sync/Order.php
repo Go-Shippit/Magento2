@@ -33,6 +33,7 @@ class Order extends \Shippit\Shipping\Helper\Data
         \Magento\Framework\Serialize\SerializerInterface $serializer
     ) {
         $this->_serializer = $serializer;
+
         parent::__construct($scopeConfig, $moduleList);
     }
 
@@ -69,7 +70,10 @@ class Order extends \Shippit\Shipping\Helper\Data
 
     public function getShippingMethodMapping()
     {
-        $values = $this->_serializer->unserialize(self::getValue('shipping_method_mapping'));
+        $values = $this->_serializer->unserialize(
+            self::getValue('shipping_method_mapping')
+        );
+        
         $mappings = [];
 
         // If the values are empty / not set, return early
