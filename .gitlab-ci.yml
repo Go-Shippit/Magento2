@@ -75,3 +75,14 @@ phpcs-psr2:
     - phpcs --version
     - phpcs --colors --standard=PSR2 --ignore=./vendor --report=full,summary,gitblame .
   allow_failure: true
+
+phpcs-magento2:
+  stage: code-style
+  image: mamis/php-build:7.2
+  dependencies:
+    - build
+  script:
+    - php -v
+    - phpcs --version
+    - phpcs --colors --standard=Magento2 --ignore=./vendor --report=full,summary,gitblame . --runtime-set installed_paths vendor/magento/magento-coding-standard/Magento2
+  allow_failure: true
