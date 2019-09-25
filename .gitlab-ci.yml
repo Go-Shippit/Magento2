@@ -23,7 +23,7 @@ build:
   script:
     - php --version
     - composer --version
-    - composer install --verbose --prefer-dist --no-progress --no-interaction --no-dev --optimize-autoloader
+    - composer install --verbose --prefer-dist --no-progress --no-interaction --optimize-autoloader
 
 
 .php-linter: &php-linter
@@ -84,5 +84,5 @@ phpcs-magento2:
   script:
     - php -v
     - phpcs --version
-    - phpcs --colors --standard=Magento2 --ignore=./vendor --report=full,summary,gitblame . --runtime-set installed_paths vendor/magento/magento-coding-standard/Magento2
+    - phpcs --colors --warning-severity=0 --standard=Magento2 --ignore=./vendor --report=full,summary,gitblame . --runtime-set installed_paths vendor/magento/magento-coding-standard/Magento2 --runtime-set ignore_warnings_on_exit true
   allow_failure: true
