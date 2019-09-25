@@ -63,7 +63,7 @@ php-depreciations-linter:
   script:
     - php --version
     - phpcf --version
-    - phpcf --target=7.2 ./
+    - phpcf --target=7.2 --exclude=./vendor ./
 
 phpcs-psr2:
   stage: code-style
@@ -73,5 +73,5 @@ phpcs-psr2:
   script:
     - php -v
     - phpcs --version
-    - phpcs --colors --standard=PSR2 --report=full,summary,gitblame .
+    - phpcs --colors --standard=PSR2 --ignore=./vendor --report=full,summary,gitblame .
   allow_failure: true
