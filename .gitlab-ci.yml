@@ -63,7 +63,7 @@ php-depreciations-linter:
   script:
     - php --version
     - phpcf --version
-    - phpcf --target=7.2 --exclude=./vendor ./
+    - phpcf --target=7.2 --exclude=vendor ./
 
 phpcs-psr2:
   stage: code-style
