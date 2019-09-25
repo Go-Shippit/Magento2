@@ -23,5 +23,11 @@
             "Shippit\\Shipping\\": ""
         }
     },
-    "prefer-stable": true
+    "prefer-stable": true,
+    "repositories": {
+        "0": {
+            "type": "composer",
+            "url": "https://repo.magento.com/"
+        }
+    }
 }
