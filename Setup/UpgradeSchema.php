@@ -70,6 +70,11 @@ class UpgradeSchema implements UpgradeSchemaInterface
             $this->upgrade_148($installer);
         }
 
+        if (version_compare($context->getVersion(), '1.4.19') < 0) {
+            // code to upgrade to 1.4.19
+            $this->upgrade_1419($installer);
+        }
+
         $installer->endSetup();
     }
 
@@ -773,5 +778,59 @@ class UpgradeSchema implements UpgradeSchemaInterface
         );
 
         $installer->endSetup();
+    }
+
+    /**
+     * Upgrade schema to v1.4.19
+     *
+     * - change dimension such as lenght, width and depth
+     * to support 4 decimal places
+     *
+     * @param $installer
+     * @return void
+     */
+    public function upgrade_1419($installer)
+    {
+        $installer->getConnection()
+            ->changeColumn(
+                $installer->getTable('shippit_sync_order_item'),
+                'length',
+                'length',
+                [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
+                    'length' => '12,4',
+                    'nullable' => true,
+                    'after' => 'weight',
+                    'comment' => 'Item Dimension - Length',
+                ]
+            );
+
+        $installer->getConnection()
+            ->changeColumn(
+                $installer->getTable('shippit_sync_order_item'),
+                'width',
+                'width',
+                [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
+                    'length' => '12,4',
+                    'nullable' => true,
+                    'after' => 'length',
+                    'comment' => 'Item Dimension - Width',
+                ]
+            );
+
+        $installer->getConnection()
+            ->changeColumn(
+                $installer->getTable('shippit_sync_order_item'),
+                'depth',
+                'depth',
+                [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL,
+                    'length' => '12,4',
+                    'nullable' => true,
+                    'after' => 'width',
+                    'comment' => 'Item Dimension - Depth',
+                ]
+            );
     }
 }
