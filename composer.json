@@ -2,7 +2,7 @@
     "name": "shippit/magento2",
     "description": "Shippit Integration Module",
     "type": "magento2-module",
-    "version": "1.4.18",
+    "version": "1.5.0",
     "require": {
         "magento/module-backend": "^100.2.0|^101.0.0",
         "magento/module-config": "^101.0.0",
@@ -16,7 +16,7 @@
         "magento/magento-coding-standard": "^4.0"
     },
     "replace": {
-        "shippit/shipping": "1.4.17"
+        "shippit/shipping": "1.5.0"
     },
     "autoload": {
         "files": [
