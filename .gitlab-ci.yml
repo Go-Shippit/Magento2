@@ -84,5 +84,4 @@ phpcs-magento2:
   script:
     - php -v
     - phpcs --version
-    - phpcs --colors --warning-severity=0 --standard=Magento2 --ignore=./vendor --report=full,summary,gitblame . --runtime-set installed_paths vendor/magento/magento-coding-standard/Magento2 --runtime-set ignore_warnings_on_exit true
-  allow_failure: true
+    - phpcs --colors --warning-severity=0 --standard=Magento2 --ignore=./vendor --report=full,summary,gitblame . --runtime-set installed_paths vendor/magento/magento-coding-standard/Magento2
