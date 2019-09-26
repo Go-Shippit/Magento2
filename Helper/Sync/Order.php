@@ -23,6 +23,21 @@ class Order extends \Shippit\Shipping\Helper\Data
     const XML_PATH_SETTINGS = 'shippit/sync_order/';
 
     /**
+     * @var SerializerInterface
+     */
+    private $_serializer;
+
+    public function __construct(
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        \Magento\Framework\Module\ModuleList $moduleList,
+        \Magento\Framework\Serialize\SerializerInterface $serializer
+    ) {
+        $this->_serializer = $serializer;
+
+        parent::__construct($scopeConfig, $moduleList);
+    }
+
+    /**
      * Return store config value for key
      *
      * @param   string $key
@@ -55,7 +70,10 @@ class Order extends \Shippit\Shipping\Helper\Data
 
     public function getShippingMethodMapping()
     {
-        $values = $this->unserialize(self::getValue('shipping_method_mapping'));
+        $values = $this->_serializer->unserialize(
+            self::getValue('shipping_method_mapping')
+        );
+        
         $mappings = [];
 
         // If the values are empty / not set, return early
@@ -113,21 +131,5 @@ class Order extends \Shippit\Shipping\Helper\Data
 
         // All options have failed, return false
         return false;
-    }
-
-    /**
-     * Add a method to unserialze data using either
-     * Magento v2.0, v2.1 methods (PHP Object)
-     * or the new Magento v2.2 (Json Object)
-     */
-    private function unserialize($value)
-    {
-        $unserialized = json_decode($value, true);
-
-        if (json_last_error() === JSON_ERROR_NONE) {
-            return $unserialized;
-        }
-
-        return unserialize($value);
     }
 }
