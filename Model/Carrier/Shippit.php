@@ -225,6 +225,11 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
         $quoteRequest->setDropoffSuburb($request->getDestCity());
         $quoteRequest->setParcelAttributes($this->_getParcelAttributes($request));
 
+        // send dutiable amount for international delivery only
+        if ($request->getDestCountryId() != 'AU') {
+            $quoteRequest->setDutiableAmount($this->_getDutiableAmount($request));
+        }
+
         try {
             // Call the api and retrieve the quote
             $shippingQuotes = $this->_api->getQuote($quoteRequest);
@@ -632,6 +637,14 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
         }
 
         return $parcelAttributes;
+    }
+
+    protected function _getDutiableAmount($request)
+    {
+        return $request->getPackageValue();
+
+        // @TODO: this is to use discounted value
+        // return $request->getPackageValueWithDiscount();
     }
 
     /*

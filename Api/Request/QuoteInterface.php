@@ -27,6 +27,7 @@ interface QuoteInterface
     const DEST_REGION_CODE      = 'dest_region_code';
     const DROPOFF_STATE         = 'dropoff_state';
     const PARCEL_ATTRIBUTES     = 'parcel_attributes';
+    const DUTIABLE_AMOUNT       = 'dutiable_amount';
 
     /**
      * Get the Order Date
@@ -117,4 +118,19 @@ interface QuoteInterface
      * @return string|null
      */
     public function setParcelAttributes($parcelAttributes);
+
+    /**
+     * Get the Dutiable Amount
+     *
+     * @return string|null
+     */
+    public function getDutiableAmount();
+
+    /**
+     * Set the Dutiable Amount
+     *
+     * @param string $dutiableAmount
+     * @return string|null
+     */
+    public function setDutiableAmount($dutiableAmount);
 }
