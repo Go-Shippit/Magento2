@@ -220,6 +220,16 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
             $quoteRequest->setDropoffStreet($request->getShipperAddressStreet());
         }
 
+        $this->_logger->addDebug(print_r($request->getStreet(), true));
+
+        // Set dropoff address if available
+        if ($request->getDestStreet()) {
+            // Multiline addresses (e.g. Line 1 & Line 2 etc) are joined with "\n"
+            // character. So, we replace newline characters with comma
+            $streetAddress = preg_replace("/[\n\r]/", ", ", $request->getDestStreet());
+            $quoteRequest->setDropoffAddress($streetAddress);
+        }
+
         $quoteRequest->setDropoffPostcode($request->getDestPostcode());
         $quoteRequest->setDropoffState($request->getDestRegionCode());
         $quoteRequest->setDropoffSuburb($request->getDestCity());

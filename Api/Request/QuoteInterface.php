@@ -26,6 +26,7 @@ interface QuoteInterface
     const DEST_POSTCODE         = 'dest_postcode';
     const DEST_REGION_CODE      = 'dest_region_code';
     const DROPOFF_STATE         = 'dropoff_state';
+    const DROPOFF_ADDRESS       = 'dropoff_address';
     const PARCEL_ATTRIBUTES     = 'parcel_attributes';
 
     /**
@@ -102,6 +103,21 @@ interface QuoteInterface
      * @return string|null
      */
     public function setDropoffState($dropoffState);
+
+    /**
+     * Get the Dropoff Address
+     *
+     * @return string|null
+     */
+    public function getDropoffAddress();
+
+    /**
+     * Set the Dropoff Address
+     *
+     * @param string $dropoffAddress
+     * @return string|null
+     */
+    public function setDropoffAddress($dropoffAddress);
 
     /**
      * Get the Parcel Attributes
