@@ -641,10 +641,9 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
 
     protected function _getDutiableAmount($request)
     {
-        return $request->getPackageValue();
-
-        // @TODO: this is to use discounted value
-        // return $request->getPackageValueWithDiscount();
+        // get discounted value of the package i.e. actual
+        // amount that is paid by the customer
+        return $request->getPackageValueWithDiscount();
     }
 
     /*
