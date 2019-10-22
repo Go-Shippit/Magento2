@@ -122,15 +122,15 @@ interface QuoteInterface
     /**
      * Get the Dutiable Amount
      *
-     * @return string|null
+     * @return float|null
      */
     public function getDutiableAmount();
 
     /**
      * Set the Dutiable Amount
      *
-     * @param string $dutiableAmount
-     * @return string|null
+     * @param float $dutiableAmount
+     * @return float|null
      */
     public function setDutiableAmount($dutiableAmount);
 }

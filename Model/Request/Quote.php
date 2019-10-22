@@ -179,7 +179,7 @@ class Quote extends \Magento\Framework\Model\AbstractModel implements QuoteInter
     /**
      * Get the Dutiable Amount
      *
-     * @return string|null
+     * @return float|null
      */
     public function getDutiableAmount()
     {
@@ -189,8 +189,8 @@ class Quote extends \Magento\Framework\Model\AbstractModel implements QuoteInter
     /**
      * Set the Dutiable Amount
      *
-     * @param string $parcelAttributes
-     * @return string|null
+     * @param float $dutiableAmount
+     * @return float|null
      */
     public function setDutiableAmount($dutiableAmount)
     {
