@@ -68,6 +68,27 @@ class Quote extends \Magento\Framework\Model\AbstractModel implements QuoteInter
     }
 
     /**
+     * Get the Dropoff Address
+     *
+     * @return string|null
+     */
+    public function getDropoffAddress()
+    {
+        return $this->getData(self::DROPOFF_ADDRESS);
+    }
+
+    /**
+     * Set the Dropoff Address
+     *
+     * @param string $dropoffAddress
+     * @return string|null
+     */
+    public function setDropoffAddress($dropoffAddress)
+    {
+        return $this->setData(self::DROPOFF_ADDRESS, $dropoffAddress);
+    }
+
+    /**
      * Get the Dest City
      *
      * @return string|null
