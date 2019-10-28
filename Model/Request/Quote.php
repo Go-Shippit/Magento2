@@ -68,6 +68,27 @@ class Quote extends \Magento\Framework\Model\AbstractModel implements QuoteInter
     }
 
     /**
+     * Get the Dropoff Address
+     *
+     * @return string|null
+     */
+    public function getDropoffAddress()
+    {
+        return $this->getData(self::DROPOFF_ADDRESS);
+    }
+
+    /**
+     * Set the Dropoff Address
+     *
+     * @param string $dropoffAddress
+     * @return string|null
+     */
+    public function setDropoffAddress($dropoffAddress)
+    {
+        return $this->setData(self::DROPOFF_ADDRESS, $dropoffAddress);
+    }
+
+    /**
      * Get the Dest City
      *
      * @return string|null
@@ -174,5 +195,26 @@ class Quote extends \Magento\Framework\Model\AbstractModel implements QuoteInter
     public function setParcelAttributes($parcelAttributes)
     {
         return $this->setData(self::PARCEL_ATTRIBUTES, $parcelAttributes);
+    }
+
+    /**
+     * Get the Dutiable Amount
+     *
+     * @return float|null
+     */
+    public function getDutiableAmount()
+    {
+        return $this->getData(self::DUTIABLE_AMOUNT);
+    }
+
+    /**
+     * Set the Dutiable Amount
+     *
+     * @param float $dutiableAmount
+     * @return float|null
+     */
+    public function setDutiableAmount($dutiableAmount)
+    {
+        return $this->setData(self::DUTIABLE_AMOUNT, $dutiableAmount);
     }
 }

@@ -22,11 +22,13 @@ interface QuoteInterface
      * Constants for keys of data array. Identical to the name of the getter in snake case
      */
     const ORDER_DATE            = 'order_date';
+    const DROPOFF_ADDRESS       = 'dropoff_address';
     const DEST_CITY             = 'dest_city';
     const DEST_POSTCODE         = 'dest_postcode';
     const DEST_REGION_CODE      = 'dest_region_code';
     const DROPOFF_STATE         = 'dropoff_state';
     const PARCEL_ATTRIBUTES     = 'parcel_attributes';
+    const DUTIABLE_AMOUNT       = 'dutiable_amount';
 
     /**
      * Get the Order Date
@@ -42,6 +44,21 @@ interface QuoteInterface
      * @return string|null
      */
     public function setOrderDate($orderDate);
+
+    /**
+     * Get the Dropoff Address
+     *
+     * @return string|null
+     */
+    public function getDropoffAddress();
+
+    /**
+     * Set the Dropoff Address
+     *
+     * @param string $dropoffAddress
+     * @return string|null
+     */
+    public function setDropoffAddress($dropoffAddress);
 
     /**
      * Get the Dest City
@@ -117,4 +134,19 @@ interface QuoteInterface
      * @return string|null
      */
     public function setParcelAttributes($parcelAttributes);
+
+    /**
+     * Get the Dutiable Amount
+     *
+     * @return float|null
+     */
+    public function getDutiableAmount();
+
+    /**
+     * Set the Dutiable Amount
+     *
+     * @param float $dutiableAmount
+     * @return float|null
+     */
+    public function setDutiableAmount($dutiableAmount);
 }
