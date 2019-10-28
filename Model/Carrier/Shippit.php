@@ -232,6 +232,16 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
         $quoteRequest->setDropoffSuburb($request->getDestCity());
         $quoteRequest->setParcelAttributes($this->_getParcelAttributes($request));
 
+        // @Workaround
+        // - Only add the dutiable_amount for domestic orders
+        // - The Shippit Quotes API does not currently support the dutiable_amount
+        //   field being present for domestic (AU) deliveries — declaring a dutiable
+        //   amount value for these quotes may result in some carrier quotes not
+        //   being available.
+        if ($request->getDestCountryId() != 'AU') {
+            $quoteRequest->setDutiableAmount($this->_getDutiableAmount($request));
+        }
+
         try {
             // Call the api and retrieve the quote
             $shippingQuotes = $this->_api->getQuote($quoteRequest);
@@ -639,6 +649,13 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
         }
 
         return $parcelAttributes;
+    }
+
+    protected function _getDutiableAmount($request)
+    {
+        // Get the discounted value of the package
+        // ie: The actual order value as paid by the customer
+        return $request->getPackageValueWithDiscount();
     }
 
     /*

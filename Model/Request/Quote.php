@@ -196,4 +196,25 @@ class Quote extends \Magento\Framework\Model\AbstractModel implements QuoteInter
     {
         return $this->setData(self::PARCEL_ATTRIBUTES, $parcelAttributes);
     }
+
+    /**
+     * Get the Dutiable Amount
+     *
+     * @return float|null
+     */
+    public function getDutiableAmount()
+    {
+        return $this->getData(self::DUTIABLE_AMOUNT);
+    }
+
+    /**
+     * Set the Dutiable Amount
+     *
+     * @param float $dutiableAmount
+     * @return float|null
+     */
+    public function setDutiableAmount($dutiableAmount)
+    {
+        return $this->setData(self::DUTIABLE_AMOUNT, $dutiableAmount);
+    }
 }
