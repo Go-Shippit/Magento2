@@ -31,6 +31,7 @@ class ApiKey extends \Magento\Framework\App\Config\Value
     protected $_logger;
     protected $_messageManager;
     protected $_configInterface;
+    protected $_dataObjectFactory;
     protected $_storeManager;
     protected $_appEmulation;
 
@@ -54,6 +55,7 @@ class ApiKey extends \Magento\Framework\App\Config\Value
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Framework\Message\ManagerInterface $messageManager,
         \Magento\Framework\App\Config\ReinitableConfigInterface $configInterface,
+        \Magento\Framework\DataObjectFactory $dataObjectFactory,
         \Magento\Store\Model\App\Emulation $emulation,
         \Shippit\Shipping\Helper\Api $api,
         \Shippit\Shipping\Logger\Logger $logger,
@@ -64,6 +66,7 @@ class ApiKey extends \Magento\Framework\App\Config\Value
         $this->_storeManager = $storeManager;
         $this->_messageManager = $messageManager;
         $this->_configInterface = $configInterface;
+        $this->_dataObjectFactory = $dataObjectFactory;
         $this->_api = $api;
         $this->_logger = $logger;
         $this->_helper = $helper;
@@ -113,6 +116,8 @@ class ApiKey extends \Magento\Framework\App\Config\Value
             else {
                 $this->_logger->addNotice(self::NOTICE_API_KEY_VALID);
                 $this->_messageManager->addSuccess(self::NOTICE_API_KEY_VALID);
+                // register shippit cart name
+                $this->registerShoppingCartName();
             }
         }
         catch (Exception $e) {
@@ -146,6 +151,18 @@ class ApiKey extends \Magento\Framework\App\Config\Value
         }
         elseif ($this->getScope() == ScopeInterface::SCOPE_STORES) {
             return $this->getScopeId();
+        }
+    }
+
+    public function registerShoppingCartName()
+    {
+        try {
+            $requestData = $this->_dataObjectFactory->create();
+            $requestData->setShippingCartMethodName('magento2');
+            $merchant = $this->_api->putMerchant($requestData, true);
+        }
+        catch (Exception $e) {
+            $this->_messageManager->addError('The request to update the shopping cart integration name failed - please try again.');
         }
     }
 }
