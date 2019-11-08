@@ -116,8 +116,9 @@ class ApiKey extends \Magento\Framework\App\Config\Value
             else {
                 $this->_logger->addNotice(self::NOTICE_API_KEY_VALID);
                 $this->_messageManager->addSuccess(self::NOTICE_API_KEY_VALID);
-                // register shippit cart name
-                $this->registerShoppingCartName();
+                
+                // Register the shipping cart name
+                $this->registerShippingCartName();
             }
         }
         catch (Exception $e) {
@@ -154,11 +155,12 @@ class ApiKey extends \Magento\Framework\App\Config\Value
         }
     }
 
-    public function registerShoppingCartName()
+    public function registerShippingCartName()
     {
         try {
             $requestData = $this->_dataObjectFactory->create();
             $requestData->setShippingCartMethodName('magento2');
+            
             $merchant = $this->_api->putMerchant($requestData, true);
         }
         catch (Exception $e) {
