@@ -215,7 +215,19 @@ class Update extends \Magento\Framework\App\Action\Action
             return false;
         }
 
-        if (!isset($request['current_state']) || empty($request['current_state']) || $request['current_state'] != 'ready_for_pickup') {
+        if (!isset($request['current_state']) || empty($request['current_state'])) {
+            $response = $this->_prepareResponse(
+                true,
+                self::NOTICE_SHIPMENT_STATUS
+            );
+
+            $this->getResponse()->setBody($response);
+
+            return false;
+        }
+
+        // Ignore webhooks that are not deemed a shipment event
+        if (!$this->isShipmentEvent($request)) {
             $response = $this->_prepareResponse(
                 true,
                 self::NOTICE_SHIPMENT_STATUS
@@ -238,6 +250,30 @@ class Update extends \Magento\Framework\App\Action\Action
         }
 
         return true;
+    }
+
+    protected function isShipmentEvent($request)
+    {
+        // If the current state of the order is "ready_for_pickup",
+        // and the courier is not click and collect
+        if ($request['current_state'] == 'ready_for_pickup'
+            && $request['courier_type'] != 'Click & Collect') {
+            return true;
+        }
+
+        // If the courier is "Click & Collect" and the current state of the
+        // order is "untrackable" or "complete"
+        if (
+            $request['courier_type'] == 'Click & Collect'
+            && (
+                $request['current_state'] == 'untrackable'
+                || $request['current_state'] == 'completed'
+            )
+        ) {
+            return true;
+        }
+
+        return false;
     }
 
     protected function _checkOrder($order)
