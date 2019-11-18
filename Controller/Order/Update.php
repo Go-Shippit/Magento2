@@ -257,14 +257,14 @@ class Update extends \Magento\Framework\App\Action\Action
         // If the current state of the order is "ready_for_pickup",
         // and the courier is not click and collect
         if ($request['current_state'] == 'ready_for_pickup'
-            && $request['courier_type'] != 'Click & Collect') {
+            && $request['courier_name'] != 'Click & Collect') {
             return true;
         }
 
         // If the courier is "Click & Collect" and the current state of the
         // order is "untrackable" or "complete"
         if (
-            $request['courier_type'] == 'Click & Collect'
+            $request['courier_name'] == 'Click & Collect'
             && (
                 $request['current_state'] == 'untrackable'
                 || $request['current_state'] == 'completed'
