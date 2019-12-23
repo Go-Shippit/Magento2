@@ -16,7 +16,7 @@
         "magento/magento-coding-standard": "^4.0"
     },
     "replace": {
-        "shippit/shipping": "1.5.3"
+        "shippit/shipping": "self.version"
     },
     "autoload": {
         "files": [
