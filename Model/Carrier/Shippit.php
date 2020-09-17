@@ -169,7 +169,7 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
         ) {
             return false;
         }
-        
+
         return $this;
     }
 
@@ -630,7 +630,7 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
             }
 
             $newParcel = [
-                'qty' => $item->getQty(),
+                'qty' => $this->getItemQty($item),
                 'weight' => ($item->getWeight() ? $item->getWeight() : 0.2),
             ];
 
@@ -649,6 +649,39 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
         }
 
         return $parcelAttributes;
+    }
+
+    /**
+     * Retrieves a item's ordered quantity
+     * - This is useful due to Magento handling the orddered qty differently,
+     *   based on the item type and it's shipping configuration
+     *
+     * @param \Magento\Sales\Api\Data\OrderItemInterface $item
+     * @return int
+     */
+    protected function getItemQty($item)
+    {
+        // If the item has a parent, consider it's type and structure to determine an appropriate qty
+        if ($item->getParentItem()) {
+            $parentItem = $this->_getRootItem($item);
+
+            // If the product is a configurable product, use the configurable item qty
+            if ($parentItem->getProductType() == ConfigurableProductType::TYPE_CODE) {
+                return $parentItem->getQty();
+            }
+
+            // If the product is a bundle product and the bundle items are being
+            // shipped seperately, use the bundle items qty * subitems qty
+            if (
+                $parentItem->getProductType() == ProductType::TYPE_BUNDLE
+                && $parentItem->isShipSeparately()
+            ) {
+                return ($item->getQty() * $parentItem->getQty());
+            }
+        }
+
+        // Otherwise, use the qty of the items
+        return $item->getQty();
     }
 
     protected function _getDutiableAmount($request)
