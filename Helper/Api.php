@@ -47,7 +47,14 @@ class Api extends \Magento\Framework\App\Helper\AbstractHelper
                     'useragent' => self::API_USER_AGENT . ' v' . $this->_helper->getModuleVersion(),
                 ]
             )
-            ->setHeaders('Content-Type', 'application/json');
+            ->setHeaders('Content-Type', 'application/json')
+            ->setHeaders(
+                'Authorization',
+                sprintf(
+                    'Bearer %s',
+                    $this->_helper->getApiKey()
+                )
+            );
     }
 
     public function getApiEndpoint()
@@ -61,18 +68,14 @@ class Api extends \Magento\Framework\App\Helper\AbstractHelper
         }
     }
 
-    public function getApiUri($path, $authToken = null)
+    public function getApiUri($path)
     {
-        if ($authToken === null) {
-            $authToken = $this->_helper->getApiKey();
-        }
-
-        return $this->getApiEndpoint() . '/' . $path . '?auth_token=' . $authToken;
+        return $this->getApiEndpoint() . '/' . $path;
     }
 
-    public function call($uri, $requestData, $method = \Zend_Http_Client::POST, $exceptionOnResponseError = true)
+    public function call($path, $requestData, $method = \Zend_Http_Client::POST, $exceptionOnResponseError = true)
     {
-        $uri = $this->getApiUri($uri);
+        $uri = $this->getApiUri($path);
         $jsonRequestData = json_encode($requestData);
         $this->log($uri, $requestData);
 
