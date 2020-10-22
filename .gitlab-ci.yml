@@ -1,13 +1,11 @@
-# Stages
 stages:
-  - build
-  - lint
-  - code-style
+  - Build
+  - Lint
+  - Code Style
 
 
-build:
-  type: build
-  image: mamis/php-build:7.2
+.build:
+  stage: Build
   artifacts:
     untracked: true
     expire_in: 7 days
@@ -25,62 +23,78 @@ build:
     - composer --version
     - composer install --verbose --prefer-dist --no-progress --no-interaction --optimize-autoloader
 
+build-php-7.0:
+  extends: .build
+  image: mamis/php-build:7.0
 
-.php-linter: &php-linter
-  stage: lint
-  dependencies:
-    - build
+build-php-7.1:
+  extends: .build
+  image: mamis/php-build:7.1
+
+build-php-7.2:
+  extends: .build
+  image: mamis/php-build:7.2
+
+build-php-7.3:
+  extends: .build
+  image: mamis/php-build:7.3
+
+
+.php-linter:
+  stage: Lint
   script:
     - php --version
     - parallel-lint --version
     - parallel-lint --exclude ./vendor ./
 
-php-5.5-linter:
-  <<: *php-linter
-  image: mamis/php-build:5.5
-
-php-5.6-linter:
-  <<: *php-linter
-  image: mamis/php-build:5.6
-
 php-7.0-linter:
-  <<: *php-linter
+  extends: .php-linter
   image: mamis/php-build:7.0
+  needs:
+    - build-php-7.0
 
 php-7.1-linter:
-  <<: *php-linter
+  extends: .php-linter
   image: mamis/php-build:7.1
+  needs:
+    - build-php-7.0
 
 php-7.2-linter:
-  <<: *php-linter
+  extends: .php-linter
   image: mamis/php-build:7.2
+  needs:
+    - build-php-7.0
 
-php-depreciations-linter:
-  stage: lint
-  image: mamis/php-build:7.2
-  dependencies:
-    - build
+php-7.3-linter:
+  extends: .php-linter
+  image: mamis/php-build:7.3
+  needs:
+    - build-php-7.0
+
+
+php-depreciations:
+  stage: Lint
+  image: mamis/php-build:7.3
+  needs: []
   script:
     - php --version
     - phpcf --version
-    - phpcf --target=7.2 --exclude=vendor ./
+    - phpcf --after=7.0 --target=7.3 --exclude=vendor ./
+
 
 phpcs-psr2:
-  stage: code-style
-  image: mamis/php-build:7.2
-  dependencies:
-    - build
+  stage: Code Style
+  image: mamis/php-build:7.3
   script:
     - php -v
     - phpcs --version
     - phpcs --colors --standard=PSR2 --ignore=./vendor --report=full,summary,gitblame .
   allow_failure: true
 
+
 phpcs-magento2:
-  stage: code-style
-  image: mamis/php-build:7.2
-  dependencies:
-    - build
+  stage: Code Style
+  image: mamis/php-build:7.3
   script:
     - php -v
     - phpcs --version
