@@ -10,7 +10,7 @@
         "magento/module-shipping": "^100.2.0",
         "magento/module-quote": "^101.0.0",
         "magento/module-checkout": "^100.2.0",
-        "php": "^7.0|^7.1|^7.2"
+        "php": "^7.0|^7.1|^7.2|^7.3"
     },
     "require-dev": {
         "magento/magento-coding-standard": "^4.0"
