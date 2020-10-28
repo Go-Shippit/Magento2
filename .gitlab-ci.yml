@@ -23,21 +23,25 @@ stages:
     - composer --version
     - composer install --verbose --prefer-dist --no-progress --no-interaction --optimize-autoloader
 
-build-php-7.0:
+build:php-7.0:
   extends: .build
   image: mamis/php-build:7.0
 
-build-php-7.1:
+build:php-7.1:
   extends: .build
   image: mamis/php-build:7.1
 
-build-php-7.2:
+build:php-7.2:
   extends: .build
   image: mamis/php-build:7.2
 
-build-php-7.3:
+build:php-7.3:
   extends: .build
   image: mamis/php-build:7.3
+
+build:php-7.4:
+  extends: .build
+  image: mamis/php-build:7.4
 
 
 .php-linter:
@@ -47,44 +51,50 @@ build-php-7.3:
     - parallel-lint --version
     - parallel-lint --exclude ./vendor ./
 
-php-7.0-linter:
+php-linter:7.0:
   extends: .php-linter
   image: mamis/php-build:7.0
   needs:
-    - build-php-7.0
+    - build:php-7.0
 
-php-7.1-linter:
+php-linter:7.1:
   extends: .php-linter
   image: mamis/php-build:7.1
   needs:
-    - build-php-7.0
+    - build:php-7.1
 
-php-7.2-linter:
+php-linter:7.2:
   extends: .php-linter
   image: mamis/php-build:7.2
   needs:
-    - build-php-7.0
+    - build:php-7.2
 
-php-7.3-linter:
+php-linter:7.3:
   extends: .php-linter
   image: mamis/php-build:7.3
   needs:
-    - build-php-7.0
+    - build:php-7.3
+
+php-linter:7.4:
+  extends: .php-linter
+  image: mamis/php-build:7.4
+  needs:
+    - build:php-7.4
 
 
 php-depreciations:
   stage: Lint
-  image: mamis/php-build:7.3
+  image: mamis/php-build:7.4
   needs: []
   script:
     - php --version
     - phpcf --version
-    - phpcf --after=7.0 --target=7.3 --exclude=vendor ./
+    - phpcf --after=7.0 --target=7.4 --exclude=vendor ./
 
 
 phpcs-psr2:
   stage: Code Style
-  image: mamis/php-build:7.3
+  image: mamis/php-build:7.4
   script:
     - php -v
     - phpcs --version
@@ -94,7 +104,7 @@ phpcs-psr2:
 
 phpcs-magento2:
   stage: Code Style
-  image: mamis/php-build:7.3
+  image: mamis/php-build:7.4
   script:
     - php -v
     - phpcs --version
