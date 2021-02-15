@@ -134,7 +134,7 @@ class Shipment
 
     /**
      * Get a list of sync orders pending sync
-     * @return [type] [description]
+     * @return \Shippit\Shipping\Model\ResourceModel\Sync\Shipment\Collection
      */
     public function getSyncShipments($storeId)
     {
@@ -156,9 +156,9 @@ class Shipment
 
     /**
      * Process each shipment queue record to create shipment record
-     * @param  shipment  $syncShipment
-     * @param  boolean $displayNotifications
-     * @return Shipment
+     * @param  SyncShipment  $syncShipment
+     * @param  bool $displayNotifications
+     * @return bool
      */
     public function sync($syncShipment, $displayNotifications = false)
     {
@@ -184,8 +184,7 @@ class Shipment
                 ->setSyncedAt($this->_date->gmtDate())
                 ->save();
 
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             $this->_logger->addError('Shipment Sync Request Failed - ' . $e->getMessage());
 
             // Fail the sync item if it's breached the max attempts
@@ -207,11 +206,12 @@ class Shipment
 
     /**
      * Create shipment record
-     * @param  Order $order
-     * @param  array $items
-     * @param  string $courierName
-     * @param  string $trackingNumber
+     * @param Order $order
+     * @param array $items
+     * @param string $courierName
+     * @param string $trackingNumber
      * @return Shipment
+     * @throws Exception
      */
     protected function _createShipment($order, $items, $courierName, $trackingNumber)
     {

@@ -99,7 +99,7 @@ class Order
     public function run()
     {
         if (!$this->_helper->isActive()) {
-            return $this;
+            return;
         }
 
         // get all stores, as we will emulate each storefront for integration run
@@ -127,7 +127,7 @@ class Order
 
     /**
      * Get a list of sync orders pending sync
-     * @return [type] [description]
+     * @return \Shippit\Shipping\Model\ResourceModel\Sync\Order\Collection
      */
     public function getSyncOrders($storeId)
     {
@@ -160,6 +160,11 @@ class Order
             );
     }
 
+    /**
+     * @param SyncOrder $syncOrder
+     * @param bool $displayNotifications
+     * @return bool
+     */
     public function sync($syncOrder, $displayNotifications = false)
     {
         if (!$this->_helper->isActive()) {
