@@ -20,10 +20,10 @@ use Exception;
 use Magento\Framework\App\Area as AppArea;
 use Shippit\Shipping\Model\Sync\Shipment as SyncShipment;
 
-class Shipment extends \Magento\Framework\Model\AbstractModel
+class Shipment
 {
     /**
-     * @var \Shippit\Shipping\Helper\Sync\Shipment
+     * @var \Shippit\Shipping\Helper\Sync\Shipping
      */
     protected $_helper;
 
@@ -88,12 +88,7 @@ class Shipment extends \Magento\Framework\Model\AbstractModel
         \Magento\Framework\Message\ManagerInterface $messageManager,
         \Magento\Framework\Stdlib\DateTime\DateTime $date,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
-        \Magento\Store\Model\App\Emulation $appEmulation,
-        \Magento\Framework\Model\Context $context,
-        \Magento\Framework\Registry $registry,
-        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
-        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
-        array $data = []
+        \Magento\Store\Model\App\Emulation $appEmulation
     ) {
         $this->_helper = $helper;
         $this->_requestShipmentInterfaceFactory = $requestShipmentInterfaceFactory;
@@ -105,8 +100,6 @@ class Shipment extends \Magento\Framework\Model\AbstractModel
         $this->_storeManagerInterface = $storeManagerInterface;
         $this->_appEmulation = $appEmulation;
         $this->_transactionFactory = $transactionFactory;
-
-        parent::__construct($context, $registry, $resource, $resourceCollection, $data);
     }
 
     public function run()

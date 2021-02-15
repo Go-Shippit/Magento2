@@ -20,7 +20,7 @@ use Exception;
 use Magento\Framework\App\Area as AppArea;
 use Shippit\Shipping\Model\Sync\Order as SyncOrder;
 
-class Order extends \Magento\Framework\Model\AbstractModel
+class Order
 {
     /**
      * @var \Shippit\Shipping\Helper\Sync\Order
@@ -83,12 +83,7 @@ class Order extends \Magento\Framework\Model\AbstractModel
         \Magento\Framework\Message\ManagerInterface $messageManager,
         \Magento\Framework\Stdlib\DateTime\DateTime $date,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
-        \Magento\Store\Model\App\Emulation $appEmulation,
-        \Magento\Framework\Model\Context $context,
-        \Magento\Framework\Registry $registry,
-        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
-        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
-        array $data = []
+        \Magento\Store\Model\App\Emulation $appEmulation
     ) {
         $this->_helper = $helper;
         $this->_api = $api;
@@ -99,8 +94,6 @@ class Order extends \Magento\Framework\Model\AbstractModel
         $this->_date = $date;
         $this->_storeManagerInterface = $storeManagerInterface;
         $this->_appEmulation = $appEmulation;
-
-        parent::__construct($context, $registry, $resource, $resourceCollection, $data);
     }
 
     public function run()
