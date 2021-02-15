@@ -117,7 +117,7 @@ class Shipment
             );
 
             if (!$this->_helper->isActive()) {
-                return $this;
+                continue;
             }
 
             // get shipments to sync
