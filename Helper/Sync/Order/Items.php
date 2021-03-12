@@ -100,10 +100,24 @@ class Items extends \Shippit\Shipping\Helper\Sync\Order
         return $this->getValue('product_origin_country_code_attribute_code');
     }
 
+    public function isDangerousGoodsCodeActive()
+    {
+        return $this->getValue('dangerous_goods_code_active');
+    }
+
+    public function getDangerousGoodsCodeAttributeCode()
+    {
+        return $this->getValue('dangerous_goods_code_attribute_code');
+    }
+
+    public function getDangerousGoodsTextAttributeCode()
+    {
+        return $this->getValue('dangerous_goods_text_attribute_code');
+    }
+
     /**
      * Begin Data Processing Helpers
      */
-
     public function getDimension($dimension)
     {
         // ensure the dimension is present and not empty
@@ -226,6 +240,48 @@ class Items extends \Shippit\Shipping\Helper\Sync\Order
         }
 
         return $originCountryCode;
+    }
+
+    public function getDangerousGoodsCode($item)
+    {
+        $attributeCode = $this->getDangerousGoodsCodeAttributeCode();
+
+        if (empty($attributeCode)) {
+            return;
+        }
+
+        $dangerousGoodsCode = $this->getAttributeValue($item->getProduct(), $attributeCode);
+
+        // Trim the value, as some attributes can introduce a space character when it's empty
+        $dangerousGoodsCode = trim($dangerousGoodsCode);
+
+        // If an empty value is provided, return null
+        if (empty($dangerousGoodsCode)) {
+            return;
+        }
+
+        return $dangerousGoodsCode;
+    }
+
+    public function getDangerousGoodsText($item)
+    {
+        $attributeCode = $this->getDangerousGoodsTextAttributeCode();
+
+        if (empty($attributeCode)) {
+            return;
+        }
+
+        $dangerousGoodsText = $this->getAttributeValue($item->getProduct(), $attributeCode);
+
+        // Trim the value, as some attributes can introduce a space character when it's empty
+        $dangerousGoodsText = trim($dangerousGoodsText);
+
+        // If an empty value is provided, return null
+        if (empty($dangerousGoodsText)) {
+            return;
+        }
+
+        return $dangerousGoodsText;
     }
 
     public function getSkus($items)

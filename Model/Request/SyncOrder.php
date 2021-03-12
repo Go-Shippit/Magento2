@@ -250,7 +250,9 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
                 $this->getItemDepth($item),
                 $this->getItemLocation($item),
                 $this->getItemTariffCode($item),
-                $this->getOriginCountryCode($item)
+                $this->getOriginCountryCode($item),
+                $this->getItemDangerousGoodsCode($item),
+                $this->getItemDangerousGoodsText($item)
             );
 
             $itemsAdded++;
@@ -516,6 +518,56 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
         return $originCountryCode;
     }
 
+    protected function getItemDangerousGoodsCode($item)
+    {
+        if (!$this->_itemsHelper->isDangerousGoodsCodeActive()) {
+            return;
+        }
+
+        $rootItem = $this->_getRootItem($item);
+        $childItem = $this->_getChildItem($item);
+
+        // Attempt to retrieve the tariff code from the child item
+        $dangerousGoodsCode = $this->_itemsHelper->getDangerousGoodsCode($childItem);
+
+        // If product has a parent product and the child item
+        // does not have dangerous goods code value set, attempt to
+        // use the root product dangerous goods code value
+        if (
+            $rootItem != $childItem
+            && empty($dangerousGoodsCode)
+        ) {
+            $dangerousGoodsCode = $this->_itemsHelper->getDangerousGoodsCode($rootItem);
+        }
+
+        return $dangerousGoodsCode;
+    }
+
+    protected function getItemDangerousGoodsText($item)
+    {
+        if (!$this->_itemsHelper->isDangerousGoodsCodeActive()) {
+            return;
+        }
+
+        $rootItem = $this->_getRootItem($item);
+        $childItem = $this->_getChildItem($item);
+
+        // Attempt to retrieve the tariff code from the child item
+        $dangerousGoodsText = $this->_itemsHelper->getDangerousGoodsText($childItem);
+
+        // If product has a parent product and the child item
+        // does not have dangerous goods code value set, attempt to
+        // use the root product dangerous goods code value
+        if (
+            $rootItem != $childItem
+            && empty($dangerousGoodsText)
+        ) {
+            $dangerousGoodsText = $this->_itemsHelper->getDangerousGoodsText($rootItem);
+        }
+
+        return $dangerousGoodsText;
+    }
+
     /**
      * Add a parcel with attributes
      *
@@ -531,7 +583,9 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
         $depth = null,
         $location = null,
         $tariffCode = null,
-        $originCountryCode = null
+        $originCountryCode = null,
+        $dangerousGoodsCode = null,
+        $dangerousGoodsText = null
     ) {
         $items = $this->getItems();
 
@@ -548,6 +602,8 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
             'location' => $location,
             'tariff_code' => $tariffCode,
             'origin_country_code' => $originCountryCode,
+            'dangerous_goods_code' => $dangerousGoodsCode,
+            'dangerous_goods_text' => $dangerousGoodsText,
         ];
 
         // for dimensions, ensure the item has values for all dimensions

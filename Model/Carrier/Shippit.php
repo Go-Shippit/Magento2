@@ -25,6 +25,7 @@ use Magento\Quote\Model\Quote\Address\RateRequest;
 use Magento\Shipping\Model\Carrier\AbstractCarrierOnline;
 use Magento\Shipping\Model\Carrier\CarrierInterface;
 use Magento\Shipping\Model\Rate\Result;
+use Magento\Store\Model\ScopeInterface;
 
 class Shippit extends AbstractCarrierOnline implements CarrierInterface
 {
@@ -42,6 +43,7 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
     protected $_api;
     protected $_methods;
     protected $_quote;
+    protected $_scopeConfig;
 
     /**
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
@@ -97,6 +99,7 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
         $this->_quote = $quote;
         $this->_productCollectionFactory = $productCollectionFactory;
         $this->_productAttributeRepository = $productAttributeRepository;
+        $this->_scopeConfig = $scopeConfig;
 
         parent::__construct(
             $scopeConfig,
@@ -231,6 +234,10 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
         $quoteRequest->setDropoffState($request->getDestRegionCode());
         $quoteRequest->setDropoffSuburb($request->getDestCity());
         $quoteRequest->setParcelAttributes($this->_getParcelAttributes($request));
+        $storeCountryCode = $this->_scopeConfig->getValue(
+            'general/country/default',
+            ScopeInterface::SCOPE_WEBSITES
+        );
 
         // @Workaround
         // - Only add the dutiable_amount for domestic orders
@@ -238,7 +245,7 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
         //   field being present for domestic (AU) deliveries — declaring a dutiable
         //   amount value for these quotes may result in some carrier quotes not
         //   being available.
-        if ($request->getDestCountryId() != 'AU') {
+        if ($storeCountryCode != $request->getDestCountryId()) {
             $quoteRequest->setDutiableAmount($this->_getDutiableAmount($request));
         }
 

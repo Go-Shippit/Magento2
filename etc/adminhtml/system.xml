@@ -182,6 +182,27 @@
                     </depends>
                     <comment>The Product Attribute to be used for Country Of Origin information sent to Shippit.</comment>
                 </field>
+
+                <field id="dangerous_goods_code_active" translate="label" type="select" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Send Dangerous Goods Codes to Shippit</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+
+                <field id="dangerous_goods_code_attribute_code" translate="label comment" type="select" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Dangerous Goods Code Attribute Code</label>
+                    <source_model>Shippit\Shipping\Model\Config\Source\Catalog\Attributes</source_model>
+                    <depends>
+                        <field id="dangerous_goods_code_active">1</field>
+                    </depends>
+                </field>
+
+                <field id="dangerous_goods_text_attribute_code" translate="label comment" type="select" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <source_model>Shippit\Shipping\Model\Config\Source\Catalog\Attributes</source_model>
+                    <label>Dangerous Goods Label Attribute Code</label>
+                    <depends>
+                        <field id="dangerous_goods_code_active">1</field>
+                    </depends>
+                </field>
             </group>
 
             <group id="sync_shipping" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
