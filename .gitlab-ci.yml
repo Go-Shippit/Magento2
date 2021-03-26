@@ -1,27 +1,43 @@
+.show-php-version: &show-php-version
+  - php --version
+
+.show-phpcs-version: &show-phpcs-version
+  - vendor/bin/phpcs --version
+
+.configure-phpcs: &configure-phpcs
+  - vendor/bin/phpcs --config-set colors 1
+  - vendor/bin/phpcs --config-set installed_paths vendor/escapestudios/symfony2-coding-standard,vendor/mamis/phpcs-coding-standard/src
+
+.show-parallel-lint-version: &show-parallel-lint-version
+  - vendor/bin/parallel-lint --version
+
+.show-composer-version: &show-composer-version
+  - composer --version
+
+.configure-composer: &configure-composer
+  - composer config http-basic.repo.magento.com $COMPOSER_MAGENTO_USERNAME $COMPOSER_MAGENTO_PASSWORD
+
+
 stages:
-  - Build
-  - Lint
-  - Code Style
+  - build
+  - test
 
 
 .build:
-  stage: Build
+  stage: build
   artifacts:
     untracked: true
     expire_in: 7 days
     paths:
       - ./
+    exclude: 
+      - auth.json
   before_script:
-    ##
-    ## Add composer authentication keys
-    ##
-    - mkdir -p ~/.composer
-    - echo "$COMPOSER_AUTH" > ~/.composer/auth.json
-
+    - *show-php-version
+    - *show-composer-version
+    - *configure-composer
   script:
-    - php --version
-    - composer --version
-    - composer install --verbose --prefer-dist --no-progress --no-interaction --optimize-autoloader
+    - composer install --prefer-dist --no-progress --no-interaction --optimize-autoloader
 
 build:php-7.0:
   extends: .build
@@ -45,11 +61,12 @@ build:php-7.4:
 
 
 .php-linter:
-  stage: Lint
+  stage: test
+  before_script:
+    - *show-php-version
+    - *show-parallel-lint-version
   script:
-    - php --version
-    - parallel-lint --version
-    - parallel-lint --exclude ./vendor ./
+    - vendor/bin/parallel-lint --exclude ./vendor ./
 
 php-linter:7.0:
   extends: .php-linter
@@ -83,29 +100,31 @@ php-linter:7.4:
 
 
 php-depreciations:
-  stage: Lint
+  stage: test
   image: mamis/php-build:7.4
-  needs: []
+  before_script:
+    - *show-php-version
+    - *show-phpcs-version
+    - *configure-phpcs
   script:
-    - php --version
-    - phpcf --version
-    - phpcf --after=7.0 --target=7.4 --exclude=vendor ./
+    - vendor/bin/phpdd --after=7.0 --target=7.4 --exclude=vendor ./
 
 
-phpcs-psr2:
-  stage: Code Style
+.phpcs:
+  stage: test
   image: mamis/php-build:7.4
-  script:
-    - php -v
-    - phpcs --version
-    - phpcs --colors --standard=PSR2 --ignore=./vendor --report=full,summary,gitblame .
+  before_script:
+    - *show-php-version
+    - *show-phpcs-version
+    - *configure-phpcs
   allow_failure: true
 
-
-phpcs-magento2:
-  stage: Code Style
-  image: mamis/php-build:7.4
+phpcs-mamis:
+  extends: .phpcs
   script:
-    - php -v
-    - phpcs --version
-    - phpcs --colors --warning-severity=0 --standard=Magento2 --ignore=./vendor --report=full,summary,gitblame . --runtime-set installed_paths vendor/magento/magento-coding-standard/Magento2
+    - vendor/bin/phpcs --standard=Mamis --report=full,summary,gitblame --ignore=./vendor/* ./
+
+phpcs-magento:
+  extends: .phpcs
+  script:
+    - vendor/bin/phpcs --standard=Magento --report=full,summary,gitblame --ignore=./vendor/* ./
