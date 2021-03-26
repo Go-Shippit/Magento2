@@ -9,7 +9,7 @@
         "magento/module-shipping": "^100.2.0",
         "magento/module-quote": "^101.0.0",
         "magento/module-checkout": "^100.2.0",
-        "php": "^7.0|^7.1|^7.2|^7.3|^7.4"
+        "php": "^7.1|^7.2|^7.3|^7.4"
     },
     "require-dev": {
         "mamis/phpcs-coding-standard": "^1.1.0",
