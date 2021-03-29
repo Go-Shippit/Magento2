@@ -75,9 +75,9 @@ class UpgradeSchema implements UpgradeSchemaInterface
             $this->upgrade_1419($installer);
         }
 
-        if (version_compare($context->getVersion(), '1.6.5') < 0) {
-            // code to upgrade to 1.6.5
-            $this->upgrade_165($installer);
+        if (version_compare($context->getVersion(), '1.7.0') < 0) {
+            // Update schema to v1.7.0
+            $this->upgrade_170($installer);
         }
 
         $installer->endSetup();
@@ -840,14 +840,14 @@ class UpgradeSchema implements UpgradeSchemaInterface
     }
 
     /**
-     * Upgrade schema to v1.6.5
+     * Upgrade schema to v1.7.0
      *
      * - Adds the origin_country_code column to the shippit_sync_order_item table
      *
      * @param $installer
      * @return void
      */
-    public function upgrade_165($installer)
+    public function upgrade_170($installer)
     {
         $installer->startSetup();
 

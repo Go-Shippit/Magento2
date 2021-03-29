@@ -242,7 +242,7 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
         // @Workaround
         // - Only add the dutiable_amount for domestic orders
         // - The Shippit Quotes API does not currently support the dutiable_amount
-        //   field being present for domestic (AU) deliveries — declaring a dutiable
+        //   field being present for domestic deliveries — declaring a dutiable
         //   amount value for these quotes may result in some carrier quotes not
         //   being available.
         if ($storeCountryCode != $request->getDestCountryId()) {

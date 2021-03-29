@@ -120,10 +120,14 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
             ->setDeliveryState($shippingAddress->getRegionCode())
             ->setDeliveryCountry($shippingAddress->getCountryId())
             ->setSourcePlatform('magento2')
-            ->setProductCurrency($this->_order->getOrderCurrencyCode())
-            ->setReceiverLanguageCode(
+            ->setProductCurrency($this->_order->getOrderCurrencyCode());
+
+        // Set the receiver language code
+        if (!empty($this->_localeResolver->getLocale())) {
+            $this->setReceiverLanguageCode(
                 strstr($this->_localeResolver->getLocale(), '_', true)
             );
+        }
 
         $this->setOrderAfter($this->_order);
 
