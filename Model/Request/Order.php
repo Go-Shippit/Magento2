@@ -44,6 +44,8 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
      */
     protected $_syncOrder;
 
+    protected $_localeResolver;
+
     /**
      * @param \Magento\Framework\Model\Context $context
      * @param \Magento\Framework\Registry $registry
@@ -53,6 +55,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
      * @param array $data
      */
     public function __construct(
+        \Magento\Framework\Locale\Resolver $localeResolver = null,
         \Magento\Framework\Model\Context $context,
         \Magento\Framework\Registry $registry,
         \Shippit\Shipping\Helper\Data $helper,
@@ -64,6 +67,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
         $this->_helper = $helper;
         $this->_syncOrder = $syncOrder;
         $this->_carrierCode = $helper::CARRIER_CODE;
+        $this->_localeResolver = $localeResolver;
 
         parent::__construct($context, $registry, $resource, $resourceCollection, $data);
     }
@@ -118,6 +122,13 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
             ->setSourcePlatform('magento2')
             ->setProductCurrency($this->_order->getOrderCurrencyCode());
 
+        // Set the receiver language code
+        if (!empty($this->_localeResolver->getLocale())) {
+            $this->setReceiverLanguageCode(
+                strstr($this->_localeResolver->getLocale(), '_', true)
+            );
+        }
+
         $this->setOrderAfter($this->_order);
 
         return $this;
@@ -169,7 +180,9 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
                     $item->getDepth(),
                     $item->getLocation(),
                     $item->getTariffCode(),
-                    $item->getOriginCountryCode()
+                    $item->getOriginCountryCode(),
+                    $item->getDangerousGoodsCode(),
+                    $item->getDangerousGoodsText()
                 );
             }
         }
@@ -194,6 +207,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
             ->setData(self::DELIVERY_SUBURB, null)
             ->setData(self::DELIVERY_POSTCODE, null)
             ->setData(self::DELIVERY_STATE, null)
+            ->setData(self::RECEIVER_LANGUAGE_CODE, null)
             ->setData(self::PARCEL_ATTRIBUTES, null);
     }
 
@@ -683,7 +697,9 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
         $depth = null,
         $location = null,
         $tariffcode = null,
-        $originCountryCode = null
+        $originCountryCode = null,
+        $dangerousGoodsCode = null,
+        $dangerousGoodsText = null
     ) {
         $parcelAttributes = $this->getParcelAttributes();
 
@@ -701,6 +717,8 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
             'location' => $location,
             'tariff_code' => $tariffcode,
             'origin_country_code' => $originCountryCode,
+            'dangerous_goods_code' => $dangerousGoodsCode,
+            'dangerous_goods_text' => $dangerousGoodsText,
         ];
 
         // for dimensions, ensure the item has values for all dimensions
@@ -760,5 +778,26 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
     public function getProductCurrency()
     {
         return $this->getData(self::PRODUCT_CURRENCY);
+    }
+
+    /**
+     * Set the Receiver Language Code
+     *
+     * @param string $receiverLanguageCode
+     * @return string
+     */
+    public function setReceiverLanguageCode($receiverLanguageCode)
+    {
+        return $this->setData(self::RECEIVER_LANGUAGE_CODE, $receiverLanguageCode);
+    }
+
+    /**
+     * Get the Receiver Language Code
+     *
+     * @return string
+     */
+    public function getReceiverLanguageCode()
+    {
+        return $this->getData(self::RECEIVER_LANGUAGE_CODE);
     }
 }
