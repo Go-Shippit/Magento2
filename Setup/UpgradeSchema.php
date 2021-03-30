@@ -861,7 +861,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 'length' => '255',
                 'nullable' => true,
                 'after' => 'origin_country_code',
-                'comment' => 'Item dangerous goods code',
+                'comment' => 'Item Dangerous Goods Code',
             ]
         );
 
@@ -873,7 +873,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 'length' => '255',
                 'nullable' => true,
                 'after' => 'origin_country_code',
-                'comment' => 'Item dangerous goods text',
+                'comment' => 'Item Dangerous Goods Text',
             ]
         );
 
