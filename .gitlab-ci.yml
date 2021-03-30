@@ -6,7 +6,7 @@
 
 .configure-phpcs: &configure-phpcs
   - vendor/bin/phpcs --config-set colors 1
-  - vendor/bin/phpcs --config-set installed_paths vendor/escapestudios/symfony2-coding-standard,vendor/mamis/phpcs-coding-standard/src
+  - vendor/bin/phpcs --config-set installed_paths vendor/escapestudios/symfony2-coding-standard,vendor/mamis/phpcs-coding-standard/src,vendor/magento/magento-coding-standard
 
 .show-parallel-lint-version: &show-parallel-lint-version
   - vendor/bin/parallel-lint --version
