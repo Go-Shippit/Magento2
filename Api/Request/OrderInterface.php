@@ -40,6 +40,7 @@ interface OrderInterface
     const PARCEL_ATTRIBUTES         = 'parcel_attributes';
     const SOURCE_PLATFORM           = 'source_platform';
     const PRODUCT_CURRENCY          = 'product_currency';
+    const RECEIVER_LANGUAGE_CODE    = 'receiver_language_code';
 
     /**
      * Set the order to be sent to the api request
@@ -336,4 +337,19 @@ interface OrderInterface
      * @return string
      */
     public function setProductCurrency($productCurrency);
+
+    /**
+     * Get the Receiver Language Code
+     *
+     * @return string|null
+     */
+    public function getReceiverLanguageCode();
+
+    /**
+     * Set the Receiver Language Code
+     *
+     * @param string $receiverLanguageCode
+     * @return string
+     */
+    public function setReceiverLanguageCode($receiverLanguageCode);
 }

@@ -323,6 +323,48 @@ class Item extends \Magento\Framework\Model\AbstractModel implements \Shippit\Sh
     }
 
     /**
+     * Get the Item DangerousGoodsCode
+     *
+     * @return string|null
+     */
+    public function getDangerousGoodsCode()
+    {
+        return $this->getData(self::DANGEROUS_GOODS_CODE);
+    }
+
+    /**
+     * Set the Item DangerousGoodsCode
+     *
+     * @param string $dangerousGoodsCode
+     * @return string|null
+     */
+    public function setDangerousGoodsCode($dangerousGoodsCode)
+    {
+        return $this->setData(self::DANGEROUS_GOODS_CODE, $dangerousGoodsCode);
+    }
+
+    /**
+     * Get the Item DangerousGoodsText
+     *
+     * @return string|null
+     */
+    public function getDangerousGoodsText()
+    {
+        return $this->getData(self::DANGEROUS_GOODS_TEXT);
+    }
+
+    /**
+     * Set the Item DangerousGoodsText
+     *
+     * @param string $dangerousGoodsText
+     * @return string|null
+     */
+    public function setDangerousGoodsText($dangerousGoodsText)
+    {
+        return $this->setData(self::DANGEROUS_GOODS_TEXT, $dangerousGoodsText);
+    }
+
+    /**
      * Add a new item to the sync order item request
      */
     public function addItem($item)

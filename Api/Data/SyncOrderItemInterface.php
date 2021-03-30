@@ -34,6 +34,8 @@ interface SyncOrderItemInterface
     const LOCATION              = 'location';
     const TARIFF_CODE           = 'tariff_code';
     const ORIGIN_COUNTRY_CODE   = 'origin_country_code';
+    const DANGEROUS_GOODS_CODE   = 'dangerous_goods_code';
+    const DANGEROUS_GOODS_TEXT   = 'dangerous_goods_text';
 
     /**
      * Get the Sync Item Id
@@ -244,6 +246,36 @@ interface SyncOrderItemInterface
      * @return string|null
      */
     public function setOriginCountryCode($originCountryCode);
+
+    /**
+     * Set the Item Dangerous Goods Code
+     *
+     * @param string $dangerousGoodsCode
+     * @return string|null
+     */
+    public function setDangerousGoodsCode($dangerousGoodsCode);
+
+    /**
+     * Get the Item Dangerous Goods Code
+     *
+     * @return string|null
+     */
+    public function getDangerousGoodsCode();
+
+    /**
+     * Set the Item Dangerous Goods Text
+     *
+     * @param string $dangerousGoodsText
+     * @return string|null
+     */
+    public function setDangerousGoodsText($dangerousGoodsText);
+
+    /**
+     * Get the Item Dangerous Goods Text
+     *
+     * @return string|null
+     */
+    public function getDangerousGoodsText();
 
     /**
      * Add a new item to the sync order item request

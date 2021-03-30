@@ -75,6 +75,11 @@ class UpgradeSchema implements UpgradeSchemaInterface
             $this->upgrade_1419($installer);
         }
 
+        if (version_compare($context->getVersion(), '1.7.0') < 0) {
+            // Update schema to v1.7.0
+            $this->upgrade_170($installer);
+        }
+
         $installer->endSetup();
     }
 
@@ -832,5 +837,46 @@ class UpgradeSchema implements UpgradeSchemaInterface
                     'comment' => 'Item Dimension - Depth',
                 ]
             );
+    }
+
+    /**
+     * Upgrade schema to v1.7.0
+     *
+     * - Adds the origin_country_code column to the shippit_sync_order_item table
+     *
+     * @param $installer
+     * @return void
+     */
+    public function upgrade_170($installer)
+    {
+        $installer->startSetup();
+
+        $table = $installer->getTable('shippit_sync_order_item');
+
+        $installer->getConnection()->addColumn(
+            $table,
+            'dangerous_goods_code',
+            [
+                'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                'length' => '255',
+                'nullable' => true,
+                'after' => 'origin_country_code',
+                'comment' => 'Item Dangerous Goods Code',
+            ]
+        );
+
+        $installer->getConnection()->addColumn(
+            $table,
+            'dangerous_goods_text',
+            [
+                'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                'length' => '255',
+                'nullable' => true,
+                'after' => 'origin_country_code',
+                'comment' => 'Item Dangerous Goods Text',
+            ]
+        );
+
+        $installer->endSetup();
     }
 }
