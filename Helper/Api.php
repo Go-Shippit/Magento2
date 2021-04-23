@@ -47,14 +47,7 @@ class Api extends \Magento\Framework\App\Helper\AbstractHelper
                     'useragent' => self::API_USER_AGENT . ' v' . $this->_helper->getModuleVersion(),
                 ]
             )
-            ->setHeaders('Content-Type', 'application/json')
-            ->setHeaders(
-                'Authorization',
-                sprintf(
-                    'Bearer %s',
-                    $this->_helper->getApiKey()
-                )
-            );
+            ->setHeaders('Content-Type', 'application/json');
     }
 
     public function getApiEndpoint()
@@ -87,6 +80,16 @@ class Api extends \Magento\Framework\App\Helper\AbstractHelper
             $apiRequest->setRawData($jsonRequestData);
         }
 
+        $apiRequest->setHeaders(
+            'Authorization',
+            sprintf(
+                'Bearer %s',
+                // If an api key value is set, use this api key for the request
+                // otherwise, use the configured api key
+                $this->_helper->getApiKey()
+            )
+        );
+
         try {
             $apiResponse = $apiRequest->request($method);
         } catch (\Exception $e) {
@@ -108,7 +111,7 @@ class Api extends \Magento\Framework\App\Helper\AbstractHelper
             $this->log($uri, $requestData, $apiResponse, false, $message);
 
             throw new LocalizedException(
-                __('Shippit_Shipping - '. $message)
+                __('Shippit_Shipping - ' . $message)
             );
         }
 
