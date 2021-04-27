@@ -44,6 +44,9 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
      */
     protected $_syncOrder;
 
+    /**
+     * @var \Magento\Framework\Locale\Resolver
+     */
     protected $_localeResolver;
 
     /**
@@ -55,11 +58,11 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
      * @param array $data
      */
     public function __construct(
-        \Magento\Framework\Locale\Resolver $localeResolver = null,
         \Magento\Framework\Model\Context $context,
         \Magento\Framework\Registry $registry,
         \Shippit\Shipping\Helper\Data $helper,
         \Shippit\Shipping\Api\Request\SyncOrderInterface $syncOrder,
+        \Magento\Framework\Locale\Resolver $localeResolver,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
