@@ -20,10 +20,10 @@ use Exception;
 use Magento\Framework\App\Area as AppArea;
 use Shippit\Shipping\Model\Sync\Shipment as SyncShipment;
 
-class Shipment extends \Magento\Framework\Model\AbstractModel
+class Shipment
 {
     /**
-     * @var \Shippit\Shipping\Helper\Sync\Shipment
+     * @var \Shippit\Shipping\Helper\Sync\Shipping
      */
     protected $_helper;
 
@@ -88,12 +88,7 @@ class Shipment extends \Magento\Framework\Model\AbstractModel
         \Magento\Framework\Message\ManagerInterface $messageManager,
         \Magento\Framework\Stdlib\DateTime\DateTime $date,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
-        \Magento\Store\Model\App\Emulation $appEmulation,
-        \Magento\Framework\Model\Context $context,
-        \Magento\Framework\Registry $registry,
-        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
-        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
-        array $data = []
+        \Magento\Store\Model\App\Emulation $appEmulation
     ) {
         $this->_helper = $helper;
         $this->_requestShipmentInterfaceFactory = $requestShipmentInterfaceFactory;
@@ -105,8 +100,6 @@ class Shipment extends \Magento\Framework\Model\AbstractModel
         $this->_storeManagerInterface = $storeManagerInterface;
         $this->_appEmulation = $appEmulation;
         $this->_transactionFactory = $transactionFactory;
-
-        parent::__construct($context, $registry, $resource, $resourceCollection, $data);
     }
 
     public function run()
@@ -124,7 +117,7 @@ class Shipment extends \Magento\Framework\Model\AbstractModel
             );
 
             if (!$this->_helper->isActive()) {
-                return $this;
+                continue;
             }
 
             // get shipments to sync
@@ -141,7 +134,7 @@ class Shipment extends \Magento\Framework\Model\AbstractModel
 
     /**
      * Get a list of sync orders pending sync
-     * @return [type] [description]
+     * @return \Shippit\Shipping\Model\ResourceModel\Sync\Shipment\Collection
      */
     public function getSyncShipments($storeId)
     {
@@ -163,9 +156,9 @@ class Shipment extends \Magento\Framework\Model\AbstractModel
 
     /**
      * Process each shipment queue record to create shipment record
-     * @param  shipment  $syncShipment
-     * @param  boolean $displayNotifications
-     * @return Shipment
+     * @param  SyncShipment  $syncShipment
+     * @param  bool $displayNotifications
+     * @return bool
      */
     public function sync($syncShipment, $displayNotifications = false)
     {
@@ -191,8 +184,7 @@ class Shipment extends \Magento\Framework\Model\AbstractModel
                 ->setSyncedAt($this->_date->gmtDate())
                 ->save();
 
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             $this->_logger->addError('Shipment Sync Request Failed - ' . $e->getMessage());
 
             // Fail the sync item if it's breached the max attempts
@@ -214,11 +206,12 @@ class Shipment extends \Magento\Framework\Model\AbstractModel
 
     /**
      * Create shipment record
-     * @param  Order $order
-     * @param  array $items
-     * @param  string $courierName
-     * @param  string $trackingNumber
+     * @param Order $order
+     * @param array $items
+     * @param string $courierName
+     * @param string $trackingNumber
      * @return Shipment
+     * @throws Exception
      */
     protected function _createShipment($order, $items, $courierName, $trackingNumber)
     {
