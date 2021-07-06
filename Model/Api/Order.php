@@ -207,7 +207,7 @@ class Order extends \Magento\Framework\Model\AbstractModel
             }
         }
         catch (Exception $e) {
-            $this->_logger->addError('API - Order Sync Request Failed - ' . $e->getMessage());
+            $this->_logger->error('API - Order Sync Request Failed - ' . $e->getMessage());
 
             // Fail the sync item if it's breached the max attempts
             if ($syncOrder->getAttemptCount() > SyncOrder::SYNC_MAX_ATTEMPTS) {

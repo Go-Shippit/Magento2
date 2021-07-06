@@ -127,8 +127,8 @@ class Update extends \Magento\Framework\App\Action\Action
         }
         catch (\Exception $e)
         {
+            $this->_logger->error($e->getMessage());
             $response = $this->_prepareResponse(false, $e->getMessage());
-            $this->_logger->addError($e);
 
             return $this->getResponse()->setBody($response);
         }
@@ -199,7 +199,7 @@ class Update extends \Magento\Framework\App\Action\Action
             ]
         ];
 
-        $this->_logger->addDebug('Shipment Sync Request Recieved', $metaData);
+        $this->_logger->debug('Shipment Sync Request Recieved', $metaData);
     }
 
     protected function _checkRequest($request = array())
@@ -379,9 +379,9 @@ class Update extends \Magento\Framework\App\Action\Action
         ];
 
         if ($success) {
-            $this->_logger->addDebug($message, $metaData);
+            $this->_logger->debug($message, $metaData);
         } else {
-            $this->_logger->addNotice($message, $metaData);
+            $this->_logger->notice($message, $metaData);
         }
 
         return $this->_jsonHelper->jsonEncode($response);

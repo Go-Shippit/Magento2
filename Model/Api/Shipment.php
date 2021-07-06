@@ -193,7 +193,7 @@ class Shipment extends \Magento\Framework\Model\AbstractModel
 
         }
         catch (Exception $e) {
-            $this->_logger->addError('Shipment Sync Request Failed - ' . $e->getMessage());
+            $this->_logger->error('Shipment Sync Request Failed - ' . $e->getMessage());
 
             // Fail the sync item if it's breached the max attempts
             if ($syncShipment->getAttemptCount() > SyncShipment::SYNC_MAX_ATTEMPTS) {

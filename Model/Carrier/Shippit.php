@@ -191,7 +191,7 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
     {
         // check if the module is active
         if (!$this->_helper->isActive()) {
-            $this->_logger->addDebug(self::NOTICE_MODULE_DISABLED);
+            $this->_logger->debug(self::NOTICE_MODULE_DISABLED);
 
             return false;
         }
@@ -199,14 +199,14 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
         // check if we have any methods allowed before proceeding
         $allowedMethods = $this->_helper->getAllowedMethods();
         if (count($allowedMethods) == 0) {
-            $this->_logger->addDebug(self::NOTICE_NOMETHODS_SELECTED);
+            $this->_logger->debug(self::NOTICE_NOMETHODS_SELECTED);
 
             return false;
         }
 
         // check the products are eligible for shippit shipping
         if (!$this->_canShipProducts($request)) {
-            $this->_logger->addDebug(self::NOTICE_PRODUCTS_NOT_ELIGIBLE);
+            $this->_logger->debug(self::NOTICE_PRODUCTS_NOT_ELIGIBLE);
             return false;
         }
 
@@ -254,7 +254,7 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
             $shippingQuotes = $this->_api->getQuote($quoteRequest);
         }
         catch (\Exception $e) {
-            $this->_logger->addError('Quote Request Error - ' . $e->getMessage());
+            $this->_logger->error('Quote Request Error - ' . $e->getMessage());
 
             return false;
         }
