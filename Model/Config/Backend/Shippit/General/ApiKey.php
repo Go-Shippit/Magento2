@@ -105,24 +105,24 @@ class ApiKey extends \Magento\Framework\App\Config\Value
 
             if (property_exists($merchant, 'error')) {
                 if ($merchant->error == 'invalid_merchant_account') {
-                    $this->_logger->addError(self::ERROR_API_KEY);
+                    $this->_logger->error(self::ERROR_API_KEY);
                     $this->_messageManager->addError(self::ERROR_API_KEY);
                 }
                 else {
-                    $this->_logger->addError(self::ERROR_API_COMMUNICATION . ' ' . $merchant->error);
+                    $this->_logger->error(self::ERROR_API_COMMUNICATION . ' ' . $merchant->error);
                     $this->_messageManager->addError(self::ERROR_API_COMMUNICATION . ' ' . $merchant->error);
                 }
             }
             else {
-                $this->_logger->addNotice(self::NOTICE_API_KEY_VALID);
+                $this->_logger->notice(self::NOTICE_API_KEY_VALID);
                 $this->_messageManager->addSuccess(self::NOTICE_API_KEY_VALID);
-                
+
                 // Register the shipping cart name
                 $this->registerShippingCartName();
             }
         }
         catch (Exception $e) {
-            $this->_logger->addError(self::ERROR_API_COMMUNICATION);
+            $this->_logger->error(self::ERROR_API_COMMUNICATION);
             $this->_messageManager->addError(self::ERROR_API_COMMUNICATION);
         }
         finally {
@@ -160,7 +160,7 @@ class ApiKey extends \Magento\Framework\App\Config\Value
         try {
             $requestData = $this->_dataObjectFactory->create();
             $requestData->setShippingCartMethodName('magento2');
-            
+
             $merchant = $this->_api->putMerchant($requestData, true);
         }
         catch (Exception $e) {

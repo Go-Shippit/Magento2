@@ -131,12 +131,12 @@ class Active extends \Magento\Framework\App\Config\Value
                 $this->_messageManager->addError(self::ERROR_WEBHOOK_REGISTRATION_ERROR . ' - ' . $merchant->error);
             }
             else {
-                $this->_logger->addNotice(self::NOTICE_WEBHOOK_REGISTRATION_SUCCESS . ' - ' . $webhookUrl);
+                $this->_logger->notice(self::NOTICE_WEBHOOK_REGISTRATION_SUCCESS . ' - ' . $webhookUrl);
                 $this->_messageManager->addSuccess(self::NOTICE_WEBHOOK_REGISTRATION_SUCCESS . ' - ' . $webhookUrl);
             }
         }
         catch (Exception $e) {
-            $this->_logger->addError(self::ERROR_WEBHOOK_REGISTRATION_UNKNOWN . ' - ' . $e->getMessage());
+            $this->_logger->error(self::ERROR_WEBHOOK_REGISTRATION_UNKNOWN . ' - ' . $e->getMessage());
             $this->_messageManager->addError(self::ERROR_WEBHOOK_REGISTRATION_UNKNOWN . ' - ' . $e->getMessage());
         }
         finally {

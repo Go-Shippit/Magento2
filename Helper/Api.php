@@ -137,9 +137,9 @@ class Api extends \Magento\Framework\App\Helper\AbstractHelper
         }
 
         if ($success) {
-            $this->_logger->addNotice($message, $requestMetaData);
+            $this->_logger->notice($message, $requestMetaData);
         } else {
-            $this->_logger->addError($message, $requestMetaData);
+            $this->_logger->error($message, $requestMetaData);
         }
     }
 

@@ -105,11 +105,11 @@ class AddOrderToSyncQueuePlugin
                 $this->_syncOrder($syncOrder);
             }
         } catch (\Magento\Framework\Exception\LocalizedException $e) {
-            $this->_logger->addError($e->getMessage());
+            $this->_logger->error($e->getMessage());
         } catch (\RuntimeException $e) {
-            $this->_logger->addError($e->getMessage());
+            $this->_logger->error($e->getMessage());
         } catch (\Exception $e) {
-            $this->_logger->addError($e->getMessage());
+            $this->_logger->error($e->getMessage());
         }
     }
 
