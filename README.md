@@ -12,12 +12,7 @@ You don't have time to waste on shipping stuff. Plug in to Shippit and forget al
 
 ## Installation
 
-### Magento Marketplace (recommended)
-The Magento Marketplace is the recommended method of installing this module for Merchants - this GitHub repo is merely a mirror of the changes we submit to the Marketplace, albeit the marketplace may be a version or two behind while we await for update approvals from the Magento Marketplace Quality Assurance Team.
-
-Goto https://marketplace.magento.com/shippit-shipping.html to install this module via the Magento Marketplace
-
-### Composer Installation
+### Composer Installation (Recommended)
 
 *Note: Installation of the module via composer should be completed by a developer or someone comfortable with composer and the server commandline - we suggest testing this installation on a staging instance before pushing this live*
 
