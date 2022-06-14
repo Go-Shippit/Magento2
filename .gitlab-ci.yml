@@ -8,13 +8,13 @@ stages:
 
 include:
   - project: mamis/gitlab-templates
-    ref: v1.9.0
+    ref: v1.11.0
     file: gitlab-ci-includes/composer.gitlab-ci.yml
   - project: mamis/gitlab-templates
-    ref: v1.9.0
+    ref: v1.11.0
     file: gitlab-ci-includes/php-lint.gitlab-ci.yml
   - project: mamis/gitlab-templates
-    ref: v1.9.0
+    ref: v1.11.0
     file: gitlab-ci-includes/php-cs.gitlab-ci.yml
 
   - local: .gitlab/php-70.gitlab-ci.yml
