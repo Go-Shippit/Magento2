@@ -1,0 +1,15 @@
+php72-composer:
+  extends:
+    - .composer
+    - .composer-magento-auth
+  stage: build
+  image:
+    name: registry.mamis.com.au/mamis/containers/php/build:7.2
+
+php72-linter:
+  extends: .php-lint
+  stage: test
+  image:
+    name: registry.mamis.com.au/mamis/containers/php/build:7.2
+  needs:
+    - php72-composer

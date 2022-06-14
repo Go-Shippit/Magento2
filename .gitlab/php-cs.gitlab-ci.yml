@@ -1,0 +1,41 @@
+phpcs-mamis:
+  extends: .php-cs
+  stage: test
+  needs:
+    - php81-composer
+  script:
+    - >
+      vendor/bin/phpcs
+      --standard=Mamis
+      --runtime-set colors 1
+      --runtime-set installed_paths vendor/escapestudios/symfony2-coding-standard,vendor/mamis/phpcs-coding-standard/src
+      ./src
+  allow_failure: true
+
+phpcs-magento:
+  extends: .php-cs
+  stage: test
+  needs:
+    - php81-composer
+  script:
+    - >
+      vendor/bin/phpcs
+      --standard=Magento2
+      --severity=8
+      --runtime-set colors 1
+      --runtime-set installed_paths vendor/magento/magento-coding-standard
+      ./src
+
+phpcs-phpcompatability:
+  extends: .php-cs
+  stage: test
+  needs:
+    - php81-composer
+  script:
+    - >
+      vendor/bin/phpcs
+      --standard=PHPCompatibility
+      --runtime-set colors 1
+      --runtime-set installed_paths vendor/phpcompatibility/php-compatibility
+      --runtime-set testVersion 7.0-8.1
+      ./src

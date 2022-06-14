@@ -1,0 +1,15 @@
+php71-composer:
+  extends:
+    - .composer
+    - .composer-magento-auth
+  stage: build
+  image:
+    name: registry.mamis.com.au/mamis/containers/php/build:7.1
+
+php71-linter:
+  extends: .php-lint
+  stage: test
+  image:
+    name: registry.mamis.com.au/mamis/containers/php/build:7.1
+  needs:
+    - php71-composer

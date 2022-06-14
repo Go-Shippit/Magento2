@@ -1,0 +1,11 @@
+php70-composer:
+  extends:
+    - .composer
+    - .composer-magento-auth
+  stage: build
+
+php70-linter:
+  extends: .php-lint
+  stage: test
+  needs:
+    - php70-composer

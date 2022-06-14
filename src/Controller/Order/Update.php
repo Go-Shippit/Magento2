@@ -276,41 +276,6 @@ class Update extends \Magento\Framework\App\Action\Action
         return false;
     }
 
-    protected function _checkOrder($order)
-    {
-        if (!$order->getId()) {
-            $response = $this->_prepareResponse(
-                false,
-                self::ERROR_ORDER_MISSING
-            );
-
-            $this->getResponse()->setBody($response);
-
-            return false;
-        }
-
-        if ($order->getForcedShipmentWithInvoice()) {
-            $response = $this->_prepareResponse(false, self::ERROR_ORDER_INVOICE);
-
-            $this->getResponse()->setBody($response);
-
-            return false;
-        }
-
-        if (!$order->canShip()) {
-            $response = $this->_prepareResponse(
-                false,
-                self::ERROR_ORDER_STATUS
-            );
-
-            $this->getResponse()->setBody($response);
-
-            return false;
-        }
-
-        return true;
-    }
-
     protected function _getOrderIncrement($request = array())
     {
         if (!isset($request['retailer_order_number'])) {
