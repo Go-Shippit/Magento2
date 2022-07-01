@@ -50,16 +50,21 @@
         "phpcs:mamis": [
             "@php --version",
             "vendor/bin/phpcs --version",
-            "vendor/bin/phpcs --standard=Mamis --runtime-set colors 1 --runtime-set installed_paths vendor/escapestudios/symfony2-coding-standard,vendor/mamis/phpcs-coding-standard/src ./src"
+            "vendor/bin/phpcs --standard=Mamis -s -p --runtime-set colors 1 --runtime-set installed_paths vendor/escapestudios/symfony2-coding-standard,vendor/mamis/phpcs-coding-standard/src ./src"
         ],
         "phpcs:magento2": [
             "@php --version",
             "vendor/bin/phpcs --version",
-            "vendor/bin/phpcs --standard=Magento2 --severity=8 --runtime-set colors 1 --runtime-set installed_paths vendor/phpcompatibility/php-compatibility,vendor/magento/magento-coding-standard ./src"
+            "vendor/bin/phpcs --standard=Magento2 --exclude=Magento2.Legacy.InstallUpgrade --severity=10 -s -p --runtime-set colors 1 --runtime-set installed_paths vendor/phpcompatibility/php-compatibility,vendor/magento/magento-coding-standard ./src"
         ],
         "phpcs:compatibility": [
             "@php --version",
-            "vendor/bin/phpcs --standard=PHPCompatibility --runtime-set colors 1 --runtime-set testVersion 7.0-8.1 --runtime-set installed_paths vendor/phpcompatibility/php-compatibility ./src"
+            "vendor/bin/phpcs --standard=PHPCompatibility -s -p --runtime-set colors 1 --runtime-set testVersion 7.0-8.1 --runtime-set installed_paths vendor/phpcompatibility/php-compatibility ./src"
         ]
+    },
+    "config": {
+        "allow-plugins": {
+            "magento/composer-dependency-version-audit-plugin": true
+        }
     }
 }

@@ -6,7 +6,10 @@ phpcs-mamis:
   script:
     - >
       vendor/bin/phpcs
+      -s
+      -q
       --standard=Mamis
+      --report=full,summary,gitblame
       --runtime-set colors 1
       --runtime-set installed_paths vendor/escapestudios/symfony2-coding-standard,vendor/mamis/phpcs-coding-standard/src
       ./src
@@ -20,8 +23,12 @@ phpcs-magento:
   script:
     - >
       vendor/bin/phpcs
+      -s
+      -q
       --standard=Magento2
-      --severity=8
+      --exclude=Magento2.Legacy.InstallUpgrade
+      --report=full,summary,gitblame
+      --severity=10
       --runtime-set colors 1
       --runtime-set installed_paths vendor/magento/magento-coding-standard
       ./src
@@ -34,7 +41,10 @@ phpcs-phpcompatibility:
   script:
     - >
       vendor/bin/phpcs
+      -s
+      -q
       --standard=PHPCompatibility
+      --report=full,summary,gitblame
       --runtime-set colors 1
       --runtime-set installed_paths vendor/phpcompatibility/php-compatibility
       --runtime-set testVersion 7.0-8.1

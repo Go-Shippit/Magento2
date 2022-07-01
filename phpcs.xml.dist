@@ -16,4 +16,10 @@
     <arg value="nps"/>
 
     <rule ref="Magento2"/>
+
+    <!-- Allow for Magento 2.2 support -->
+    <rule ref="Magento2.Legacy.InstallUpgrade">
+        <severity>9</severity>
+        <type>warning</type>
+    </rule>
 </ruleset>
