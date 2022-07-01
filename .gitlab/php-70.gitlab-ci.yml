@@ -1,0 +1,15 @@
+php70-composer:
+  extends:
+    - .composer
+    - .composer-magento-auth
+  stage: build
+  image:
+    name: registry.mamis.com.au/mamis/containers/php/build:7.0
+
+php70-linter:
+  extends: .php-lint
+  stage: test
+  needs:
+    - php70-composer
+  image:
+    name: registry.mamis.com.au/mamis/containers/php/build:7.0
