@@ -30,7 +30,7 @@ phpcs-magento:
       --report=full,summary,gitblame
       --severity=10
       --runtime-set colors 1
-      --runtime-set installed_paths vendor/magento/magento-coding-standard
+      --runtime-set installed_paths vendor/phpcompatibility/php-compatibility,vendor/magento/magento-coding-standard
       ./src
 
 phpcs-phpcompatibility:
