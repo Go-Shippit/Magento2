@@ -75,8 +75,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
         parent::__construct($context, $registry, $resource, $resourceCollection, $data);
     }
 
-    public function processSyncOrder(\Shippit\Shipping\Model\Sync
-        \Order $syncOrder)
+    public function processSyncOrder(\Shippit\Shipping\Model\Sync\Order $syncOrder)
     {
         // get the order attached to the syncOrder object
         $order = $syncOrder->getOrder();
