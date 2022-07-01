@@ -17,7 +17,6 @@
 namespace Shippit\Shipping\Model\Api;
 
 use Exception;
-use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\App\Area as AppArea;
 use Shippit\Shipping\Model\Sync\Shipment as SyncShipment;
 
@@ -42,11 +41,6 @@ class Shipment extends \Magento\Framework\Model\AbstractModel
      * @var \Shippit\Shipping\Logger\Logger
      */
     protected $_logger;
-
-    /**
-     * @var \Magento\Sales\Model\OrderRepository
-     */
-    protected $_orderRepository
 
     /**
      * @var \Magento\Sales\Model\Order\ShipmentFactory
@@ -89,14 +83,12 @@ class Shipment extends \Magento\Framework\Model\AbstractModel
         \Shippit\Shipping\Api\Request\ShipmentInterfaceFactory $requestShipmentInterfaceFactory,
         \Shippit\Shipping\Api\Data\SyncShipmentInterfaceFactory $syncShipmentInterfaceFactory,
         \Shippit\Shipping\Logger\Logger $logger,
-        \Magento\Sales\Model\OrderRepository $orderRepository,
         \Magento\Sales\Model\Order\ShipmentFactory $shipmentFactory,
         \Magento\Framework\DB\TransactionFactory $transactionFactory,
         \Magento\Framework\Message\ManagerInterface $messageManager,
         \Magento\Framework\Stdlib\DateTime\DateTime $date,
         \Magento\Store\Model\StoreManagerInterface $storeManagerInterface,
         \Magento\Store\Model\App\Emulation $appEmulation,
-
         \Magento\Framework\Model\Context $context,
         \Magento\Framework\Registry $registry,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
@@ -107,7 +99,6 @@ class Shipment extends \Magento\Framework\Model\AbstractModel
         $this->_requestShipmentInterfaceFactory = $requestShipmentInterfaceFactory;
         $this->_syncShipmentInterfaceFactory = $syncShipmentInterfaceFactory;
         $this->_logger = $logger;
-        $this->_orderRepository = $orderRepository;
         $this->_shipmentFactory = $shipmentFactory;
         $this->_messageManager = $messageManager;
         $this->_date = $date;
@@ -201,18 +192,6 @@ class Shipment extends \Magento\Framework\Model\AbstractModel
                 ->save();
 
         }
-        catch (NoSuchEntityException $e) {
-            $this->_logger->error('Shipment Sync Request Failed - ' . $e->getMessage());
-
-            $syncShipment->setStatus(SyncShipment::STATUS_FAILED)
-                ->save();
-
-            if ($displayNotifications) {
-                $this->_messageManager->addError(__('Shipment for Order ' . $syncShipment->getOrderIncrement() . ' was not created - ' . $e->getMessage()));
-            }
-
-            return false;
-        }
         catch (Exception $e) {
             $this->_logger->error('Shipment Sync Request Failed - ' . $e->getMessage());
 
@@ -227,7 +206,6 @@ class Shipment extends \Magento\Framework\Model\AbstractModel
             if ($displayNotifications) {
                 $this->_messageManager->addError(__('Shipment for Order ' . $syncShipment->getOrderIncrement() . ' was not created - ' . $e->getMessage()));
             }
-
             return false;
         }
 
