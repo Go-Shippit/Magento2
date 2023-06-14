@@ -23,12 +23,14 @@ class Methods implements \Magento\Framework\Option\ArrayInterface
     const SERVICE_LEVEL_STANDARD = 'standard';
     const SERVICE_LEVEL_EXPRESS = 'express';
     const SERVICE_LEVEL_PRIORITY = 'priority';
+    const SERVICE_LEVEL_ON_DEMAND = 'on_demand';
     const SERVICE_LEVEL_CC = 'click_and_collect';
 
     public static $serviceLevels = [
         'standard' => 'Standard',
         'express' => 'Express',
         'priority' => 'Priority',
+        'on_demand' => 'On Demand',
         'click_and_collect' => 'Click and Collect',
     ];
 
@@ -79,6 +81,7 @@ class Methods implements \Magento\Framework\Option\ArrayInterface
         'Tnt' => 'TNT',
         'TntOvernightExpress' => 'TNT Overnight Express',
         'Toll' => 'Toll',
+        'UberOndemand' => 'Uber On Demand',
         'YelloOndemand' => 'Yello On Demand',
     ];
 

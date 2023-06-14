@@ -73,7 +73,7 @@ class Order extends \Shippit\Shipping\Helper\Data
         $values = $this->_serializer->unserialize(
             self::getValue('shipping_method_mapping')
         );
-        
+
         $mappings = [];
 
         // If the values are empty / not set, return early
@@ -107,9 +107,12 @@ class Order extends \Shippit\Shipping\Helper\Data
             if (isset($shippingOptions[0])) {
                 $method = strtolower($shippingOptions[0]);
 
+                if ($method == 'ondemand') {
+                    return 'on_demand';
+                }
                 // allows for legacy capability where
                 // "priority" was referred to as "premium"
-                if ($method == 'priority' || $method == 'premium') {
+                else if ($method == 'priority' || $method == 'premium') {
                     return 'priority';
                 }
                 else if ($method == 'express') {
