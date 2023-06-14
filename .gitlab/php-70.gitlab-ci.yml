@@ -5,6 +5,8 @@ php70-composer:
   stage: build
   image:
     name: registry.mamis.com.au/mamis/containers/php/build:7.0
+  script:
+    - composer install --prefer-dist --optimize-autoloader --no-progress --no-plugins --no-interaction
 
 php70-linter:
   extends: .php-lint
