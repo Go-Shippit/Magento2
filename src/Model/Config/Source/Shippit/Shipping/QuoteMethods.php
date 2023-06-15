@@ -37,7 +37,11 @@ class QuoteMethods implements \Magento\Framework\Option\ArrayInterface
             [
                 'label' => 'Priority',
                 'value' => 'priority'
-            ]
+            ],
+            [
+                'label' => 'On Demand',
+                'value' => 'on_demand'
+            ],
         ];
     }
 
@@ -51,7 +55,8 @@ class QuoteMethods implements \Magento\Framework\Option\ArrayInterface
         return [
             'standard' => 'Standard',
             'express' => 'Express',
-            'priority' => 'Priority'
+            'priority' => 'Priority',
+            'on_demand' => 'On Demand',
         ];
     }
 }

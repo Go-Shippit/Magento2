@@ -16,6 +16,8 @@
 
 namespace Shippit\Shipping\Model\Carrier;
 
+use Carbon\Carbon;
+use Carbon\CarbonInterface;
 use Magento\Framework\DataObject;
 use Magento\Catalog\Model\Product\Type as ProductType;
 use Magento\Catalog\Model\Product\Type\AbstractType as ProductTypeAbstract;
@@ -276,6 +278,7 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
     {
         $allowedMethods = $this->_helper->getAllowedMethods();
 
+        $isOnDemandAvailable = in_array('on_demand', $allowedMethods);
         $isPriorityAvailable = in_array('priority', $allowedMethods);
         $isExpressAvailable = in_array('express', $allowedMethods);
         $isStandardAvailable = in_array('standard', $allowedMethods);
@@ -284,6 +287,12 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
         foreach ($shippingQuotes as $shippingQuoteKey => $shippingQuote) {
             if ($shippingQuote->success) {
                 switch ($shippingQuote->service_level) {
+                    case 'on_demand':
+                        if ($isOnDemandAvailable) {
+                            $this->_addOnDemandQuote($rateResult, $shippingQuote);
+                        }
+
+                        break;
                     case 'priority':
                         if ($isPriorityAvailable) {
                             $this->_addPriorityQuote($rateResult, $shippingQuote);
@@ -364,6 +373,47 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
                 $method = 'Priority';
                 $methodTitle = 'Priority';
             }
+
+            $rateResultMethod->setCarrier($this->_code)
+                ->setCarrierTitle($carrierTitle)
+                ->setMethod($method)
+                ->setMethodTitle($methodTitle)
+                ->setCost($shippingQuoteQuote->price)
+                ->setPrice($this->_getQuotePrice($shippingQuoteQuote->price));
+
+            $rateResult->append($rateResultMethod);
+        }
+    }
+
+    protected function _addOnDemandQuote(&$rateResult, $shippingQuote)
+    {
+        $maxTimeslots = $this->_helper->getMaxTimeslots();
+        $timeslotCount = 0;
+
+        foreach ($shippingQuote->quotes as $shippingQuoteQuote) {
+            if (!empty($maxTimeslots) && $maxTimeslots <= $timeslotCount) {
+                break;
+            }
+
+            // Parse the estimated_delivery_time received from Shippit to
+            // obtain a human readable delivery estimate
+            $deliveryEstimate = Carbon::parse($shippingQuoteQuote->estimated_delivery_time)
+                ->diffForHumans(
+                    [
+                        'options' => Carbon::CEIL,
+                        'parts' => 1,
+                    ],
+                    CarbonInterface::DIFF_ABSOLUTE
+                );
+
+            $rateResultMethod = $this->_rateMethodFactory->create();
+
+            $carrierTitle = $this->_helper->getTitle();
+            $method = 'ondemand';
+            $methodTitle = sprintf(
+                'On Demand - Delivered within %s',
+                $deliveryEstimate
+            );
 
             $rateResultMethod->setCarrier($this->_code)
                 ->setCarrierTitle($carrierTitle)
