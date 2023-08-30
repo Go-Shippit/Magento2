@@ -88,7 +88,7 @@ class UpgradeData implements UpgradeDataInterface
          */
         $configOptions = [
             'carriers/shippit/product_attribute_code' => 'carriers/shippit/enabled_product_attribute_code',
-            'carriers/shippit/product_attribute_value' => 'carriers/shippit/enabled_product_attribute_value'
+            'carriers/shippit/product_attribute_value' => 'carriers/shippit/enabled_product_attribute_value',
         ];
 
         foreach ($configOptions as $configOptionOldKey => $configOptionNewKey) {
@@ -116,7 +116,7 @@ class UpgradeData implements UpgradeDataInterface
          */
         $configOptions = [
             'shippit/sync_order/product_location_attribute_code' => 'shippit/sync_item/product_location_active',
-            'shippit/sync_order/product_location_attribute_code' => 'shippit/sync_item/product_location_attribute_code'
+            'shippit/sync_order/product_location_attribute_code' => 'shippit/sync_item/product_location_attribute_code',
         ];
 
         foreach ($configOptions as $configOptionOldKey => $configOptionNewKey) {

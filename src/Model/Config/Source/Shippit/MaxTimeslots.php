@@ -16,7 +16,7 @@
 
 namespace Shippit\Shipping\Model\Config\Source\Shippit;
 
-class MaxTimeslots implements \Magento\Framework\Option\ArrayInterface
+class MaxTimeslots implements \Magento\Framework\Data\OptionSourceInterface
 {
     const TIMESLOTS_MIN = 1;
     const TIMESLOTS_MAX = 20;
@@ -33,13 +33,13 @@ class MaxTimeslots implements \Magento\Framework\Option\ArrayInterface
         $optionsArray = [];
         $optionsArray[] = [
             'label' => '-- No Max Timeslots --',
-            'value' => ''
+            'value' => '',
         ];
 
         foreach ($timeslots as $timeslot) {
             $optionsArray[] = [
                 'label' => $timeslot . ' Timeslots',
-                'value' => $timeslot
+                'value' => $timeslot,
             ];
         }
 

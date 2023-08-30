@@ -83,12 +83,12 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
                     'shipping_method',
                     'tracking_number',
                     'synced_at',
-                    'sync_status' => 'status'
+                    'sync_status' => 'status',
                 ]
             )
             ->join(
                 [
-                    'order' => $this->syncOrderCollection->getTable('sales_order')
+                    'order' => $this->syncOrderCollection->getTable('sales_order'),
                 ],
                 'main_table.order_id = order.entity_id',
                 [
@@ -101,7 +101,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
             )
             ->join(
                 [
-                    'order_address' => $this->syncOrderCollection->getTable('sales_order_address')
+                    'order_address' => $this->syncOrderCollection->getTable('sales_order_address'),
                 ],
                 'order.entity_id = order_address.parent_id AND order_address.address_type != \'billing\'',
                 [
@@ -162,7 +162,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
             [
                 'header' => __('Purchased On'),
                 'type' => 'datetime',
-                'index' => 'created_at'
+                'index' => 'created_at',
             ]
         );
 
@@ -210,7 +210,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
             [
                 'header' => __('Synced At'),
                 'type' => 'datetime',
-                'index' => 'synced_at'
+                'index' => 'synced_at',
             ]
         );
 
@@ -220,7 +220,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
                 'header' => __('Sync Status'),
                 'index' => 'sync_status',
                 'type' => 'options',
-                'options' => $this->syncOrderStatus->toArray()
+                'options' => $this->syncOrderStatus->toArray(),
             ]
         );
 
@@ -235,19 +235,19 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
                     [
                         'caption' => __('Sync Now'),
                         'url' => ['base' => '*/*/sync'],
-                        'field' => 'id'
+                        'field' => 'id',
                     ],
                     ['caption' => __('Schedule Sync'),
                         'url' => ['base' => '*/*/schedule'],
-                        'field' => 'id'
+                        'field' => 'id',
                     ],
                     ['caption' => __('Delete'),
                         'url' => ['base' => '*/*/delete'],
-                        'field' => 'id'
+                        'field' => 'id',
                     ],
                 ],
                 'filter' => false,
-                'sortable' => false
+                'sortable' => false,
             ]
         );
 

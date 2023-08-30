@@ -48,7 +48,7 @@ interface SyncOrderItemInterface
      * Set the Sync Item Id
      *
      * @param integer $syncItemId
-     * @return string|null
+     * @return self
      */
     public function setId($syncItemId);
 
@@ -63,7 +63,7 @@ interface SyncOrderItemInterface
      * Set the Sync Item Id
      *
      * @param integer $syncItemId
-     * @return string|null
+     * @return self
      */
     public function setSyncItemId($syncItemId);
 
@@ -78,7 +78,7 @@ interface SyncOrderItemInterface
      * Set the Sync Order Id
      *
      * @param integer $syncOrderId
-     * @return string|null
+     * @return self
      */
     public function setSyncOrderId($syncOrderId);
 
@@ -93,7 +93,7 @@ interface SyncOrderItemInterface
      * Set the Item Sku
      *
      * @param string $sku
-     * @return string|null
+     * @return self
      */
     public function setSku($sku);
 
@@ -107,8 +107,8 @@ interface SyncOrderItemInterface
     /**
      * Set the Item Title
      *
-     * @param string $sku
-     * @return string|null
+     * @param string $title
+     * @return self
      */
     public function setTitle($title);
 
@@ -123,7 +123,7 @@ interface SyncOrderItemInterface
      * Set the Item Qty
      *
      * @param string $qty
-     * @return string|null
+     * @return self
      */
     public function setQty($qty);
 
@@ -137,8 +137,8 @@ interface SyncOrderItemInterface
     /**
      * Set the Item Price
      *
-     * @param string $sku
-     * @return string|null
+     * @param string $price
+     * @return self
      */
     public function setPrice($price);
 
@@ -153,7 +153,7 @@ interface SyncOrderItemInterface
      * Set the Item Weight
      *
      * @param string $weight
-     * @return string|null
+     * @return self
      */
     public function setWeight($weight);
 
@@ -168,7 +168,7 @@ interface SyncOrderItemInterface
      * Set the Item Length
      *
      * @param string $length
-     * @return string|null
+     * @return self
      */
     public function setLength($length);
 
@@ -183,7 +183,7 @@ interface SyncOrderItemInterface
      * Set the Item Width
      *
      * @param string $width
-     * @return string|null
+     * @return self
      */
     public function setWidth($width);
 
@@ -198,7 +198,7 @@ interface SyncOrderItemInterface
      * Set the Item Depth
      *
      * @param string $depth
-     * @return string|null
+     * @return self
      */
     public function setDepth($depth);
 
@@ -213,7 +213,7 @@ interface SyncOrderItemInterface
      * Set the Item Location
      *
      * @param string $location
-     * @return string|null
+     * @return self
      */
     public function setLocation($location);
 
@@ -228,7 +228,7 @@ interface SyncOrderItemInterface
      * Set the Item Tariffcode
      *
      * @param string $tariffCode
-     * @return string|null
+     * @return self
      */
     public function setTariffCode($tariffCode);
 
@@ -243,7 +243,7 @@ interface SyncOrderItemInterface
      * Set the Item Origin Country Code
      *
      * @param string $originCountryCode
-     * @return string|null
+     * @return self
      */
     public function setOriginCountryCode($originCountryCode);
 
@@ -251,7 +251,7 @@ interface SyncOrderItemInterface
      * Set the Item Dangerous Goods Code
      *
      * @param string $dangerousGoodsCode
-     * @return string|null
+     * @return self
      */
     public function setDangerousGoodsCode($dangerousGoodsCode);
 
@@ -266,7 +266,7 @@ interface SyncOrderItemInterface
      * Set the Item Dangerous Goods Text
      *
      * @param string $dangerousGoodsText
-     * @return string|null
+     * @return self
      */
     public function setDangerousGoodsText($dangerousGoodsText);
 
@@ -279,6 +279,9 @@ interface SyncOrderItemInterface
 
     /**
      * Add a new item to the sync order item request
+     *
+     * @param array $item
+     * @return self
      */
     public function addItem($item);
 }

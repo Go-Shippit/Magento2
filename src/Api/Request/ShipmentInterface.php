@@ -31,49 +31,55 @@ interface ShipmentInterface
     /**
      * Get the Order Id
      *
-     * @return string|null
+     * @return int|null
      */
     public function getOrderId();
-
-    public function setOrderByIncrementId($incrementId);
 
     /**
      * Get the Order Object
      *
-     * @return Magento_Sales_Model_Order|null
+     * @return \Magento\Sales\Model\Order|null
      */
     public function getOrder();
 
     /**
      * Set the Order Object
      *
-     * @param Magento_Sales_Model_Order $order
-     * @return Magento_Sales_Model_Order|null
+     * @param \Magento\Sales\Model\Order $order
+     * @return self
      */
     public function setOrder($order);
+
+    /**
+     * Set the order id by the order increment
+     *
+     * @param string $incrementId
+     * @return self
+     */
+    public function setOrderByIncrementId($incrementId);
 
     /**
      * Process items in the shipment request,
      * - ensures only items contained in the order are present
      * - ensures only qtys available for shipping are used in the shipment
      *
-     * @param object $items   The items to be included in the request
-     * @return object         The items captured in the request
+     * @param array $items The items to be included in the request
+     * @return self
      */
     public function processItems($items = []);
 
     /**
      * Get the Items in the request
      *
-     * @return object|null
+     * @return array|null
      */
     public function getItems();
 
     /**
      * Set the items in the request
      *
-     * @param object $items The items to be included in the request
-     * @return object       The items captured in the request
+     * @param array $items The items to be included in the request
+     * @return self
      */
     public function setItems($items);
 
@@ -82,6 +88,7 @@ interface ShipmentInterface
      *
      * @param string $itemId The Item Id to be Shipped
      * @param float $qty     The Item Qty to be Shipped
+     * @return self
      */
     public function addItem($itemId, $qty);
 }

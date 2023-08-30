@@ -111,7 +111,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
                     'primary' => true,
                     'unsigned' => true,
                     'nullable' => false,
-                    'comment' => 'Sync Order ID'
+                    'comment' => 'Sync Order ID',
                 ]
             );
 
@@ -126,7 +126,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
                     'length' => 10,
                     'unsigned' => true,
                     'nullable' => false,
-                    'comment' => 'Order ID'
+                    'comment' => 'Order ID',
                 ]
             );
 
@@ -188,7 +188,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 [
                     'type' => \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
                     'unsigned' => true,
-                    'comment' => 'Attempt Count'
+                    'comment' => 'Attempt Count',
                 ]
             );
 
@@ -200,14 +200,14 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 [
                     'type' => \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
                     'unsigned' => true,
-                    'comment' => 'Status'
+                    'comment' => 'Status',
                 ]
             );
 
         // Add Order Item Schema
         $orderItemTable = $installer->getConnection()
             ->newTable($installer->getTable('shippit_sync_order_item'))
-             ->addColumn(
+            ->addColumn(
                 'sync_item_id',
                 \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
                 null,
@@ -215,7 +215,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
                     'identity' => true,
                     'nullable' => false,
                     'primary' => true,
-                    'unsigned' => true
+                    'unsigned' => true,
                 ],
                 'Sync Item ID'
             )
@@ -225,7 +225,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 null,
                 [
                     'nullable' => false,
-                    'unsigned' => true
+                    'unsigned' => true,
                 ],
                 'Sync Order ID'
             )
@@ -248,7 +248,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 \Magento\Framework\DB\Ddl\Table::TYPE_FLOAT,
                 null,
                 [
-                    'nullable' => false
+                    'nullable' => false,
                 ],
                 'Item Qty'
             )
@@ -258,7 +258,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 null,
                 [
                     'nullable' => true,
-                    'default' => null
+                    'default' => null,
                 ],
                 'Item Price'
             )
@@ -267,7 +267,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 \Magento\Framework\DB\Ddl\Table::TYPE_FLOAT,
                 null,
                 [
-                    'nullable' => false
+                    'nullable' => false,
                 ],
                 'Item Weight'
             )
@@ -343,7 +343,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
                     'nullable' => true,
                     'default' => null,
                     'comment' => 'API Key',
-                    'after' => 'sync_order_id'
+                    'after' => 'sync_order_id',
                 ]
             );
 
@@ -357,7 +357,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
                     'type' => \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
                     'unsigned' => true,
                     'comment' => 'Attempt Count',
-                    'default' => '0'
+                    'default' => '0',
                 ]
             );
 
@@ -370,7 +370,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
                     'type' => \Magento\Framework\DB\Ddl\Table::TYPE_SMALLINT,
                     'unsigned' => true,
                     'comment' => 'Status',
-                    'default' => '0'
+                    'default' => '0',
                 ]
             );
     }
@@ -406,7 +406,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 'type' => 'text',
                 'nullable' => true,
                 'default' => null,
-                'comment' => 'Shippit - Delivery Instructions'
+                'comment' => 'Shippit - Delivery Instructions',
             ]
         );
 
@@ -428,7 +428,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 'type' => 'text',
                 'nullable' => true,
                 'default' => null,
-                'comment' => 'Shippit - Delivery Instructions'
+                'comment' => 'Shippit - Delivery Instructions',
             ]
         );
 

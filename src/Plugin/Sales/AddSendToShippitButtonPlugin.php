@@ -41,7 +41,7 @@ class AddSendToShippitButtonPlugin
                 [
                     'label' => __('Send to Shippit'),
                     'onclick' => 'setLocation(\'' . $this->getShippitOrderSyncUrl($request) . '\')',
-                    'class' => 'ship'
+                    'class' => 'ship',
                 ],
                 100
             );
@@ -57,7 +57,7 @@ class AddSendToShippitButtonPlugin
         return $this->url->getUrl(
             'shippit/order/sync',
             [
-                'order_id' => $orderId
+                'order_id' => $orderId,
             ]
         );
     }

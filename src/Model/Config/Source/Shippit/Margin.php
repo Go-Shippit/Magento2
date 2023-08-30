@@ -20,7 +20,7 @@
  */
 namespace Shippit\Shipping\Model\Config\Source\Shippit;
 
-class Margin implements \Magento\Framework\Option\ArrayInterface
+class Margin implements \Magento\Framework\Data\OptionSourceInterface
 {
     const NONE = '';
     const PERCENTAGE = 'percentage';
@@ -36,16 +36,16 @@ class Margin implements \Magento\Framework\Option\ArrayInterface
         return [
             [
                 'label' => 'No',
-                'value' => self::NONE
+                'value' => self::NONE,
             ],
             [
                 'label' => 'Yes - Percentage',
-                'value' => self::PERCENTAGE
+                'value' => self::PERCENTAGE,
             ],
             [
                 'label' => 'Yes - Fixed Amount',
-                'value' => self::FIXED
-            ]
+                'value' => self::FIXED,
+            ],
         ];
     }
 
@@ -59,7 +59,7 @@ class Margin implements \Magento\Framework\Option\ArrayInterface
         return [
             self::NONE => 'No',
             self::PERCENTAGE => 'Yes - Percentage',
-            self::FIXED => 'Yes - Fixed Amount'
+            self::FIXED => 'Yes - Fixed Amount',
         ];
     }
 }

@@ -16,167 +16,193 @@
 
 namespace Shippit\Shipping\Helper;
 
+use GuzzleHttp\Client;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\RequestOptions;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Log\LoggerInterface;
 use Shippit\Shipping\Model\Config\Source\Shippit\Environment as ShippitEnvironment;
-use Magento\Framework\Exception\LocalizedException;
 
 class Api extends \Magento\Framework\App\Helper\AbstractHelper
 {
-    const API_ENDPOINT_PRODUCTION = 'https://www.shippit.com/api/3';
-    const API_ENDPOINT_STAGING = 'https://staging.shippit.com/api/3';
-    const API_TIMEOUT = 15;
-    const API_USER_AGENT = 'Shippit_Shipping for Magento2';
+    const API_ENDPOINT_PRODUCTION = 'https://app.shippit.com/api/3/';
+    const API_ENDPOINT_STAGING = 'https://app.staging.shippit.com/api/3/';
+    const API_TIMEOUT = 30;
 
-    protected $_api;
-    protected $_helper;
-    protected $_logger;
+    /**
+     * @var \Shippit\Shipping\Helper\Data
+     */
+    protected $helper;
+
+    /**
+     * @var \Shippit\Shipping\Logger\Logger
+     */
+    protected $logger;
+
+    /**
+     * @var \GuzzleHttp\Client
+     */
+    protected $client;
 
     /**
      * @param \Shippit\Shipping\Helper\Data $helper
+     * @param \Shippit\Shipping\Logger\Logger $logger
      */
     public function __construct(
         \Shippit\Shipping\Helper\Data $helper,
         \Shippit\Shipping\Logger\Logger $logger
     ) {
-        $this->_helper = $helper;
-        $this->_logger = $logger;
+        $this->logger = $logger;
+        $this->helper = $helper;
 
-        $this->_api = new \Zend_Http_Client;
-        $this->_api->setConfig(
-                [
-                    'timeout' => self::API_TIMEOUT,
-                    'useragent' => self::API_USER_AGENT . ' v' . $this->_helper->getModuleVersion(),
-                ]
-            )
-            ->setHeaders('Content-Type', 'application/json');
-    }
-
-    public function getApiEndpoint()
-    {
-        $environment = $this->_helper->getEnvironment();
-
-        if ($environment == ShippitEnvironment::LIVE) {
-            return self::API_ENDPOINT_PRODUCTION;
-        } else {
-            return self::API_ENDPOINT_STAGING;
-        }
-    }
-
-    public function getApiUri($path)
-    {
-        return $this->getApiEndpoint() . '/' . $path;
-    }
-
-    public function call($path, $requestData, $method = \Zend_Http_Client::POST, $exceptionOnResponseError = true)
-    {
-        $uri = $this->getApiUri($path);
-        $jsonRequestData = json_encode($requestData);
-        $this->log($uri, $requestData);
-
-        $apiRequest = $this->_api
-            ->setMethod($method)
-            ->setUri($uri);
-
-        if ($requestData !== null) {
-            $apiRequest->setRawData($jsonRequestData);
-        }
-
-        $apiRequest->setHeaders(
-            'Authorization',
-            sprintf(
-                'Bearer %s',
-                // If an api key value is set, use this api key for the request
-                // otherwise, use the configured api key
-                $this->_helper->getApiKey()
-            )
+        $clientHandler = HandlerStack::create();
+        $clientHandler->push(
+            $this->logRequestsMiddleware($this->logger),
+            'log-requests'
         );
 
-        try {
-            $apiResponse = $apiRequest->request($method);
-        } catch (\Exception $e) {
-            if (!isset($apiResponse)) {
-                $apiResponse = null;
-            }
-
-            $this->log($uri, $requestData, $apiResponse, false, 'API Request Error');
-
-            throw new LocalizedException(
-                __('Shippit_Shipping - An API Communication Error Occurred')
-            );
-        }
-
-        if ($exceptionOnResponseError && $apiResponse->isError()) {
-            $message = 'API Response Error' . "\n";
-            $message .= 'Response: ' . $apiResponse->getStatus() . ' - ' . $apiResponse->getMessage() . "\n";
-
-            $this->log($uri, $requestData, $apiResponse, false, $message);
-
-            throw new LocalizedException(
-                __('Shippit_Shipping - ' . $message)
-            );
-        }
-
-        $this->log($uri, $requestData, $apiResponse);
-        $apiResponseBody = json_decode($apiResponse->getBody());
-
-        return $apiResponseBody;
-    }
-
-    protected function log($uri, $requestData, $apiResponse = null, $success = true, $message = 'Shippit API Request')
-    {
-        // add the request meta data
-        $requestMetaData = [
-            'api_request' => [
-                'request_uri' => $uri,
-                'request_body' => $requestData,
+        $this->client = new Client(
+            [
+                'base_uri' => (
+                    $this->helper->getEnvironment() == ShippitEnvironment::PRODUCTION
+                    ? self::API_ENDPOINT_PRODUCTION
+                    : self::API_ENDPOINT_STAGING
+                ),
+                'handler' => $clientHandler,
+                'timeout' => self::API_TIMEOUT,
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'User-Agent' => $this->getUserAgent(),
+                    'Authorization' => sprintf(
+                        'Bearer %s',
+                        $this->helper->getApiKey()
+                    ),
+                ],
             ]
-        ];
-
-        if ($apiResponse !== null) {
-            $requestMetaData['api_request']['response_code'] = $apiResponse->getStatus();
-            $requestMetaData['api_request']['response_body'] = json_decode($apiResponse->getBody());
-        }
-
-        if ($success) {
-            $this->_logger->notice($message, $requestMetaData);
-        } else {
-            $this->_logger->error($message, $requestMetaData);
-        }
+        );
     }
 
-    public function getQuote($requestData)
+    /**
+     * Retrieve a quote
+     *
+     * @param \Shippit\Shipping\Api\Request\QuoteInterface $quoteRequestData
+     * @return object
+     */
+    public function createQuote($quoteRequestData)
     {
-        $requestData = [
-            'quote' => $requestData->toArray()
-        ];
+        $apiResponse = $this->client->post(
+            'quotes',
+            [
+                RequestOptions::JSON => [
+                    'quote' => $quoteRequestData->toArray(),
+                ],
+            ]
+        );
 
-        return $this->call('quotes', $requestData)
+        return json_decode($apiResponse->getBody())
             ->response;
     }
 
-    public function sendOrder($requestData)
+    /**
+     * Create an order
+     *
+     * @param \Shippit\Shipping\Model\Request\Order $orderRequestData
+     * @return object
+     */
+    public function createOrder($orderRequestData)
     {
-        $requestData = [
-            'order' => $requestData->toArray()
-        ];
+        $apiResponse = $this->client->post(
+            'orders',
+            [
+                RequestOptions::JSON => [
+                    'order' => $orderRequestData->toArray(),
+                ],
+            ]
+        );
 
-        return $this->call('orders', $requestData)
+        return json_decode($apiResponse->getBody())
             ->response;
     }
 
+    /**
+     * Retrieve the merchant details
+     *
+     * @return object
+     */
     public function getMerchant()
     {
-        return $this->call('merchant', null, \Zend_Http_Client::GET, false);
+        $apiResponse = $this->client->get('merchant');
+
+        return json_decode($apiResponse->getBody())
+            ->response;
     }
 
-    public function putMerchant($requestData, $exceptionOnResponseError = false)
+    /**
+     * Update the merchant details
+     *
+     * @param object $merchantRequestData
+     * @return object
+     */
+    public function updateMerchant($merchantRequestData)
     {
-        $requestData = [
-            'merchant' => $requestData->toArray()
-        ];
+        $apiResponse = $this->client->put(
+            'merchant',
+            [
+                RequestOptions::JSON => [
+                    'merchant' => $merchantRequestData->toArray(),
+                ],
+            ]
+        );
 
-        $url = $this->getApiUri('merchant');
-
-        return $this->call('merchant', $requestData, \Zend_Http_Client::PUT, $exceptionOnResponseError)
+        return json_decode($apiResponse->getBody())
             ->response;
+    }
+
+    /**
+     * Retrieve the user agent for outbound API calls
+     *
+     * @return string
+     */
+    protected function getUserAgent()
+    {
+        return sprintf(
+            'Shippit_Magento2/%s Magento/%s PHP/%s',
+            $this->helper->getModuleVersion(),
+            $this->helper->getMagentoVersion(),
+            phpversion()
+        );
+    }
+
+    protected function logRequestsMiddleware(LoggerInterface $logger)
+    {
+        return function (callable $handler) use ($logger) {
+            return function (RequestInterface $request, array $options) use ($handler, $logger) {
+                // Log the request
+                $logger->info(
+                    'Request:',
+                    [
+                        'method' => $request->getMethod(),
+                        'uri' => $request->getUri(),
+                        'body' => $request->getBody()->__toString(),
+                    ]
+                );
+
+                return $handler($request, $options)->then(
+                    function (ResponseInterface $response) use ($logger) {
+                        // Log the response
+                        $logger->info(
+                            'Response:',
+                            [
+                                'statusCode' => $response->getStatusCode(),
+                                'body' => $response->getBody()->__toString(),
+                            ]
+                        );
+
+                        return $response;
+                    }
+                );
+            };
+        };
     }
 }

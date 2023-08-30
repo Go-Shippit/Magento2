@@ -25,54 +25,68 @@ class Order extends \Magento\Framework\Model\AbstractModel
     /**
      * @var \Shippit\Shipping\Helper\Sync\Order
      */
-    protected $_helper;
+    protected $helper;
 
     /**
      * @var \Shippit\Shipping\Helper\Api
      */
-    protected $_api;
+    protected $api;
 
     /**
      * @var \Magento\Framework\Stdlib\DateTime\DateTime
      */
-    protected $_date;
+    protected $date;
 
     /**
      * @var \Shippit\Shipping\Model\Request\OrderFactory
      */
-    protected $_requestOrderFactory;
+    protected $requestOrderFactory;
 
     /**
      * @var \Shippit\Shipping\Model\Sync\OrderFactory
      */
-    protected $_syncOrderFactory;
+    protected $syncOrderFactory;
 
     /**
      * @var \Shippit\Shipping\Logger\Logger
      */
-    protected $_logger;
+    protected $logger;
 
     /**
      * @var \Magento\Framework\Message\ManagerInterface
      */
-    protected $_messageManager;
+    protected $messageManager;
 
     /**
      * Store Manager Interface
      *
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    protected $_storeManagerInterface;
+    protected $storeManagerInterface;
 
     /**
      * App emulation model
      *
      * @var \Magento\Store\Model\App\Emulation
      */
-    protected $_appEmulation;
+    protected $appEmulation;
 
     /**
-     * @param \Shippit\Shipping\Helper\Data $helper
+     *
+     * @param \Shippit\Shipping\Helper\Sync\Order $helper
+     * @param \Shippit\Shipping\Helper\Api $api
+     * @param \Shippit\Shipping\Model\Request\OrderFactory $requestOrderFactory
+     * @param \Shippit\Shipping\Model\Sync\OrderFactory $syncOrderFactory
+     * @param \Shippit\Shipping\Logger\Logger $logger
+     * @param \Magento\Framework\Message\ManagerInterface $messageManager
+     * @param \Magento\Framework\Stdlib\DateTime\DateTime $date
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManagerInterface
+     * @param \Magento\Store\Model\App\Emulation $appEmulation
+     * @param \Magento\Framework\Model\Context $context
+     * @param \Magento\Framework\Registry $registry
+     * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
+     * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection
+     * @param array $data
      */
     public function __construct(
         \Shippit\Shipping\Helper\Sync\Order $helper,
@@ -90,33 +104,33 @@ class Order extends \Magento\Framework\Model\AbstractModel
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
     ) {
-        $this->_helper = $helper;
-        $this->_api = $api;
-        $this->_requestOrderFactory = $requestOrderFactory;
-        $this->_syncOrderFactory = $syncOrderFactory;
-        $this->_logger = $logger;
-        $this->_messageManager = $messageManager;
-        $this->_date = $date;
-        $this->_storeManagerInterface = $storeManagerInterface;
-        $this->_appEmulation = $appEmulation;
+        $this->helper = $helper;
+        $this->api = $api;
+        $this->requestOrderFactory = $requestOrderFactory;
+        $this->syncOrderFactory = $syncOrderFactory;
+        $this->logger = $logger;
+        $this->messageManager = $messageManager;
+        $this->date = $date;
+        $this->storeManagerInterface = $storeManagerInterface;
+        $this->appEmulation = $appEmulation;
 
         parent::__construct($context, $registry, $resource, $resourceCollection, $data);
     }
 
     public function run()
     {
-        if (!$this->_helper->isActive()) {
+        if (!$this->helper->isActive()) {
             return $this;
         }
 
         // get all stores, as we will emulate each storefront for integration run
-        $stores = $this->_storeManagerInterface->getStores();
+        $stores = $this->storeManagerInterface->getStores();
 
         foreach ($stores as $store) {
             $storeId = $store->getStoreId();
 
             // Start Store Emulation
-            $this->_appEmulation->startEnvironmentEmulation(
+            $this->appEmulation->startEnvironmentEmulation(
                 $storeId,
                 AppArea::AREA_ADMINHTML
             );
@@ -128,17 +142,16 @@ class Order extends \Magento\Framework\Model\AbstractModel
             }
 
             // Stop Store Emulation
-            $this->_appEmulation->stopEnvironmentEmulation();
+            $this->appEmulation->stopEnvironmentEmulation();
         }
     }
 
     /**
      * Get a list of sync orders pending sync
-     * @return [type] [description]
      */
     public function getSyncOrders($storeId)
     {
-        $collection = $this->_syncOrderFactory->create()
+        $collection = $this->syncOrderFactory->create()
             ->getCollection();
 
         return $collection
@@ -151,7 +164,7 @@ class Order extends \Magento\Framework\Model\AbstractModel
             )
             ->addFieldToFilter(
                 'main_table.status',
-                SyncOrder::STATUS_PENDING
+                (string) SyncOrder::STATUS_PENDING
             )
             ->addFieldToFilter(
                 'main_table.attempt_count',
@@ -169,7 +182,7 @@ class Order extends \Magento\Framework\Model\AbstractModel
 
     public function sync($syncOrder, $displayNotifications = false)
     {
-        if (!$this->_helper->isActive()) {
+        if (!$this->helper->isActive()) {
             return false;
         }
 
@@ -179,10 +192,10 @@ class Order extends \Magento\Framework\Model\AbstractModel
             $order = $syncOrder->getOrder();
 
             // Build the order request
-            $orderRequest = $this->_requestOrderFactory->create()
+            $orderRequest = $this->requestOrderFactory->create()
                 ->processSyncOrder($syncOrder);
 
-            $apiResponse = $this->_api->sendOrder($orderRequest);
+            $apiResponse = $this->api->createOrder($orderRequest);
 
             // Add the order tracking details to
             // the order comments and save
@@ -194,20 +207,22 @@ class Order extends \Magento\Framework\Model\AbstractModel
             // Update the order to be marked as synced
             $syncOrder->setStatus(SyncOrder::STATUS_SYNCED)
                 ->setTrackingNumber($apiResponse->tracking_number)
-                ->setSyncedAt($this->_date->gmtDate())
+                ->setSyncedAt($this->date->gmtDate())
                 ->save();
 
             if ($displayNotifications) {
-                $this->_messageManager
+                $this->messageManager
                     ->addSuccess(
-                        __('Order ' . $order->getIncrementId()
-                        . ' Synced with Shippit - '
-                        . $apiResponse->tracking_number)
+                        __(
+                            'Order ' . $order->getIncrementId()
+                                . ' Synced with Shippit - '
+                                . $apiResponse->tracking_number
+                        )
                     );
             }
         }
         catch (Exception $e) {
-            $this->_logger->error('API - Order Sync Request Failed - ' . $e->getMessage());
+            $this->logger->error('API - Order Sync Request Failed - ' . $e->getMessage());
 
             // Fail the sync item if it's breached the max attempts
             if ($syncOrder->getAttemptCount() > SyncOrder::SYNC_MAX_ATTEMPTS) {
@@ -218,7 +233,7 @@ class Order extends \Magento\Framework\Model\AbstractModel
             $syncOrder->save();
 
             if ($displayNotifications) {
-                $this->_messageManager->addError(__('Order ' . $order->getIncrementId() . ' was not Synced with Shippit - ' . $e->getMessage()));
+                $this->messageManager->addError(__('Order ' . $order->getIncrementId() . ' was not Synced with Shippit - ' . $e->getMessage()));
             }
 
             return false;

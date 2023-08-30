@@ -16,9 +16,7 @@
 
 namespace Shippit\Shipping\Model\Config\Source\Shippit\Sync\Order;
 
-use Shippit\Shipping\Helper\Data;
-
-class Mode implements \Magento\Framework\Option\ArrayInterface
+class Mode implements \Magento\Framework\Data\OptionSourceInterface
 {
     const REALTIME  = 'realtime';
     const SCHEDULED = 'cron';
@@ -34,16 +32,16 @@ class Mode implements \Magento\Framework\Option\ArrayInterface
         $optionsArray = [
             [
                 'label' => 'Realtime',
-                'value' => self::REALTIME
+                'value' => self::REALTIME,
             ],
             [
                 'label' => 'Scheduled',
-                'value' => self::SCHEDULED
+                'value' => self::SCHEDULED,
             ],
             [
                 'label' => 'Custom',
-                'value' => self::CUSTOM
-            ]
+                'value' => self::CUSTOM,
+            ],
         ];
 
         return $optionsArray;
@@ -59,7 +57,7 @@ class Mode implements \Magento\Framework\Option\ArrayInterface
         $optionsArray = [
             self::REALTIME => 'Realtime',
             self::SCHEDULED => 'Scheduled',
-            self::CUSTOM => 'Custom'
+            self::CUSTOM => 'Custom',
         ];
 
         return $optionsArray;

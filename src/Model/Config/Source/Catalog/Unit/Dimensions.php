@@ -16,7 +16,7 @@
 
 namespace Shippit\Shipping\Model\Config\Source\Catalog\Unit;
 
-class Dimensions implements \Magento\Framework\Option\ArrayInterface
+class Dimensions implements \Magento\Framework\Data\OptionSourceInterface
 {
     public function toOptionArray()
     {

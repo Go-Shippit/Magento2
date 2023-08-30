@@ -45,7 +45,7 @@ class InstallSchema implements InstallSchemaInterface
                 [
                     'identity' => true,
                     'nullable' => false,
-                    'primary' => true
+                    'primary' => true,
                 ],
                 'Sync Order ID'
             )
@@ -55,7 +55,7 @@ class InstallSchema implements InstallSchemaInterface
                 null,
                 [
                     'unsigned' => true,
-                    'nullable' => false
+                    'nullable' => false,
                 ],
                 'Order Entity ID'
             )
@@ -73,7 +73,7 @@ class InstallSchema implements InstallSchemaInterface
                 [
                     'unsigned' => true,
                     'nullable' => false,
-                    'default' => '0'
+                    'default' => '0',
                 ],
                 'Sync Attempt Count'
             )

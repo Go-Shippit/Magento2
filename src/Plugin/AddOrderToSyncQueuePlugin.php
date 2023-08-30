@@ -100,15 +100,20 @@ class AddOrderToSyncQueuePlugin
 
             // If the sync mode is realtime,
             // attempt realtime sync now
-            if ($this->_helper->getMode() == Mode::REALTIME
-                || $shippitShippingMethod == 'priority') {
+            if (
+                $this->_helper->getMode() == Mode::REALTIME
+                || $shippitShippingMethod == 'priority'
+            ) {
                 $this->_syncOrder($syncOrder);
             }
-        } catch (\Magento\Framework\Exception\LocalizedException $e) {
+        }
+        catch (\Magento\Framework\Exception\LocalizedException $e) {
             $this->_logger->error($e->getMessage());
-        } catch (\RuntimeException $e) {
+        }
+        catch (\RuntimeException $e) {
             $this->_logger->error($e->getMessage());
-        } catch (\Exception $e) {
+        }
+        catch (\Exception $e) {
             $this->_logger->error($e->getMessage());
         }
     }
@@ -117,19 +122,21 @@ class AddOrderToSyncQueuePlugin
     {
         $order = $syncOrder->getOrder();
 
-        if (!$this->_hasAttemptedSync
-            // ensure the order is in the processing state
-            && $order->getState() == Order::STATE_PROCESSING
-            // ensure the sync order is in the pending state
-            && $syncOrder->getStatus() == SyncOrder::STATUS_PENDING) {
+        if (
+            !$this->_hasAttemptedSync
+                // ensure the order is in the processing state
+                && $order->getState() == Order::STATE_PROCESSING
+                // ensure the sync order is in the pending state
+                && $syncOrder->getStatus() == SyncOrder::STATUS_PENDING
+        ) {
             $this->_hasAttemptedSync = true;
 
             // attempt the sync
             $syncResult = $this->_apiOrder->sync($syncOrder);
 
             return $syncResult;
-        } else {
-            return false;
         }
+
+        return false;
     }
 }

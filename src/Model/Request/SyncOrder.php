@@ -26,19 +26,22 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
     /**
      * @var \Shippit\Shipping\Helper\Sync\Order
      */
-    protected $_helper;
+    protected $helper;
 
     /**
      * @var \Shippit\Shipping\Helper\Sync\Order\Items
      */
-    protected $_itemsHelper;
+    protected $itemsHelper;
 
     /**
      * @var \Magento\Sales\Api\Data\OrderItemInterface
      */
-    protected $_orderItemInterface;
+    protected $orderItemInterface;
 
-    protected $_directoryHelper;
+    /**
+     * @var \Magento\Directory\Helper\Data
+     */
+    protected $directoryHelper;
 
     /**
      * @param \Magento\Framework\Model\Context $context
@@ -61,10 +64,10 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
     ) {
-        $this->_helper = $helper;
-        $this->_itemsHelper = $itemsHelper;
-        $this->_orderItemInterface = $orderItemInterface;
-        $this->_directoryHelper = $directoryHelper;
+        $this->helper = $helper;
+        $this->itemsHelper = $itemsHelper;
+        $this->orderItemInterface = $orderItemInterface;
+        $this->directoryHelper = $directoryHelper;
 
         parent::__construct($context, $registry, $resource, $resourceCollection, $data);
     }
@@ -83,7 +86,7 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
      * Set the API Key
      *
      * @param string $apiKey
-     * @return string|null
+     * @return self
      */
     public function setApiKey($apiKey)
     {
@@ -93,7 +96,7 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
     /**
      * Get the Order Id
      *
-     * @return string|null
+     * @return int|null
      */
     public function getOrderId()
     {
@@ -103,8 +106,8 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
     /**
      * Set the Order Id
      *
-     * @param string $orderId
-     * @return string|null
+     * @param int $orderId
+     * @return self
      */
     public function setOrderId($orderId)
     {
@@ -124,19 +127,13 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
     /**
      * Set the Order Object
      *
-     * @param string $orderId
-     * @return \Magento\Sales\Api\Data\OrderInterface|null
+     * @param \Magento\Sales\Api\Data\OrderInterface|null $order
+     * @return self
      */
-    public function setOrder(\Magento\Sales\Api\Data\OrderInterface $order)
+    public function setOrder($order)
     {
-        if ($order instanceof \Magento\Sales\Api\Data\OrderInterface) {
-            $this->setData(self::ORDER, $order);
-            $this->setOrderId($order->getId());
-        }
-        else {
-            $this->setData(self::ORDER, $order);
-            $this->setOrderId($order);
-        }
+        $this->setData(self::ORDER, $order);
+        $this->setOrderId($order->getEntityId());
 
         return $this;
     }
@@ -155,7 +152,7 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
      * Set the Shipping Method
      *
      * @param string $shippingMethod
-     * @return string|null
+     * @return self
      */
     public function setShippingMethod($shippingMethod)
     {
@@ -168,7 +165,7 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
                 && !array_key_exists($shippingMethod, ShippingMethods::$couriers)
             )
         ) {
-            $shippingMethod = $this->_helper->getShippitShippingMethod($shippingMethod);
+            $shippingMethod = $this->helper->getShippitShippingMethod($shippingMethod);
         }
 
         // Process the shipping method using the Shippit
@@ -203,20 +200,20 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
      */
     public function setItems($items = [])
     {
-        $itemsCollection = $this->_orderItemInterface
+        $itemsCollection = $this->orderItemInterface
             ->getCollection()
             ->addFieldToFilter('order_id', $this->getOrderId());
 
         // if specific items have been passed,
         // ensure that these are the only items in the request
         if (!empty($items)) {
-            $itemsSkus = $this->_itemsHelper->getSkus($items);
+            $itemsSkus = $this->itemsHelper->getSkus($items);
 
             if (!empty($itemsSkus)) {
                 $itemsCollection = $itemsCollection->addFieldToFilter(
                     'sku',
                     [
-                        'in' => $itemsSkus
+                        'in' => $itemsSkus,
                     ]
                 );
             }
@@ -267,7 +264,7 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
         return $this;
     }
 
-    protected function _getRootItem($item)
+    protected function getRootItem($item)
     {
         if ($item->getParentItem()) {
             return $item->getParentItem();
@@ -282,13 +279,13 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
      * - If the item is a bundle and is being shipped together
      *   we return the bundle item, as it's the "shipped" product
      *
-     * @param  Mage_Sales_Model_Order_Item $item
-     * @return Mage_Sales_Model_Order_Item
+     * @param \Magento\Sales\Model\Order\Item $item
+     * @return \Magento\Sales\Model\Order\Item
      */
-    protected function _getChildItem($item)
+    protected function getChildItem($item)
     {
         if ($item->getHasChildren()) {
-            $rootItem = $this->_getRootItem($item);
+            $rootItem = $this->getRootItem($item);
 
             // Get the first child item
             // - If the root item is a bundle, use the item
@@ -322,7 +319,7 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
 
     protected function getItemName($item)
     {
-        $childItem = $this->_getChildItem($item);
+        $childItem = $this->getChildItem($item);
 
         return $childItem->getName();
     }
@@ -331,17 +328,17 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
     {
         $requestedQty = $this->getRequestedQuantity($items, 'sku', $item->getSku(), 'qty');
 
-        return $this->_itemsHelper->getQtyToShip($item, $requestedQty);
+        return $this->itemsHelper->getQtyToShip($item, $requestedQty);
     }
 
     protected function getRequestedQuantity($items, $itemKey, $itemSku, $itemDataKey)
     {
-        return $this->_itemsHelper->getItemData($items, $itemKey, $itemSku, $itemDataKey);
+        return $this->itemsHelper->getItemData($items, $itemKey, $itemSku, $itemDataKey);
     }
 
     protected function getItemPrice($item)
     {
-        $rootItem = $this->_getRootItem($item);
+        $rootItem = $this->getRootItem($item);
 
         // Get the item price
         // - If the root item is a bundle, use the item price
@@ -356,7 +353,7 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
 
     protected function getBundleItemPrice($item)
     {
-        $rootItem = $this->_getRootItem($item);
+        $rootItem = $this->getRootItem($item);
 
         // if we are sending the bundle together
         if ($rootItem->getId() == $item->getId()) {
@@ -396,59 +393,59 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
 
     protected function getItemLength($item)
     {
-        if (!$this->_itemsHelper->isProductDimensionActive()) {
+        if (!$this->itemsHelper->isProductDimensionActive()) {
             return;
         }
 
-        $childItem = $this->_getChildItem($item);
+        $childItem = $this->getChildItem($item);
 
-        return $this->_itemsHelper->getLength($childItem);
+        return $this->itemsHelper->getLength($childItem);
     }
 
     protected function getItemWidth($item)
     {
-        if (!$this->_itemsHelper->isProductDimensionActive()) {
+        if (!$this->itemsHelper->isProductDimensionActive()) {
             return;
         }
 
-        $childItem = $this->_getChildItem($item);
+        $childItem = $this->getChildItem($item);
 
-        return $this->_itemsHelper->getWidth($childItem);
+        return $this->itemsHelper->getWidth($childItem);
     }
 
     protected function getItemDepth($item)
     {
-        if (!$this->_itemsHelper->isProductDimensionActive()) {
+        if (!$this->itemsHelper->isProductDimensionActive()) {
             return;
         }
 
-        $childItem = $this->_getChildItem($item);
+        $childItem = $this->getChildItem($item);
 
-        return $this->_itemsHelper->getDepth($childItem);
+        return $this->itemsHelper->getDepth($childItem);
     }
 
     protected function getItemLocation($item)
     {
-        if (!$this->_itemsHelper->isProductLocationActive()) {
+        if (!$this->itemsHelper->isProductLocationActive()) {
             return;
         }
 
-        $childItem = $this->_getChildItem($item);
+        $childItem = $this->getChildItem($item);
 
-        return $this->_itemsHelper->getLocation($childItem);
+        return $this->itemsHelper->getLocation($childItem);
     }
 
     protected function getItemTariffCode($item)
     {
-        if (!$this->_itemsHelper->isProductTariffCodeActive()) {
+        if (!$this->itemsHelper->isProductTariffCodeActive()) {
             return;
         }
 
-        $rootItem = $this->_getRootItem($item);
-        $childItem = $this->_getChildItem($item);
+        $rootItem = $this->getRootItem($item);
+        $childItem = $this->getChildItem($item);
 
         // Attempt to retrieve the tariff code from the child item
-        $tariffCode = $this->_itemsHelper->getTariffCode($childItem);
+        $tariffCode = $this->itemsHelper->getTariffCode($childItem);
 
         // If product has a parent product and the child item
         // does not have tariff code value set, attempt to
@@ -457,7 +454,7 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
             $rootItem != $childItem
             && empty($tariffCode)
         ) {
-            $tariffCode = $this->_itemsHelper->getTariffCode($rootItem);
+            $tariffCode = $this->itemsHelper->getTariffCode($rootItem);
         }
 
         return $tariffCode;
@@ -465,15 +462,15 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
 
     protected function getOriginCountryCode($item)
     {
-        if (!$this->_itemsHelper->isProductOriginCountryCodeActive()) {
+        if (!$this->itemsHelper->isProductOriginCountryCodeActive()) {
             return;
         }
 
-        $rootItem = $this->_getRootItem($item);
-        $childItem = $this->_getChildItem($item);
+        $rootItem = $this->getRootItem($item);
+        $childItem = $this->getChildItem($item);
 
         // Attempt to retrieve the origin country from the child item
-        $originCountryCode = $this->_itemsHelper->getOriginCountryCode($childItem);
+        $originCountryCode = $this->itemsHelper->getOriginCountryCode($childItem);
 
         // If product has a parent product and the child item
         // does not have origin country code value set,
@@ -483,14 +480,14 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
             $rootItem != $childItem
             && empty($originCountryCode)
         ) {
-            $originCountryCode = $this->_itemsHelper->getOriginCountryCode($rootItem);
+            $originCountryCode = $this->itemsHelper->getOriginCountryCode($rootItem);
         }
 
         // If the value is 2 characters, assume this is a valid ISO2 code standard
         // Otherwise, attempt to lookup the country by name / ISO3 code and
         // convert this value into ISO2
         if (strlen($originCountryCode) > 2) {
-            $countryCollection = $this->_directoryHelper->getCountryCollection();
+            $countryCollection = $this->directoryHelper->getCountryCollection();
             $countryData = [];
 
             foreach ($countryCollection as $country) {
@@ -520,15 +517,15 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
 
     protected function getItemDangerousGoodsCode($item)
     {
-        if (!$this->_itemsHelper->isDangerousGoodsCodeActive()) {
+        if (!$this->itemsHelper->isDangerousGoodsCodeActive()) {
             return;
         }
 
-        $rootItem = $this->_getRootItem($item);
-        $childItem = $this->_getChildItem($item);
+        $rootItem = $this->getRootItem($item);
+        $childItem = $this->getChildItem($item);
 
         // Attempt to retrieve the tariff code from the child item
-        $dangerousGoodsCode = $this->_itemsHelper->getDangerousGoodsCode($childItem);
+        $dangerousGoodsCode = $this->itemsHelper->getDangerousGoodsCode($childItem);
 
         // If product has a parent product and the child item
         // does not have dangerous goods code value set, attempt to
@@ -537,7 +534,7 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
             $rootItem != $childItem
             && empty($dangerousGoodsCode)
         ) {
-            $dangerousGoodsCode = $this->_itemsHelper->getDangerousGoodsCode($rootItem);
+            $dangerousGoodsCode = $this->itemsHelper->getDangerousGoodsCode($rootItem);
         }
 
         return $dangerousGoodsCode;
@@ -545,15 +542,15 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
 
     protected function getItemDangerousGoodsText($item)
     {
-        if (!$this->_itemsHelper->isDangerousGoodsCodeActive()) {
+        if (!$this->itemsHelper->isDangerousGoodsCodeActive()) {
             return;
         }
 
-        $rootItem = $this->_getRootItem($item);
-        $childItem = $this->_getChildItem($item);
+        $rootItem = $this->getRootItem($item);
+        $childItem = $this->getChildItem($item);
 
         // Attempt to retrieve the tariff code from the child item
-        $dangerousGoodsText = $this->_itemsHelper->getDangerousGoodsText($childItem);
+        $dangerousGoodsText = $this->itemsHelper->getDangerousGoodsText($childItem);
 
         // If product has a parent product and the child item
         // does not have dangerous goods code value set, attempt to
@@ -562,7 +559,7 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
             $rootItem != $childItem
             && empty($dangerousGoodsText)
         ) {
-            $dangerousGoodsText = $this->_itemsHelper->getDangerousGoodsText($rootItem);
+            $dangerousGoodsText = $this->itemsHelper->getDangerousGoodsText($rootItem);
         }
 
         return $dangerousGoodsText;
@@ -613,7 +610,7 @@ class SyncOrder extends \Magento\Framework\Model\AbstractModel implements \Shipp
                 array(
                     'length' => (float) $length,
                     'width' => (float) $width,
-                    'depth' => (float) $depth
+                    'depth' => (float) $depth,
                 )
             );
         }

@@ -38,22 +38,22 @@ interface SyncOrderInterface
      * Set the API Key
      *
      * @param string $apiKey
-     * @return string|null
+     * @return self
      */
     public function setApiKey($apiKey);
 
     /**
      * Get the Order Id
      *
-     * @return string|null
+     * @return int|null
      */
     public function getOrderId();
 
     /**
      * Set the Order Id
      *
-     * @param string $orderId
-     * @return string|null
+     * @param int|null $orderId
+     * @return self
      */
     public function setOrderId($orderId);
 
@@ -67,10 +67,10 @@ interface SyncOrderInterface
     /**
      * Set the Order Object
      *
-     * @param string $orderId
-     * @return \Magento\Sales\Api\Data\OrderInterface|null
+     * @param \Magento\Sales\Api\Data\OrderInterface|null $order
+     * @return self
      */
-    public function setOrder(\Magento\Sales\Api\Data\OrderInterface $order);
+    public function setOrder($order);
 
     /**
      * Get the Shipping Method

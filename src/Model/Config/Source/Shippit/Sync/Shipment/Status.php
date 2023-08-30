@@ -18,7 +18,7 @@ namespace Shippit\Shipping\Model\Config\Source\Shippit\Sync\Shipment;
 
 use Shippit\Shipping\Model\Sync\Shipment as SyncShipment;
 
-class Status implements \Magento\Framework\Option\ArrayInterface
+class Status implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**
      * Options getter
@@ -30,16 +30,16 @@ class Status implements \Magento\Framework\Option\ArrayInterface
         $optionsArray = [
             [
                 'label' => SyncShipment::STATUS_PENDING_TEXT,
-                'value' => SyncShipment::STATUS_PENDING
+                'value' => SyncShipment::STATUS_PENDING,
             ],
             [
                 'label' => SyncShipment::STATUS_SYNCED_TEXT,
-                'value' => SyncShipment::STATUS_SYNCED
+                'value' => SyncShipment::STATUS_SYNCED,
             ],
             [
                 'label' => SyncShipment::STATUS_FAILED_TEXT,
-                'value' => SyncShipment::STATUS_FAILED
-            ]
+                'value' => SyncShipment::STATUS_FAILED,
+            ],
         ];
 
         return $optionsArray;
@@ -55,7 +55,7 @@ class Status implements \Magento\Framework\Option\ArrayInterface
         $optionsArray = [
             SyncShipment::STATUS_PENDING => SyncShipment::STATUS_PENDING_TEXT,
             SyncShipment::STATUS_SYNCED => SyncShipment::STATUS_SYNCED_TEXT,
-            SyncShipment::STATUS_FAILED => SyncShipment::STATUS_FAILED_TEXT
+            SyncShipment::STATUS_FAILED => SyncShipment::STATUS_FAILED_TEXT,
         ];
 
         return $optionsArray;

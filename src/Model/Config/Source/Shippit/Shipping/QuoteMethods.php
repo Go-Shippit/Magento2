@@ -16,7 +16,7 @@
 
 namespace Shippit\Shipping\Model\Config\Source\Shippit\Shipping;
 
-class QuoteMethods implements \Magento\Framework\Option\ArrayInterface
+class QuoteMethods implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**
      * Options getter
@@ -28,19 +28,19 @@ class QuoteMethods implements \Magento\Framework\Option\ArrayInterface
         return [
             [
                 'label' => 'Standard',
-                'value' => 'standard'
+                'value' => 'standard',
             ],
             [
                 'label' => 'Express',
-                'value' => 'express'
+                'value' => 'express',
             ],
             [
                 'label' => 'Priority',
-                'value' => 'priority'
+                'value' => 'priority',
             ],
             [
                 'label' => 'On Demand',
-                'value' => 'on_demand'
+                'value' => 'on_demand',
             ],
         ];
     }

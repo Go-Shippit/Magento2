@@ -85,7 +85,7 @@ class ShippingMethodMapping extends \Magento\Config\Block\System\Config\Form\Fie
             'shipping_method',
             [
                 'label' => __('Shipping Method'),
-                'renderer' => $this->getShippingMethodRenderer()
+                'renderer' => $this->getShippingMethodRenderer(),
             ]
         );
 
@@ -93,7 +93,7 @@ class ShippingMethodMapping extends \Magento\Config\Block\System\Config\Form\Fie
             'shippit_service_class',
             [
                 'label' => __('Shippit Service Class'),
-                'renderer' => $this->getShippitServiceClassRenderer()
+                'renderer' => $this->getShippitServiceClassRenderer(),
             ]
         );
 

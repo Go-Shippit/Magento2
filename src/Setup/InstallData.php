@@ -44,7 +44,7 @@ class InstallData implements InstallDataInterface
             $bind = [
                 'country_id' => $row[0],
                 'code' => $row[1],
-                'default_name' => $row[2]
+                'default_name' => $row[2],
             ];
             $setup->getConnection()
                 ->insert($tableCountryRegion, $bind);

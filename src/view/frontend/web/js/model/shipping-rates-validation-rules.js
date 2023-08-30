@@ -17,8 +17,9 @@ define(
     [],
     function () {
         'use strict';
+
         return {
-            getRules: function() {
+            getRules: function () {
                 return {
                     'city': {
                         'required': true

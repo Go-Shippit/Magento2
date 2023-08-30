@@ -5,6 +5,11 @@ php71-composer:
   stage: build
   image:
     name: registry.mamis.com.au/mamis/containers/php/build:7.1
+  before_script:
+    - !reference [.composer-magento-auth, before_script]
+    # Remove unsupported dev-packages
+    - composer remove bitexpert/phpstan-magento --dev --no-interaction --no-update
+    - composer remove phpstan/phpstan --dev --no-interaction --no-update
 
 php71-linter:
   extends: .php-lint

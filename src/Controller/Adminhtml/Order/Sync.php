@@ -85,7 +85,7 @@ class Sync extends \Magento\Backend\App\Action
                     'order' => $order->getId(),
                     'sync_mode' => 'realtime',
                     'shipping_method' => $order->getShippingMethod(),
-                    'display_notifications' => true
+                    'display_notifications' => true,
                 ]
             );
         }

@@ -23,18 +23,19 @@ class Order extends \Shippit\Shipping\Helper\Data
     const XML_PATH_SETTINGS = 'shippit/sync_order/';
 
     /**
-     * @var SerializerInterface
+     * @var \Magento\Framework\Serialize\SerializerInterface
      */
-    private $_serializer;
+    protected $serializer;
 
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Framework\Module\ModuleList $moduleList,
+        \Magento\Framework\App\ProductMetadataInterface $productMetadata,
         \Magento\Framework\Serialize\SerializerInterface $serializer
     ) {
-        $this->_serializer = $serializer;
+        $this->serializer = $serializer;
 
-        parent::__construct($scopeConfig, $moduleList);
+        parent::__construct($scopeConfig, $moduleList, $productMetadata);
     }
 
     /**
@@ -47,7 +48,7 @@ class Order extends \Shippit\Shipping\Helper\Data
     {
         $path = self::XML_PATH_SETTINGS . $key;
 
-        return $this->_scopeConfig->getValue($path, $scope);
+        return $this->scopeConfig->getValue($path, $scope);
     }
 
     /**
@@ -70,7 +71,7 @@ class Order extends \Shippit\Shipping\Helper\Data
 
     public function getShippingMethodMapping()
     {
-        $values = $this->_serializer->unserialize(
+        $values = $this->serializer->unserialize(
             self::getValue('shipping_method_mapping')
         );
 
@@ -91,8 +92,8 @@ class Order extends \Shippit\Shipping\Helper\Data
     // Helper Methods
     public function getShippitShippingMethod($shippingMethod)
     {
-        if (strpos($shippingMethod, self::CARRIER_CODE_CC) !== FALSE ||
-            strpos($shippingMethod, self::CARRIER_CODE_CC_LEGACY) !== FALSE
+        if (strpos($shippingMethod, self::CARRIER_CODE_CC) !== false ||
+            strpos($shippingMethod, self::CARRIER_CODE_CC_LEGACY) !== false
         ) {
             return 'click_and_collect';
         }
@@ -102,7 +103,6 @@ class Order extends \Shippit\Shipping\Helper\Data
         if (strpos($shippingMethod, self::CARRIER_CODE) !== false) {
             $shippingOptions = str_replace(self::CARRIER_CODE . '_', '', $shippingMethod);
             $shippingOptions = explode('_', $shippingOptions);
-            $courierData = [];
 
             if (isset($shippingOptions[0])) {
                 $method = strtolower($shippingOptions[0]);
@@ -112,13 +112,13 @@ class Order extends \Shippit\Shipping\Helper\Data
                 }
                 // allows for legacy capability where
                 // "priority" was referred to as "premium"
-                else if ($method == 'priority' || $method == 'premium') {
+                elseif ($method == 'priority' || $method == 'premium') {
                     return 'priority';
                 }
-                else if ($method == 'express') {
+                elseif ($method == 'express') {
                     return 'express';
                 }
-                else if ($method == 'standard') {
+                elseif ($method == 'standard') {
                     return 'standard';
                 }
             }

@@ -186,17 +186,17 @@ class Update extends \Magento\Framework\App\Action\Action
         if (!empty(file_get_contents('php://input'))) {
             return $this->_jsonHelper
                 ->jsonDecode(file_get_contents('php://input'));
-        } else {
-            return array();
         }
+
+        return array();
     }
 
     protected function _logRequest($request = array())
     {
         $metaData = [
             'api_request' => [
-                'request_body' => $request
-            ]
+                'request_body' => $request,
+            ],
         ];
 
         $this->_logger->debug('Shipment Sync Request Recieved', $metaData);
@@ -329,9 +329,9 @@ class Update extends \Magento\Framework\App\Action\Action
     {
         if (isset($request['courier_name'])) {
             return 'Shippit - ' . $request['courier_name'];
-        } else {
-            return 'Shippit';
         }
+
+        return 'Shippit';
     }
 
     protected function _getTrackingNumber($request = array())
@@ -357,7 +357,7 @@ class Update extends \Magento\Framework\App\Action\Action
                 return array(
                     'sku' => $product['sku'],
                     'title' => $product['title'],
-                    'qty' => $product['quantity']
+                    'qty' => $product['quantity'],
                 );
             },
             $products
@@ -374,8 +374,8 @@ class Update extends \Magento\Framework\App\Action\Action
         $metaData = [
             'api_request' => [
                 'request_body' => $this->_getRequest(),
-                'response_body' => $response
-            ]
+                'response_body' => $response,
+            ],
         ];
 
         if ($success) {

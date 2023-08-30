@@ -60,7 +60,7 @@ class MassSync extends \Magento\Sales\Controller\Adminhtml\Order\AbstractMassAct
                     'shippit_add_order',
                     [
                         'order' => $order->getEntityId(),
-                        'shipping_method' => $order->getShippingMethod()
+                        'shipping_method' => $order->getShippingMethod(),
                     ]
                 );
             }

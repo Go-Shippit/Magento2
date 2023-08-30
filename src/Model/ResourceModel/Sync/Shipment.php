@@ -16,27 +16,8 @@
 
 namespace Shippit\Shipping\Model\ResourceModel\Sync;
 
-/**
- * Sync Order MySQL Resource
- */
 class Shipment extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 {
-    /**
-     * Construct
-     *
-     * @param \Magento\Framework\Model\ResourceModel\Db\Context $context
-     * @param \Magento\Framework\Stdlib\DateTime\DateTime $date
-     * @param string|null $resourcePrefix
-     */
-    public function __construct(
-        \Magento\Framework\Model\ResourceModel\Db\Context $context,
-        \Magento\Framework\Stdlib\DateTime\DateTime $date,
-        $resourcePrefix = null
-    ) {
-        parent::__construct($context, $resourcePrefix);
-        $this->_date = $date;
-    }
-
     /**
      * Initialize resource model
      *
@@ -50,8 +31,8 @@ class Shipment extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Save related items to the Sync Shipment
      *
-     * @param \Magento\Framework\Model\AbstractModel $customer
-     * @return \Magento\Eav\Model\Entity\AbstractEntity
+     * @param \Magento\Framework\Model\AbstractModel $syncShipment
+     * @return self
      */
     protected function _afterSave(\Magento\Framework\Model\AbstractModel $syncShipment)
     {
@@ -63,8 +44,8 @@ class Shipment extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
     /**
      * Save the items attached to the sync shipment
      *
-     * @param  \Shippit\Shipping\Model\Sync\Shipment $syncOrder The Sync Shipment Object
-     * @return \Shippit\Shipping\Model\Sync\Shipment The Sync Shipment Object
+     * @param \Shippit\Shipping\Model\Sync\Shipment $syncShipment
+     * @return self
      */
     protected function _saveItems(\Shippit\Shipping\Model\Sync\Shipment $syncShipment)
     {

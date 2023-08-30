@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
-<ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="CoffeeParts_Migration" xsi:noNamespaceSchemaLocation="phpcs.xsd">
+<ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="Shippit_Shipping" xsi:noNamespaceSchemaLocation="phpcs.xsd">
     <file>src</file>
     <exclude-pattern>/vendor/**</exclude-pattern>
 
-    <config name="installed_paths" value="vendor/phpcompatibility/php-compatibility,vendor/magento/magento-coding-standard"/>
+    <config name="installed_paths" value="vendor/phpcompatibility/php-compatibility,vendor/magento/magento-coding-standard,vendor/mamis/phpcs-coding-standard/src,vendor/escapestudios/symfony2-coding-standard"/>
     <config name="ignore_errors_on_exit" value="1"/>
     <config name="ignore_warnings_on_exit" value="1"/>
     <config name="error_severity" value="10"/>
@@ -17,7 +17,18 @@
 
     <rule ref="Magento2"/>
 
-    <!-- Allow for Magento 2.2 support -->
+    <rule ref="Mamis">
+        <!-- Allow prefixed method names -->
+        <exclude name="PSR2.Methods.MethodDeclaration.Underscore"/>
+
+        <!-- Allow prefixed property names -->
+        <exclude name="PSR2.Classes.PropertyDeclaration.Underscore"/>
+
+        <!-- Allow unordered public,protected,private methods -->
+        <exclude name="Symfony.Functions.ScopeOrder.Invalid"/>
+    </rule>
+
+    <!-- Require Magento 2.2 support -->
     <rule ref="Magento2.Legacy.InstallUpgrade">
         <severity>9</severity>
         <type>warning</type>

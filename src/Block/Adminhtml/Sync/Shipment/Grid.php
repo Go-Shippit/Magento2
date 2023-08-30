@@ -72,7 +72,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
                     'track_number',
                     'attempt_count',
                     'created_at',
-                    'synced_at'
+                    'synced_at',
 
                 ]
             );
@@ -93,7 +93,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
             'header' => __('ID'),
             'index'  => 'sync_shipment_id',
             'column_css_class' => '',
-            'header_css_class' => ''
+            'header_css_class' => '',
         ));
 
         $this->addColumn('shipment_increment', array(
@@ -128,13 +128,13 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
         $this->addColumn('created_at', array(
             'header' => __('Created At'),
             'type'   => 'datetime',
-            'index'  => 'created_at'
+            'index'  => 'created_at',
         ));
 
         $this->addColumn('synced_at', array(
             'header' => __('Synced At'),
             'type'   => 'datetime',
-            'index'  => 'synced_at'
+            'index'  => 'synced_at',
         ));
 
         $this->addColumn('actions', array(
@@ -145,20 +145,22 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
             'actions' => array(
                 array(
                     'caption' => __('Sync Now'),
-                    'url' => array('base'=>'*/*/sync'),
-                    'field' => 'id'
+                    'url' => array('base' => '*/*/sync'),
+                    'field' => 'id',
                 ),
-                array('caption' => __('Schedule Sync'),
-                    'url' => array('base'=>'*/*/schedule'),
-                    'field' => 'id'
+                array(
+                    'caption' => __('Schedule Sync'),
+                    'url' => array('base' => '*/*/schedule'),
+                    'field' => 'id',
                 ),
-                array('caption' => __('Delete'),
-                    'url' => array('base'=>'*/*/delete'),
-                    'field' => 'id'
+                array(
+                    'caption' => __('Delete'),
+                    'url' => array('base' => '*/*/delete'),
+                    'field' => 'id',
                 ),
                 'filter' => false,
-                'sortable' => false
-            )
+                'sortable' => false,
+            ),
         ));
 
         return $this;

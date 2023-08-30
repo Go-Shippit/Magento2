@@ -43,7 +43,7 @@ interface SyncShipmentInterface
      * Set the Sync Shipment Id
      *
      * @param integer $syncShipmentId
-     * @return string|null
+     * @return self
      */
     public function setId($syncShipmentId);
 
@@ -58,7 +58,7 @@ interface SyncShipmentInterface
      * Set the Sync Shipment Id
      *
      * @param integer $syncShipmentId
-     * @return string|null
+     * @return self
      */
     public function setSyncShipmentId($syncShipmentId);
 
@@ -73,7 +73,7 @@ interface SyncShipmentInterface
      * Set the Store Id
      *
      * @param string $storeId
-     * @return string|null
+     * @return self
      */
     public function setStoreId($storeId);
 
@@ -88,7 +88,7 @@ interface SyncShipmentInterface
      * Set the Order Increment
      *
      * @param string $orderIncrement
-     * @return string|null
+     * @return self
      */
     public function setOrderIncrement($orderIncrement);
 
@@ -103,7 +103,7 @@ interface SyncShipmentInterface
      * Set the Shipment Increment
      *
      * @param string $shipmentIncrement
-     * @return string|null
+     * @return self
      */
     public function setShipmentIncrement($shipmentIncrement);
 
@@ -118,7 +118,7 @@ interface SyncShipmentInterface
      * Set the status
      *
      * @param string $status
-     * @return string|null
+     * @return self
      */
     public function setStatus($status);
 
@@ -132,8 +132,8 @@ interface SyncShipmentInterface
     /**
      * Set the courier allocation
      *
-     * @param string $courier allocation
-     * @return string|null
+     * @param string $courierAllocation
+     * @return self
      */
     public function setCourierAllocation($courierAllocation);
 
@@ -148,7 +148,7 @@ interface SyncShipmentInterface
      * Set the track number
      *
      * @param string $trackNumber
-     * @return string|null
+     * @return self
      */
     public function setTrackNumber($trackNumber);
 
@@ -163,35 +163,37 @@ interface SyncShipmentInterface
      * Set the attempt count
      *
      * @param string $attemptCount
-     * @return string|null
+     * @return self
      */
     public function setAttemptCount($attemptCount);
 
     /**
      * Get the sync at
      *
-     * @return date
+     * @return string|null
      */
     public function getSyncedAt();
 
     /**
      * Set the sync at
      *
-     * @return date
+     * @param string|null $syncedAt
+     * @return self
      */
     public function setSyncedAt($syncedAt);
 
     /**
      * get the created at
      *
-     * @return date
+     * @return string|null
      */
     public function getCreatedAt();
 
     /**
      * set the created at
      *
-     * @return date
+     * @param string|null $createdAt
+     * @return self
      */
     public function setCreatedAt($createdAt);
 
@@ -206,7 +208,8 @@ interface SyncShipmentInterface
     /**
      * Add new items to the sync order request
      *
-     * @param Array $items
+     * @param array $items
+     * @return self
      */
     public function addItems(array $items);
 }

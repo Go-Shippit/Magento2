@@ -41,7 +41,7 @@ class Quote extends \Magento\Framework\Model\AbstractModel implements QuoteInter
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
     ) {
-        $this->_helper = $helper;
+        $this->helper = $helper;
 
         parent::__construct($context, $registry, $resource, $resourceCollection, $data);
     }
@@ -59,8 +59,8 @@ class Quote extends \Magento\Framework\Model\AbstractModel implements QuoteInter
     /**
      * Set the Order Date
      *
-     * @param DateTime|string $orderDate
-     * @return string|null
+     * @param string|null $orderDate
+     * @return self
      */
     public function setOrderDate($orderDate)
     {
@@ -80,8 +80,8 @@ class Quote extends \Magento\Framework\Model\AbstractModel implements QuoteInter
     /**
      * Set the Dropoff Address
      *
-     * @param string $dropoffAddress
-     * @return string|null
+     * @param string|null $dropoffAddress
+     * @return self
      */
     public function setDropoffAddress($dropoffAddress)
     {
@@ -93,62 +93,41 @@ class Quote extends \Magento\Framework\Model\AbstractModel implements QuoteInter
      *
      * @return string|null
      */
-    public function getDestCity()
+    public function getDropoffSuburb()
     {
-        return $this->getData(self::DEST_CITY);
+        return $this->getData(self::DROPOFF_SUBURB);
     }
 
     /**
      * Set the Dest City
      *
-     * @param string $destCity
-     * @return string|null
+     * @param string|null $dropoffSuburb
+     * @return self
      */
-    public function setDestCity($destCity)
+    public function setDropoffSuburb($dropoffSuburb)
     {
-        return $this->setData(self::DEST_CITY, $destCity);
+        return $this->setData(self::DROPOFF_SUBURB, $dropoffSuburb);
     }
 
     /**
-     * Get the Dest Postcode
+     * Get the Dropoff Postcode
      *
      * @return string|null
      */
-    public function getDestPostcode()
+    public function getDropoffPostcode()
     {
-        return $this->getData(self::DEST_POSTCODE);
+        return $this->getData(self::DROPOFF_POSTCODE);
     }
 
     /**
-     * Set the Dest Postcode
+     * Set the Dropoff Postcode
      *
-     * @param string $destPostcode
-     * @return string|null
+     * @param string|null $dropoffPostcode
+     * @return self
      */
-    public function setDestPostcode($destPostcode)
+    public function setDropoffPostcode($dropoffPostcode)
     {
-        return $this->setData(self::DEST_POSTCODE, $destPostcode);
-    }
-
-    /**
-     * Get the Dest Region Code
-     *
-     * @return string|null
-     */
-    public function getDestRegionCode()
-    {
-        return $this->getData(self::DEST_REGION_CODE);
-    }
-
-    /**
-     * Set the Dest Region Code
-     *
-     * @param string $destRegionCode
-     * @return string|null
-     */
-    public function setDestRegionCode($destRegionCode)
-    {
-        return $this->setData(self::DEST_REGION_CODE, $destRegionCode);
+        return $this->setData(self::DROPOFF_POSTCODE, $dropoffPostcode);
     }
 
     /**
@@ -162,18 +141,35 @@ class Quote extends \Magento\Framework\Model\AbstractModel implements QuoteInter
     }
 
     /**
-     * Set the Dropoff State
+     * Set the Dropoff Country Code
      *
-     * @param string $dropoffState
+     * @param string|null $dropoffCountryCode
+     * @return self
+     */
+    public function setDropoffState($dropoffCountryCode)
+    {
+        return $this->setData(self::DROPOFF_STATE, $dropoffCountryCode);
+    }
+
+    /**
+     * Get the Dropoff Postcode
+     *
      * @return string|null
      */
-    public function setDropoffState($dropoffState)
+    public function getDropoffCountryCode()
     {
-        if (empty($dropoffState)) {
-            $dropoffState = $this->_helper->getStateFromPostcode($this->getDestPostcode());
-        }
+        return $this->getData(self::DROPOFF_COUNTRY_CODE);
+    }
 
-        return $this->setData(self::DROPOFF_STATE, $dropoffState);
+    /**
+     * Set the Dropoff State
+     *
+     * @param string|null $dropoffCountryCode
+     * @return self
+     */
+    public function setDropoffCountryCode($dropoffCountryCode)
+    {
+        return $this->getData(self::DROPOFF_COUNTRY_CODE, $dropoffCountryCode);
     }
 
     /**
@@ -190,7 +186,7 @@ class Quote extends \Magento\Framework\Model\AbstractModel implements QuoteInter
      * Set the Parcel Attributes
      *
      * @param string $parcelAttributes
-     * @return string|null
+     * @return self
      */
     public function setParcelAttributes($parcelAttributes)
     {
@@ -211,7 +207,7 @@ class Quote extends \Magento\Framework\Model\AbstractModel implements QuoteInter
      * Set the Dutiable Amount
      *
      * @param float $dutiableAmount
-     * @return float|null
+     * @return self
      */
     public function setDutiableAmount($dutiableAmount)
     {

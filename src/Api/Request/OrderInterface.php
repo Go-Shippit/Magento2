@@ -70,8 +70,8 @@ interface OrderInterface
     /**
      * Set the Retailer Invoice Referance
      *
-     * @param string $orderDate
-     * @return string
+     * @param string $retailerInvoice
+     * @return self
      */
     public function setRetailerInvoice($retailerInvoice);
 
@@ -85,8 +85,8 @@ interface OrderInterface
     /**
      * Set the Authority To Leave
      *
-     * @param bool $authorityToLeave
-     * @return bool
+     * @param bool|null $authorityToLeave
+     * @return self
      */
     public function setAuthorityToLeave($authorityToLeave);
 
@@ -101,7 +101,7 @@ interface OrderInterface
      * Set the Delivery Instructions
      *
      * @param string $deliveryInstructions
-     * @return string
+     * @return self
      */
     public function setDeliveryInstructions($deliveryInstructions);
 
@@ -115,63 +115,57 @@ interface OrderInterface
     /**
      * Set the User Attributes
      *
-     * @param array $userAttributes
-     * @return array
+     * @param string|null $email
+     * @param string|null $firstname
+     * @param string|null $lastname
+     * @return self
      */
     public function setUserAttributes($email, $firstname, $lastname);
 
     /**
-     * Set the Courier Type
-     *
-     * @param array $courierType
-     * @return array
-     */
-    public function setCourierType($courierType);
-
-    /**
      * Get the Courier Type
      *
-     * @return array|null
+     * @return string|null
      */
     public function getCourierType();
 
     /**
-     * Set the Courier Allocation
+     * Set the Courier Type
      *
-     * @param array $courierAllocation
-     * @return array
+     * @param string|null $courierType
+     * @return self
      */
-    public function setCourierAllocation($courierAllocation);
+    public function setCourierType($courierType);
 
     /**
      * Get the Courier Allocation
      *
-     * @return array|null
+     * @return string|null
      */
     public function getCourierAllocation();
 
     /**
-     * Set the Delivery Date
+     * Set the Courier Allocation
      *
-     * @param array $deliveryDate
-     * @return array
+     * @param string|null $courierAllocation
+     * @return self
      */
-    public function setDeliveryDate($deliveryDate);
+    public function setCourierAllocation($courierAllocation);
 
     /**
      * Get the Delivery Date
      *
-     * @return array|null
+     * @return string|null
      */
     public function getDeliveryDate();
 
     /**
-     * Set the Delivery Window
+     * Set the Delivery Date
      *
-     * @param array $deliveryWindow
-     * @return array
+     * @param string $deliveryDate
+     * @return self
      */
-    public function setDeliveryWindow($deliveryWindow);
+    public function setDeliveryDate($deliveryDate);
 
     /**
      * Get the Delivery Window
@@ -181,10 +175,18 @@ interface OrderInterface
     public function getDeliveryWindow();
 
     /**
+     * Set the Delivery Window
+     *
+     * @param string|null $deliveryWindow
+     * @return self
+     */
+    public function setDeliveryWindow($deliveryWindow);
+
+    /**
      * Set the Reciever Name
      *
      * @param string $receiverName    Receiver Name
-     * @return string
+     * @return self
      */
     public function setReceiverName($receiverName);
 
@@ -199,7 +201,7 @@ interface OrderInterface
      * Set the Reciever Contact Number
      *
      * @param string $receiverContactNumber    Receiver Contact Number
-     * @return string
+     * @return self
      */
     public function setReceiverContactNumber($receiverContactNumber);
 
@@ -214,7 +216,7 @@ interface OrderInterface
      * Set the Delivery Company
      *
      * @param string $deliveryCompany   Delivery Company
-     * @return string
+     * @return self
      */
     public function setDeliveryCompany($deliveryCompany);
 
@@ -229,7 +231,7 @@ interface OrderInterface
      * Set the Delivery Address
      *
      * @param string $deliveryAddress   Delivery Address
-     * @return string
+     * @return self
      */
     public function setDeliveryAddress($deliveryAddress);
 
@@ -243,8 +245,8 @@ interface OrderInterface
     /**
      * Set the Delivery Suburb
      *
-     * @param string $deliverySuburb   Delivery Suburb
-     * @return string
+     * @param string|null $deliverySuburb   Delivery Suburb
+     * @return self
      */
     public function setDeliverySuburb($deliverySuburb);
 
@@ -258,8 +260,8 @@ interface OrderInterface
     /**
      * Set the Delivery Postcode
      *
-     * @param string $deliveryPostcode   Delivery Postcode
-     * @return string
+     * @param string|null $deliveryPostcode   Delivery Postcode
+     * @return self
      */
     public function setDeliveryPostcode($deliveryPostcode);
 
@@ -273,8 +275,8 @@ interface OrderInterface
     /**
      * Set the Delivery State
      *
-     * @param string $deliveryState   Delivery State
-     * @return string
+     * @param string|null $deliveryState   Delivery State
+     * @return self
      */
     public function setDeliveryState($deliveryState);
 
@@ -288,23 +290,23 @@ interface OrderInterface
     /**
      * Set the Delivery Country
      *
-     * @param string $deliveryCountry   Delivery Country
-     * @return string
+     * @param string|null $deliveryCountry   Delivery Country
+     * @return self
      */
     public function setDeliveryCountry($deliveryCountry);
 
     /**
      * Get the Parcel Attributes
      *
-     * @return string|null
+     * @return array|null
      */
     public function getParcelAttributes();
 
     /**
      * Set the Parcel Attributes
      *
-     * @param string $parcelAttributes
-     * @return string|null
+     * @param array|null $parcelAttributes
+     * @return self
      */
     public function setParcelAttributes($parcelAttributes);
 
@@ -319,7 +321,7 @@ interface OrderInterface
      * Set the Source Platform
      *
      * @param string $sourcePlatform
-     * @return string
+     * @return self
      */
     public function setSourcePlatform($sourcePlatform);
 
@@ -334,7 +336,7 @@ interface OrderInterface
      * Set the Product Currency
      *
      * @param string $productCurrency
-     * @return string
+     * @return self
      */
     public function setProductCurrency($productCurrency);
 
@@ -348,8 +350,8 @@ interface OrderInterface
     /**
      * Set the Receiver Language Code
      *
-     * @param string $receiverLanguageCode
-     * @return string
+     * @param string|null $receiverLanguageCode
+     * @return self
      */
     public function setReceiverLanguageCode($receiverLanguageCode);
 }

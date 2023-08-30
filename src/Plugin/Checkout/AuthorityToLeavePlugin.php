@@ -39,6 +39,7 @@ class AuthorityToLeavePlugin
             return $jsLayout;
         }
 
+        // @phpcs:disable Squiz.Arrays.ArrayBracketSpacing.SpaceBeforeBracket
         $jsLayout['components']
             ['checkout']
             ['children']
@@ -54,13 +55,13 @@ class AuthorityToLeavePlugin
             ['children']
             ['shippit-options']
             ['children']
-            ['shippit_authority_to_leave']= [
+            ['shippit_authority_to_leave'] = [
                 'component' => 'Magento_Ui/js/form/element/boolean',
                 'config' => [
                     'customScope' => 'shippingAddress',
                     'template' => 'ui/form/field',
                     'elementTmpl' => 'ui/form/element/checkbox',
-                    'id' => 'authority-to-leave'
+                    'id' => 'authority-to-leave',
                 ],
                 'dataScope' => 'shippingAddress.shippit_authority_to_leave',
                 'label' => 'Authority To Leave',
@@ -69,7 +70,7 @@ class AuthorityToLeavePlugin
                 'visible' => true,
                 'validation' => [],
                 'sortOrder' => 200,
-                'id' => 'authority-to-leave'
+                'id' => 'authority-to-leave',
             ];
 
         return $jsLayout;
