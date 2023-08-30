@@ -1,0 +1,15 @@
+includes:
+    - ./vendor/bitExpert/phpstan-magento/extension.neon
+
+parameters:
+    level: 5
+
+    paths:
+        - src/Api
+        - src/Helper
+        - src/Logger
+        - src/Model
+
+    treatPhpDocTypesAsCertain: false
+
+    editorUrl: 'vscode://file/%%file%%:%%line%%'

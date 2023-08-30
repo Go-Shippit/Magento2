@@ -125,10 +125,10 @@ class Active extends \Magento\Framework\App\Config\Value
                 $requestData->setWebhookUrl();
             }
 
-            $merchant = $this->_api->putMerchant($requestData, true);
+            $merchant = $this->_api->updateMerchant($requestData);
 
             if (property_exists($merchant, 'error')) {
-                $this->_messageManager->addError(self::ERROR_WEBHOOK_REGISTRATION_ERROR . ' - ' . $merchant->error);
+                $this->_messageManager->addError(self::ERROR_WEBHOOK_REGISTRATION . ' - ' . $merchant->error);
             }
             else {
                 $this->_logger->notice(self::NOTICE_WEBHOOK_REGISTRATION_SUCCESS . ' - ' . $webhookUrl);
@@ -167,5 +167,7 @@ class Active extends \Magento\Framework\App\Config\Value
         elseif ($this->getScope() == ScopeInterface::SCOPE_STORES) {
             return $this->getScopeId();
         }
+
+        return null;
     }
 }

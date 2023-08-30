@@ -18,7 +18,6 @@ namespace Shippit\Shipping\Api\Data;
 
 interface SyncShipmentItemInterface
 {
-
     /**
      * Constants for keys of data array. Identical to the name of the getter in snake case
      */
@@ -42,7 +41,7 @@ interface SyncShipmentItemInterface
      * Set the Sync Shipment Item Id
      *
      * @param integer $syncShipmentItemId
-     * @return string|null
+     * @return self
      */
     public function setId($syncShipmentItemId);
 
@@ -57,7 +56,7 @@ interface SyncShipmentItemInterface
      * Set the Sync Shipment Item Id
      *
      * @param integer $syncShipmentItemId
-     * @return string|null
+     * @return self
      */
     public function setSyncShipmentItemId($syncShipmentItemId);
 
@@ -72,7 +71,7 @@ interface SyncShipmentItemInterface
      * Set the Sync Shipment Id
      *
      * @param integer $syncShipmentId
-     * @return string|null
+     * @return self
      */
     public function setSyncShipmentId($syncShipmentId);
 
@@ -87,7 +86,7 @@ interface SyncShipmentItemInterface
      * Set the Item Sku
      *
      * @param string $sku
-     * @return string|null
+     * @return self
      */
     public function setSku($sku);
 
@@ -101,8 +100,8 @@ interface SyncShipmentItemInterface
     /**
      * Set the Item Title
      *
-     * @param string $sku
-     * @return string|null
+     * @param string $title
+     * @return self
      */
     public function setTitle($title);
 
@@ -117,7 +116,7 @@ interface SyncShipmentItemInterface
      * Set the Item Qty
      *
      * @param string $qty
-     * @return string|null
+     * @return self
      */
     public function setQty($qty);
 
@@ -131,8 +130,8 @@ interface SyncShipmentItemInterface
     /**
      * Set the Item Price
      *
-     * @param string $sku
-     * @return string|null
+     * @param string $price
+     * @return self
      */
     public function setPrice($price);
 
@@ -147,7 +146,7 @@ interface SyncShipmentItemInterface
      * Set the Item Weight
      *
      * @param string $weight
-     * @return string|null
+     * @return self
      */
     public function setWeight($weight);
 
@@ -162,12 +161,22 @@ interface SyncShipmentItemInterface
      * Set the Item Location
      *
      * @param string $location
-     * @return string|null
+     * @return self
      */
     public function setLocation($location);
 
     /**
      * Add a new item to the sync shipment item request
+     *
+     * @param array $item
+     * @return self
      */
     public function addItem($item);
+
+    /**
+     * Retrieve a collection of items
+     *
+     * @return \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
+     */
+    public function getCollection();
 }

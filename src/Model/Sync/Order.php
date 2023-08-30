@@ -33,38 +33,38 @@ class Order extends \Magento\Framework\Model\AbstractModel implements SyncOrderI
     /**
      * @var \Magento\Sales\Api\Data\OrderInterface
      */
-    protected $_orderInterface;
+    protected $orderInterface;
 
     /**
      * @var \Shippit\Shipping\Api\Data\SyncOrderItemInterface
      */
-    protected $_syncOrderItemInterface;
+    protected $syncOrderItemInterface;
 
     /**
      * @var \Shippit\Shipping\Model\Sync\Order\ItemFactory
      */
-    protected $_syncOrderItemFactory;
+    protected $syncOrderItemFactory;
 
     /**
      * An instance of an order
      *
      * @var \Magento\Sales\Api\Data\OrderInterface
      */
-    protected $_order;
+    protected $order;
 
     /**
      * An array of sync order items
      *
      * @var Array
      */
-    protected $_items;
+    protected $items;
 
     /**
      * A collection of sync order items
      *
      * @var \Shippit\Shipping\Model\ResourceModel\Sync\Order\Item\Collection
      */
-    protected $_itemsCollection;
+    protected $itemsCollection;
 
     /**
      * @param \Magento\Framework\Model\Context $context
@@ -85,9 +85,9 @@ class Order extends \Magento\Framework\Model\AbstractModel implements SyncOrderI
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
     ) {
-        $this->_orderInterface = $orderInterface;
-        $this->_syncOrderItemInterface = $syncOrderItemInterface;
-        $this->_syncOrderItemFactory = $syncOrderItemFactory;
+        $this->orderInterface = $orderInterface;
+        $this->syncOrderItemInterface = $syncOrderItemInterface;
+        $this->syncOrderItemFactory = $syncOrderItemFactory;
 
         parent::__construct($context, $registry, $resource, $resourceCollection, $data);
     }
@@ -113,7 +113,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements SyncOrderI
     /**
      * Get the Sync Order Id
      *
-     * @return string|null
+     * @return int|null
      */
     public function getId()
     {
@@ -123,8 +123,8 @@ class Order extends \Magento\Framework\Model\AbstractModel implements SyncOrderI
     /**
      * Set the Sync Order Id
      *
-     * @param DateTime|string $orderDate
-     * @return string|null
+     * @param int|null $syncOrderId
+     * @return self
      */
     public function setId($syncOrderId)
     {
@@ -134,7 +134,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements SyncOrderI
     /**
      * Get the Sync Order Id
      *
-     * @return string|null
+     * @return int|null
      */
     public function getSyncOrderId()
     {
@@ -144,8 +144,8 @@ class Order extends \Magento\Framework\Model\AbstractModel implements SyncOrderI
     /**
      * Set the Sync Order Id
      *
-     * @param DateTime|string $orderDate
-     * @return string|null
+     * @param int|null $syncOrderId
+     * @return self
      */
     public function setSyncOrderId($syncOrderId)
     {
@@ -165,8 +165,8 @@ class Order extends \Magento\Framework\Model\AbstractModel implements SyncOrderI
     /**
      * Set the API Key
      *
-     * @param string $apiKey
-     * @return string|null
+     * @param string|null $apiKey
+     * @return self
      */
     public function setApiKey($apiKey)
     {
@@ -190,17 +190,17 @@ class Order extends \Magento\Framework\Model\AbstractModel implements SyncOrderI
 
     public function getOrder()
     {
-        if (!$this->_order instanceof $this->_orderInterface) {
-            $this->_order = $this->_orderInterface->load($this->getOrderId());
+        if (!$this->order instanceof $this->orderInterface) {
+            $this->order = $this->orderInterface->load($this->getOrderId());
         }
 
-        return $this->_order;
+        return $this->order;
     }
 
     /**
      * Get the Order Id
      *
-     * @return string|null
+     * @return int|null
      */
     public function getOrderId()
     {
@@ -210,8 +210,8 @@ class Order extends \Magento\Framework\Model\AbstractModel implements SyncOrderI
     /**
      * Set the Order Id
      *
-     * @param string $orderId
-     * @return string|null
+     * @param int|null $orderId
+     * @return self
      */
     public function setOrderId($orderId)
     {
@@ -232,7 +232,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements SyncOrderI
      * Set the Shipping Method
      *
      * @param string $shippingMethod
-     * @return string|null
+     * @return self
      */
     public function setShippingMethod($shippingMethod)
     {
@@ -242,7 +242,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements SyncOrderI
     /**
      * Get the attempt count
      *
-     * @return string|null
+     * @return int|null
      */
     public function getAttemptCount()
     {
@@ -252,8 +252,8 @@ class Order extends \Magento\Framework\Model\AbstractModel implements SyncOrderI
     /**
      * Set the attempt count
      *
-     * @param string $attemptCount
-     * @return string|null
+     * @param int|null $attemptCount
+     * @return self
      */
     public function setAttemptCount($attemptCount)
     {
@@ -263,7 +263,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements SyncOrderI
     /**
      * Get the status
      *
-     * @return string|null
+     * @return int|null
      */
     public function getStatus()
     {
@@ -273,8 +273,8 @@ class Order extends \Magento\Framework\Model\AbstractModel implements SyncOrderI
     /**
      * Set the status
      *
-     * @param string $status
-     * @return string|null
+     * @param int $status
+     * @return self
      */
     public function setStatus($status)
     {
@@ -295,7 +295,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements SyncOrderI
      * Set the tracking number
      *
      * @param string $trackingNumber
-     * @return string|null
+     * @return self
      */
     public function setTrackingNumber($trackingNumber)
     {
@@ -310,13 +310,13 @@ class Order extends \Magento\Framework\Model\AbstractModel implements SyncOrderI
      */
     public function getItemsCollection($useCache = true)
     {
-        if ($this->_itemsCollection === null || !$useCache) {
-            $this->_itemsCollection = $this->_syncOrderItemInterface
+        if ($this->itemsCollection === null || !$useCache) {
+            $this->itemsCollection = $this->syncOrderItemInterface
                 ->getCollection()
                 ->addSyncOrderFilter($this);
         }
 
-        return $this->_itemsCollection;
+        return $this->itemsCollection;
     }
 
     /**
@@ -326,9 +326,9 @@ class Order extends \Magento\Framework\Model\AbstractModel implements SyncOrderI
      */
     public function getItems()
     {
-        $this->_items = $this->getItemsCollection()->getItems();
+        $this->items = $this->getItemsCollection()->getItems();
 
-        return $this->_items;
+        return $this->items;
     }
 
     /**
@@ -340,7 +340,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements SyncOrderI
     {
         if (!$item->getSyncItemId()) {
             $this->getItemsCollection()->addItem($item);
-            $this->_items[] = $item;
+            $this->items[] = $item;
         }
 
         return $this;
@@ -354,7 +354,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements SyncOrderI
     public function addItems(array $items)
     {
         foreach ($items as $item) {
-            $itemObject = $this->_syncOrderItemFactory
+            $itemObject = $this->syncOrderItemFactory
                 ->create()
                 ->addItem($item);
 

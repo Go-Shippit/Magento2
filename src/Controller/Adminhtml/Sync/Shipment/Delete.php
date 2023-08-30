@@ -71,7 +71,7 @@ class Delete extends \Magento\Backend\App\Action
         ->getCollection()
         ->addFieldToFilter(
             'sync_shipment_id',
-            array('in',$syncIds)
+            array('in', $syncIds)
         );
 
         if ($syncShipments->getSize() == 0) {
@@ -84,7 +84,6 @@ class Delete extends \Magento\Backend\App\Action
 
         // delete shipment and its items
         foreach ($syncShipments as $syncShipment) {
-
             // // delete items first
             // $syncShipmentItems = $syncShipment->getItemsCollection()->toArray()['items'];
             // if($syncShipmentItems) {

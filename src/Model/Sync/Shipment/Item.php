@@ -31,7 +31,7 @@ class Item extends \Magento\Framework\Model\AbstractModel implements \Shippit\Sh
     /**
      * Get the Sync Shipment Item Id
      *
-     * @return string|null
+     * @return string|int|null|mixed
      */
     public function getId()
     {
@@ -42,7 +42,7 @@ class Item extends \Magento\Framework\Model\AbstractModel implements \Shippit\Sh
      * Set the Sync Shipment Item Id
      *
      * @param integer $syncShipmentItemId
-     * @return string|null
+     * @return self
      */
     public function setId($syncShipmentItemId)
     {
@@ -63,7 +63,7 @@ class Item extends \Magento\Framework\Model\AbstractModel implements \Shippit\Sh
      * Set the Sync Shipment Item Id
      *
      * @param integer $syncShipmentItemId
-     * @return string|null
+     * @return self
      */
     public function setSyncShipmentItemId($syncShipmentItemId)
     {
@@ -84,7 +84,7 @@ class Item extends \Magento\Framework\Model\AbstractModel implements \Shippit\Sh
      * Set the Sync Shipment Id
      *
      * @param integer $syncShipmentId
-     * @return string|null
+     * @return self
      */
     public function setSyncShipmentId($syncShipmentId)
     {
@@ -105,7 +105,7 @@ class Item extends \Magento\Framework\Model\AbstractModel implements \Shippit\Sh
      * Set the Item Sku
      *
      * @param string $sku
-     * @return string|null
+     * @return self
      */
     public function setSku($sku)
     {
@@ -125,8 +125,8 @@ class Item extends \Magento\Framework\Model\AbstractModel implements \Shippit\Sh
     /**
      * Set the Item Title
      *
-     * @param string $sku
-     * @return string|null
+     * @param string $title
+     * @return self
      */
     public function setTitle($title)
     {
@@ -147,7 +147,7 @@ class Item extends \Magento\Framework\Model\AbstractModel implements \Shippit\Sh
      * Set the Item Qty
      *
      * @param string $qty
-     * @return string|null
+     * @return self
      */
     public function setQty($qty)
     {
@@ -167,8 +167,8 @@ class Item extends \Magento\Framework\Model\AbstractModel implements \Shippit\Sh
     /**
      * Set the Item Price
      *
-     * @param string $sku
-     * @return string|null
+     * @param string $price
+     * @return self
      */
     public function setPrice($price)
     {
@@ -189,7 +189,7 @@ class Item extends \Magento\Framework\Model\AbstractModel implements \Shippit\Sh
      * Set the Item Weight
      *
      * @param string $weight
-     * @return string|null
+     * @return self
      */
     public function setWeight($weight)
     {
@@ -210,7 +210,7 @@ class Item extends \Magento\Framework\Model\AbstractModel implements \Shippit\Sh
      * Set the Item Location
      *
      * @param string $location
-     * @return string|null
+     * @return self
      */
     public function setLocation($location)
     {
@@ -219,6 +219,9 @@ class Item extends \Magento\Framework\Model\AbstractModel implements \Shippit\Sh
 
     /**
      * Add a new item to the sync shipment item request
+     *
+     * @param array $item
+     * @return self
      */
     public function addItem($item)
     {

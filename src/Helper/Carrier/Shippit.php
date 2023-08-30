@@ -16,14 +16,12 @@
 
 namespace Shippit\Shipping\Helper\Carrier;
 
-use Magento\Framework\App\Config\ScopeConfigInterface;
-
 class Shippit extends \Shippit\Shipping\Helper\Data
 {
     const XML_PATH_SETTINGS = 'carriers/shippit/';
 
-    protected $_itemsHelper;
-    protected $_productRepository;
+    protected $itemsHelper;
+    protected $productRepository;
 
     /**
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
@@ -35,14 +33,16 @@ class Shippit extends \Shippit\Shipping\Helper\Data
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Framework\Module\ModuleList $moduleList,
         \Shippit\Shipping\Helper\Sync\Order\Items $itemsHelper,
-        \Magento\Catalog\Model\ProductRepository $productRepository
+        \Magento\Catalog\Model\ProductRepository $productRepository,
+        \Magento\Framework\App\ProductMetadataInterface $productMetadata
     ) {
-        $this->_itemsHelper = $itemsHelper;
-        $this->_productRepository = $productRepository;
+        $this->itemsHelper = $itemsHelper;
+        $this->productRepository = $productRepository;
 
         parent::__construct(
             $scopeConfig,
-            $moduleList
+            $moduleList,
+            $productMetadata
         );
     }
 
@@ -56,7 +56,7 @@ class Shippit extends \Shippit\Shipping\Helper\Data
     {
         $path = self::XML_PATH_SETTINGS . $key;
 
-        return $this->_scopeConfig->getValue($path, $scope);
+        return $this->scopeConfig->getValue($path, $scope);
     }
 
     /**
@@ -119,12 +119,12 @@ class Shippit extends \Shippit\Shipping\Helper\Data
 
     public function getProductById($id)
     {
-        return $this->_productRepository->getById($id);
+        return $this->productRepository->getById($id);
     }
 
     public function getWidth($item)
     {
-        $attributeCode = $this->_itemsHelper->getProductDimensionWidthAttributeCode();
+        $attributeCode = $this->itemsHelper->getProductDimensionWidthAttributeCode();
 
         if (empty($attributeCode)) {
             return;
@@ -132,14 +132,14 @@ class Shippit extends \Shippit\Shipping\Helper\Data
 
         $product = $this->getProductById($item->getProductId());
 
-        $attributeValue = $this->_itemsHelper->getAttributeValue($product, $attributeCode);
+        $attributeValue = $this->itemsHelper->getAttributeValue($product, $attributeCode);
 
-        return $this->_itemsHelper->getDimension($attributeValue);
+        return $this->itemsHelper->getDimension($attributeValue);
     }
 
     public function getLength($item)
     {
-        $attributeCode = $this->_itemsHelper->getProductDimensionLengthAttributeCode();
+        $attributeCode = $this->itemsHelper->getProductDimensionLengthAttributeCode();
 
         if (empty($attributeCode)) {
             return;
@@ -147,14 +147,14 @@ class Shippit extends \Shippit\Shipping\Helper\Data
 
         $product = $this->getProductById($item->getProductId());
 
-        $attributeValue = $this->_itemsHelper->getAttributeValue($product, $attributeCode);
+        $attributeValue = $this->itemsHelper->getAttributeValue($product, $attributeCode);
 
-        return $this->_itemsHelper->getDimension($attributeValue);
+        return $this->itemsHelper->getDimension($attributeValue);
     }
 
     public function getDepth($item)
     {
-        $attributeCode = $this->_itemsHelper->getProductDimensionDepthAttributeCode();
+        $attributeCode = $this->itemsHelper->getProductDimensionDepthAttributeCode();
 
         if (empty($attributeCode)) {
             return;
@@ -162,8 +162,8 @@ class Shippit extends \Shippit\Shipping\Helper\Data
 
         $product = $this->getProductById($item->getProductId());
 
-        $attributeValue = $this->_itemsHelper->getAttributeValue($product, $attributeCode);
+        $attributeValue = $this->itemsHelper->getAttributeValue($product, $attributeCode);
 
-        return $this->_itemsHelper->getDimension($attributeValue);
+        return $this->itemsHelper->getDimension($attributeValue);
     }
 }

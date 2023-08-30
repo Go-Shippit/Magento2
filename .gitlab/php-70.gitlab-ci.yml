@@ -5,8 +5,11 @@ php70-composer:
   stage: build
   image:
     name: registry.mamis.com.au/mamis/containers/php/build:7.0
-  script:
-    - composer install --prefer-dist --optimize-autoloader --no-progress --no-plugins --no-interaction
+  before_script:
+    - !reference [.composer-magento-auth, before_script]
+    # Remove unsupported dev-packages
+    - composer remove bitexpert/phpstan-magento --dev --no-interaction --no-update
+    - composer remove phpstan/phpstan --dev --no-interaction --no-update
 
 php70-linter:
   extends: .php-lint

@@ -31,18 +31,33 @@ class Shipment extends \Magento\Framework\Model\AbstractModel implements SyncShi
     const SYNC_MAX_ATTEMPTS = 5;
 
     /**
+     * @var \Magento\Sales\Api\Data\ShipmentInterface
+     */
+    protected $shipmentInterface;
+
+    /**
+     * @var \Shippit\Shipping\Api\Data\SyncShipmentItemInterface
+     */
+    protected $syncShipmentItemInterface;
+
+    /**
+     * @var \Shippit\Shipping\Model\Sync\Shipment\ItemFactory
+     */
+    protected $syncShipmentItemFactory;
+
+    /**
      * An array of sync shipment items
      *
      * @var Array
      */
-    protected $_items;
+    protected $items;
 
     /**
      * A collection of sync shipment items
      *
      * @var \Shippit\Shipping\Model\ResourceModel\Sync\Shipment\Item\Collection
      */
-    protected $_itemsCollection;
+    protected $itemsCollection;
 
     /**
      * @param \Magento\Framework\Model\Context $context
@@ -63,9 +78,9 @@ class Shipment extends \Magento\Framework\Model\AbstractModel implements SyncShi
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
     ) {
-        $this->_shipmentInterface = $shipmentInterface;
-        $this->_syncShipmentItemInterface = $syncShipmentItemInterface;
-        $this->_syncShipmentItemFactory = $syncShipmentItemFactory;
+        $this->shipmentInterface = $shipmentInterface;
+        $this->syncShipmentItemInterface = $syncShipmentItemInterface;
+        $this->syncShipmentItemFactory = $syncShipmentItemFactory;
 
         parent::__construct($context, $registry, $resource, $resourceCollection, $data);
     }
@@ -94,7 +109,7 @@ class Shipment extends \Magento\Framework\Model\AbstractModel implements SyncShi
      * Set the Sync Shipment Id
      *
      * @param int $syncShipmentId
-     * @return string|null
+     * @return self
      */
     public function setId($syncShipmentId)
     {
@@ -115,7 +130,7 @@ class Shipment extends \Magento\Framework\Model\AbstractModel implements SyncShi
      * Set the Sync Shipment Id
      *
      * @param int $syncShipmentId
-     * @return string|null
+     * @return self
      */
     public function setSyncShipmentId($syncShipmentId)
     {
@@ -135,8 +150,8 @@ class Shipment extends \Magento\Framework\Model\AbstractModel implements SyncShi
     /**
      * Set the Store Id
      *
-     * @param string $orderId
-     * @return string|null
+     * @param string $storeId
+     * @return self
      */
     public function setStoreId($storeId)
     {
@@ -156,8 +171,8 @@ class Shipment extends \Magento\Framework\Model\AbstractModel implements SyncShi
     /**
      * Set the Order Increment
      *
-     * @param string $orderincrement
-     * @return string|null
+     * @param string $orderIncrement
+     * @return self
      */
     public function setOrderIncrement($orderIncrement)
     {
@@ -177,8 +192,8 @@ class Shipment extends \Magento\Framework\Model\AbstractModel implements SyncShi
     /**
      * Set the Shipping Increment
      *
-     * @param string $shippingincrement
-     * @return string|null
+     * @param string $shipmentIncrement
+     * @return self
      */
     public function setShipmentIncrement($shipmentIncrement)
     {
@@ -199,7 +214,7 @@ class Shipment extends \Magento\Framework\Model\AbstractModel implements SyncShi
      * Set the status
      *
      * @param string $status
-     * @return string|null
+     * @return self
      */
     public function setStatus($status)
     {
@@ -220,7 +235,7 @@ class Shipment extends \Magento\Framework\Model\AbstractModel implements SyncShi
      * Set the courier allocation
      *
      * @param string $courierAllocation
-     * @return string|null
+     * @return self
      */
     public function setCourierAllocation($courierAllocation)
     {
@@ -241,7 +256,7 @@ class Shipment extends \Magento\Framework\Model\AbstractModel implements SyncShi
      * Set the tracking number
      *
      * @param string $trackNumber
-     * @return string|null
+     * @return self
      */
     public function setTrackNumber($trackNumber)
     {
@@ -262,7 +277,7 @@ class Shipment extends \Magento\Framework\Model\AbstractModel implements SyncShi
      * Set the attempt count
      *
      * @param string $attemptCount
-     * @return string|null
+     * @return self
      */
     public function setAttemptCount($attemptCount)
     {
@@ -282,8 +297,8 @@ class Shipment extends \Magento\Framework\Model\AbstractModel implements SyncShi
     /**
      * Set the created at
      *
-     * @param string $attemptCount
-     * @return string|null
+     * @param string|null $createdAt
+     * @return self
      */
     public function setCreatedAt($createdAt)
     {
@@ -303,21 +318,12 @@ class Shipment extends \Magento\Framework\Model\AbstractModel implements SyncShi
     /**
      * Set the synced at
      *
-     * @param string $attemptCount
-     * @return string|null
+     * @param string|null $syncedAt
+     * @return self
      */
     public function setSyncedAt($syncedAt)
     {
         return $this->setData(self::SYNCED_AT, $syncedAt);
-    }
-
-    public function getOrder()
-    {
-        if (!$this->_order instanceof $this->_orderInterface) {
-            $this->_order = $this->_orderInterface->load($this->getOrderId());
-        }
-
-        return $this->_order;
     }
 
     /**
@@ -328,13 +334,13 @@ class Shipment extends \Magento\Framework\Model\AbstractModel implements SyncShi
      */
     public function getItemsCollection($useCache = true)
     {
-        if ($this->_itemsCollection === null || !$useCache) {
-            $this->_itemsCollection = $this->_syncShipmentItemInterface
+        if ($this->itemsCollection === null || !$useCache) {
+            $this->itemsCollection = $this->syncShipmentItemInterface
                 ->getCollection()
                 ->addSyncShipmentFilter($this);
         }
 
-        return $this->_itemsCollection;
+        return $this->itemsCollection;
     }
 
     /**
@@ -344,9 +350,7 @@ class Shipment extends \Magento\Framework\Model\AbstractModel implements SyncShi
      */
     public function getItems()
     {
-        $this->_items = $this->getItemsCollection()->getItems();
-
-        return $this->_items;
+        return $this->getItemsCollection()->getItems();
     }
 
     /**
@@ -358,7 +362,6 @@ class Shipment extends \Magento\Framework\Model\AbstractModel implements SyncShi
     {
         if (!$item->getSyncShipmentItemId()) {
             $this->getItemsCollection()->addItem($item);
-            $this->_items[] = $item;
         }
 
         return $this;
@@ -372,7 +375,7 @@ class Shipment extends \Magento\Framework\Model\AbstractModel implements SyncShi
     public function addItems(array $items)
     {
         foreach ($items as $item) {
-            $itemObject = $this->_syncShipmentItemFactory
+            $itemObject = $this->syncShipmentItemFactory
                 ->create()
                 ->addItem($item);
 

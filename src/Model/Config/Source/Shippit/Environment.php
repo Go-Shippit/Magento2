@@ -20,9 +20,9 @@
  */
 namespace Shippit\Shipping\Model\Config\Source\Shippit;
 
-class Environment implements \Magento\Framework\Option\ArrayInterface
+class Environment implements \Magento\Framework\Data\OptionSourceInterface
 {
-    const LIVE = 'production';
+    const PRODUCTION = 'production';
     const STAGING = 'staging';
 
     /**
@@ -34,13 +34,13 @@ class Environment implements \Magento\Framework\Option\ArrayInterface
     {
         return [
             [
-                'label' => 'Live',
-                'value' => self::LIVE
+                'label' => 'Production',
+                'value' => self::PRODUCTION,
             ],
             [
-                'label' => 'Sandbox',
-                'value' => self::STAGING
-            ]
+                'label' => 'Staging',
+                'value' => self::STAGING,
+            ],
         ];
     }
 
@@ -52,8 +52,8 @@ class Environment implements \Magento\Framework\Option\ArrayInterface
     public function toArray()
     {
         return [
-            self::LIVE => 'Live',
-            self::STAGING => 'Sandbox'
+            self::PRODUCTION => 'Production',
+            self::STAGING => 'Staging',
         ];
     }
 }

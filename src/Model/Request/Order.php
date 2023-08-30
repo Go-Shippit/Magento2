@@ -24,30 +24,32 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
     /**
      * @var \Shippit\Shipping\Helper\Data
      */
-    protected $_helper;
+    protected $helper;
 
     /**
      * The carrier code used for Shippit Live Quotes
+     *
      * @var string
      */
-    protected $_carrierCode;
+    protected $carrierCode;
 
     /**
      * The order object
-     * @var Magento\Sales\Model\Order
+     *
+     * @var \Magento\Sales\Model\Order
      */
-    protected $_order;
+    protected $order;
 
     /**
      * THe Sync Order Object
      * @var \Shippit\Shipping\Api\Request\SyncOrderInterface
      */
-    protected $_syncOrder;
+    protected $syncOrder;
 
     /**
      * @var \Magento\Framework\Locale\Resolver
      */
-    protected $_localeResolver;
+    protected $localeResolver;
 
     /**
      * @param \Magento\Framework\Model\Context $context
@@ -67,10 +69,10 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
     ) {
-        $this->_helper = $helper;
-        $this->_syncOrder = $syncOrder;
-        $this->_carrierCode = $helper::CARRIER_CODE;
-        $this->_localeResolver = $localeResolver;
+        $this->helper = $helper;
+        $this->syncOrder = $syncOrder;
+        $this->carrierCode = $helper::CARRIER_CODE;
+        $this->localeResolver = $localeResolver;
 
         parent::__construct($context, $registry, $resource, $resourceCollection, $data);
     }
@@ -100,18 +102,18 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
     public function setOrder($order)
     {
         if ($order instanceof \Magento\Sales\Model\Order) {
-            $this->_order = $order;
+            $this->order = $order;
         }
         else {
-            $this->_order = $this->load($order);
+            $this->order = $this->load($order);
         }
 
-        $billingAddress = $this->_order->getBillingAddress();
-        $shippingAddress = $this->_order->getShippingAddress();
+        $billingAddress = $this->order->getBillingAddress();
+        $shippingAddress = $this->order->getShippingAddress();
 
-        $this->setRetailerInvoice($this->_order->getIncrementId())
-            ->setAuthorityToLeave($this->_order->getShippitAuthorityToLeave())
-            ->setDeliveryInstructions($this->_order->getShippitDeliveryInstructions())
+        $this->setRetailerInvoice($this->order->getIncrementId())
+            ->setAuthorityToLeave($this->order->getShippitAuthorityToLeave())
+            ->setDeliveryInstructions($this->order->getShippitDeliveryInstructions())
             ->setUserAttributes($billingAddress->getEmail(), $billingAddress->getFirstname(), $billingAddress->getLastname())
             ->setReceiverName($shippingAddress->getName())
             ->setReceiverContactNumber($shippingAddress->getTelephone())
@@ -122,16 +124,16 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
             ->setDeliveryState($shippingAddress->getRegionCode())
             ->setDeliveryCountry($shippingAddress->getCountryId())
             ->setSourcePlatform('magento2')
-            ->setProductCurrency($this->_order->getOrderCurrencyCode());
+            ->setProductCurrency($this->order->getOrderCurrencyCode());
 
         // Set the receiver language code
-        if (!empty($this->_localeResolver->getLocale())) {
+        if (!empty($this->localeResolver->getLocale())) {
             $this->setReceiverLanguageCode(
-                strstr($this->_localeResolver->getLocale(), '_', true)
+                strstr($this->localeResolver->getLocale(), '_', true)
             );
         }
 
-        $this->setOrderAfter($this->_order);
+        $this->setOrderAfter($this->order);
 
         return $this;
     }
@@ -143,7 +145,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
         // If the delivery state is empty
         // Attempt to retrieve from the postcode lookup for AU Addresses
         if (empty($deliveryState) && $this->getDeliveryCountry() == 'AU') {
-            $postcodeState = $this->_helper->getStateFromPostcode($this->getDeliveryPostcode());
+            $postcodeState = $this->helper->getStateFromPostcode($this->getDeliveryPostcode());
 
             if ($postcodeState) {
                 $this->setDeliveryState($postcodeState);
@@ -161,8 +163,8 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
         if (count($items) == 0) {
             // If we don't have specific items in the request, build
             // the request dynamically from the order object
-            $items = $this->_syncOrder
-                ->setOrder($this->_order)
+            $items = $this->syncOrder
+                ->setOrder($this->order)
                 ->setItems()
                 ->getItems();
 
@@ -226,8 +228,8 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
     /**
      * Set the Retailer Invoice Referance
      *
-     * @param string $orderDate
-     * @return string
+     * @param string $retailerInvoice
+     * @return self
      */
     public function setRetailerInvoice($retailerInvoice)
     {
@@ -247,8 +249,8 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
     /**
      * Set the Authority To Leave
      *
-     * @param bool $authorityToLeave
-     * @return bool
+     * @param bool|null $authorityToLeave
+     * @return self
      */
     public function setAuthorityToLeave($authorityToLeave)
     {
@@ -276,7 +278,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
      * Set the Delivery Instructions
      *
      * @param string $deliveryInstructions
-     * @return string
+     * @return self
      */
     public function setDeliveryInstructions($deliveryInstructions)
     {
@@ -296,8 +298,10 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
     /**
      * Set the User Attributes
      *
-     * @param array $userAttributes
-     * @return array
+     * @param string|null $email
+     * @param string|null $firstname
+     * @param string|null $lastname
+     * @return self
      */
     public function setUserAttributes($email, $firstname, $lastname)
     {
@@ -323,7 +327,8 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
     /**
      * Get the Courier Type
      *
-     * @return array|null
+     * @param string|null $courierType
+     * @return self
      */
     public function setCourierType($courierType)
     {
@@ -343,7 +348,8 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
     /**
      * Get the Courier Allocation
      *
-     * @return array|null
+     * @param string $courierAllocation
+     * @return self
      */
     public function setCourierAllocation($courierAllocation)
     {
@@ -364,7 +370,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
      * Set the Delivery Date
      *
      * @param string $deliveryDate   Delivery Date
-     * @return string
+     * @return self
      */
     public function setDeliveryDate($deliveryDate)
     {
@@ -385,7 +391,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
      * Set the Delivery Window
      *
      * @param string $deliveryWindow   Delivery Window
-     * @return string
+     * @return self
      */
     public function setDeliveryWindow($deliveryWindow)
     {
@@ -398,7 +404,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
      * - Values may include the courier_type, delivery_date and delivery_window
      *
      * @param string|null $shippingMethod
-     * @return array
+     * @return self
      */
     public function setShippingMethod($shippingMethod = null)
     {
@@ -412,21 +418,23 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
             // If the shipping method service level is priority,
             // process the delivery date and delivery window
             if ($shippingMethod == ShippingMethods::SERVICE_LEVEL_PRIORITY) {
-                $deliveryDate = $this->_getOrderDeliveryDate($this->_order);
-                $deliveryWindow = $this->_getOrderDeliveryWindow($this->_order);
+                $deliveryDate = $this->getOrderDeliveryDate($this->order);
+                $deliveryWindow = $this->getOrderDeliveryWindow($this->order);
 
                 if (!empty($deliveryDate) && !empty($deliveryWindow)) {
                     $this->setDeliveryDate($deliveryDate);
                     $this->setDeliveryWindow($deliveryWindow);
                 }
             }
+
+            return $this;
         }
         // If shipping method is in the list of available
         // couriers then set a courier allocation
         elseif (!empty($shippingMethod)
             && array_key_exists($shippingMethod, ShippingMethods::$couriers)
         ) {
-            $this->setCourierAllocation($shippingMethod);
+            return $this->setCourierAllocation($shippingMethod);
         }
         // Otherwise, if no matches are found, send
         // the order as a standard service level
@@ -435,14 +443,14 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
         }
     }
 
-    protected function _getOrderDeliveryDate($order)
+    protected function getOrderDeliveryDate($order)
     {
         $shippingMethod = $order->getShippingMethod();
 
         // If the shipping method is a shippit method,
         // processing using the selected shipping options
-        if (strpos($shippingMethod, $this->_carrierCode) !== FALSE) {
-            $shippingOptions = str_replace($this->_carrierCode . '_', '', $shippingMethod);
+        if (strpos($shippingMethod, $this->carrierCode) !== FALSE) {
+            $shippingOptions = str_replace($this->carrierCode . '_', '', $shippingMethod);
             $shippingOptions = explode('_', $shippingOptions);
             $courierData = [];
 
@@ -465,14 +473,14 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
         }
     }
 
-    protected function _getOrderDeliveryWindow($order)
+    protected function getOrderDeliveryWindow($order)
     {
         $shippingMethod = $order->getShippingMethod();
 
         // If the shipping method is a shippit method,
         // processing using the selected shipping options
-        if (strpos($shippingMethod, $this->_carrierCode) !== FALSE) {
-            $shippingOptions = str_replace($this->_carrierCode . '_', '', $shippingMethod);
+        if (strpos($shippingMethod, $this->carrierCode) !== FALSE) {
+            $shippingOptions = str_replace($this->carrierCode . '_', '', $shippingMethod);
             $shippingOptions = explode('_', $shippingOptions);
             $courierData = [];
 
@@ -509,7 +517,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
      * Set the Reciever Name
      *
      * @param string $receiverName    Receiver Name
-     * @return string
+     * @return self
      */
     public function setReceiverName($receiverName)
     {
@@ -530,7 +538,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
      * Set the Reciever Contact Number
      *
      * @param string $receiverContactNumber    Receiver Contact Number
-     * @return string
+     * @return self
      */
     public function setReceiverContactNumber($receiverContactNumber)
     {
@@ -551,7 +559,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
      * Set the Delivery Company
      *
      * @param string $deliveryCompany   Delivery Company
-     * @return string
+     * @return self
      */
     public function setDeliveryCompany($deliveryCompany)
     {
@@ -572,7 +580,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
      * Set the Delivery Address
      *
      * @param string $deliveryAddress   Delivery Address
-     * @return string
+     * @return self
      */
     public function setDeliveryAddress($deliveryAddress)
     {
@@ -593,7 +601,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
      * Set the Delivery Suburb
      *
      * @param string $deliverySuburb   Delivery Suburb
-     * @return string
+     * @return self
      */
     public function setDeliverySuburb($deliverySuburb)
     {
@@ -614,7 +622,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
      * Set the Delivery Postcode
      *
      * @param string $deliveryPostcode   Delivery Postcode
-     * @return string
+     * @return self
      */
     public function setDeliveryPostcode($deliveryPostcode)
     {
@@ -635,7 +643,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
      * Set the Delivery State
      *
      * @param string $deliveryState   Delivery State
-     * @return string
+     * @return self
      */
     public function setDeliveryState($deliveryState)
     {
@@ -656,7 +664,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
      * Set the Delivery Country
      *
      * @param string $deliveryCountry   Delivery Country
-     * @return string
+     * @return self
      */
     public function setDeliveryCountry($deliveryCountry)
     {
@@ -666,7 +674,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
     /**
      * Get the Parcel Attributes
      *
-     * @return string|null
+     * @return array|null
      */
     public function getParcelAttributes()
     {
@@ -676,8 +684,8 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
     /**
      * Set the Parcel Attributes
      *
-     * @param string $parcelAttributes
-     * @return string|null
+     * @param array $parcelAttributes
+     * @return self
      */
     public function setParcelAttributes($parcelAttributes)
     {
@@ -730,7 +738,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
                 array(
                     'length' => (float) $length,
                     'width' => (float) $width,
-                    'depth' => (float) $depth
+                    'depth' => (float) $depth,
                 )
             );
         }
@@ -744,7 +752,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
      * Set the Source Platform
      *
      * @param string $sourcePlatform
-     * @return string
+     * @return self
      */
     public function setSourcePlatform($sourcePlatform)
     {
@@ -765,7 +773,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
      * Set the Product Currency
      *
      * @param string $productCurrency
-     * @return string
+     * @return self
      */
     public function setProductCurrency($productCurrency)
     {
@@ -786,7 +794,7 @@ class Order extends \Magento\Framework\Model\AbstractModel implements OrderInter
      * Set the Receiver Language Code
      *
      * @param string $receiverLanguageCode
-     * @return string
+     * @return self
      */
     public function setReceiverLanguageCode($receiverLanguageCode)
     {

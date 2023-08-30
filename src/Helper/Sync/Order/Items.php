@@ -26,7 +26,10 @@ class Items extends \Shippit\Shipping\Helper\Sync\Order
 
     const XML_PATH_SETTINGS = 'shippit/sync_item/';
 
-    protected $_locationAttributeCode = null;
+    /**
+     * @var bool|string|null
+     */
+    protected $locationAttributeCode = null;
 
     /**
      * Return store config value for key
@@ -38,7 +41,7 @@ class Items extends \Shippit\Shipping\Helper\Sync\Order
     {
         $path = self::XML_PATH_SETTINGS . $key;
 
-        return $this->_scopeConfig->getValue($path, $scope);
+        return $this->scopeConfig->getValue($path, $scope);
     }
 
     /**
@@ -286,12 +289,14 @@ class Items extends \Shippit\Shipping\Helper\Sync\Order
 
     public function getSkus($items)
     {
-        $itemsSkus = [];
+        $itemSkus = [];
 
         foreach ($items as $item) {
-            if (isset($item['sku'])) {
-                $itemSkus[] = $item['sku'];
+            if (!isset($item['sku']) || empty($item['sku'])) {
+                continue;
             }
+
+            $itemSkus[] = $item['sku'];
         }
 
         return $itemSkus;
@@ -339,16 +344,16 @@ class Items extends \Shippit\Shipping\Helper\Sync\Order
 
     public function getLocationAttributeCode()
     {
-        if (is_null($this->_locationAttributeCode)) {
+        if (is_null($this->locationAttributeCode)) {
             if (!$this->isProductLocationActive()) {
-                $this->_locationAttributeCode = false;
+                $this->locationAttributeCode = false;
             }
             else {
-                $this->_locationAttributeCode = $this->getProductLocationAttributeCode();
+                $this->locationAttributeCode = $this->getProductLocationAttributeCode();
             }
         }
 
-        return $this->_locationAttributeCode;
+        return $this->locationAttributeCode;
     }
 
     /**

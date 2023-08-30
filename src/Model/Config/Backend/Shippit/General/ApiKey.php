@@ -40,9 +40,16 @@ class ApiKey extends \Magento\Framework\App\Config\Value
      * @param \Magento\Framework\Registry $registry
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $config
      * @param \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList
-     * @param \Magento\Framework\Model\ResourceModel\AbstractResource $resource
-     * @param \Magento\Framework\Data\Collection\AbstractDb $resourceCollection
-     * @param string $runModelPath
+     * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
+     * @param \Magento\Framework\Data\Collection\AbstractDb|null $resourceCollection
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * @param \Magento\Framework\Message\ManagerInterface $messageManager
+     * @param \Magento\Framework\App\Config\ReinitableConfigInterface $configInterface
+     * @param \Magento\Framework\DataObjectFactory $dataObjectFactory
+     * @param \Magento\Store\Model\App\Emulation $emulation
+     * @param \Shippit\Shipping\Helper\Api $api
+     * @param \Shippit\Shipping\Logger\Logger $logger
+     * @param \Shippit\Shipping\Helper\Data $helper
      * @param array $data
      */
     public function __construct(
@@ -153,6 +160,8 @@ class ApiKey extends \Magento\Framework\App\Config\Value
         elseif ($this->getScope() == ScopeInterface::SCOPE_STORES) {
             return $this->getScopeId();
         }
+
+        return null;
     }
 
     public function registerShippingCartName()
@@ -161,7 +170,7 @@ class ApiKey extends \Magento\Framework\App\Config\Value
             $requestData = $this->_dataObjectFactory->create();
             $requestData->setShippingCartMethodName('magento2');
 
-            $merchant = $this->_api->putMerchant($requestData, true);
+            $merchant = $this->_api->updateMerchant($requestData);
         }
         catch (Exception $e) {
             $this->_messageManager->addError('The request to update the shopping cart integration name failed - please try again.');

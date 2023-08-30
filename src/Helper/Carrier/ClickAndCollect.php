@@ -16,8 +16,6 @@
 
 namespace Shippit\Shipping\Helper\Carrier;
 
-use Magento\Framework\App\Config\ScopeConfigInterface;
-
 class ClickAndCollect extends \Shippit\Shipping\Helper\Data
 {
     const XML_PATH_SETTINGS = 'carriers/shippitcc/';
@@ -32,7 +30,7 @@ class ClickAndCollect extends \Shippit\Shipping\Helper\Data
     {
         $path = self::XML_PATH_SETTINGS . $key;
 
-        return $this->_scopeConfig->getValue($path, $scope);
+        return $this->scopeConfig->getValue($path, $scope);
     }
 
     /**

@@ -42,7 +42,7 @@ class Item extends \Magento\Framework\Model\AbstractModel implements \Shippit\Sh
      * Set the Sync Item Id
      *
      * @param integer $syncItemId
-     * @return string|null
+     * @return self
      */
     public function setId($syncItemId)
     {
@@ -63,7 +63,7 @@ class Item extends \Magento\Framework\Model\AbstractModel implements \Shippit\Sh
      * Set the Sync Item Id
      *
      * @param integer $syncItemId
-     * @return string|null
+     * @return self
      */
     public function setSyncItemId($syncItemId)
     {
@@ -84,7 +84,7 @@ class Item extends \Magento\Framework\Model\AbstractModel implements \Shippit\Sh
      * Set the Sync Order Id
      *
      * @param integer $syncOrderId
-     * @return string|null
+     * @return self
      */
     public function setSyncOrderId($syncOrderId)
     {
@@ -105,7 +105,7 @@ class Item extends \Magento\Framework\Model\AbstractModel implements \Shippit\Sh
      * Set the Item Sku
      *
      * @param string $sku
-     * @return string|null
+     * @return self
      */
     public function setSku($sku)
     {
@@ -125,8 +125,8 @@ class Item extends \Magento\Framework\Model\AbstractModel implements \Shippit\Sh
     /**
      * Set the Item Title
      *
-     * @param string $sku
-     * @return string|null
+     * @param string $title
+     * @return self
      */
     public function setTitle($title)
     {
@@ -147,7 +147,7 @@ class Item extends \Magento\Framework\Model\AbstractModel implements \Shippit\Sh
      * Set the Item Qty
      *
      * @param string $qty
-     * @return string|null
+     * @return self
      */
     public function setQty($qty)
     {
@@ -167,8 +167,8 @@ class Item extends \Magento\Framework\Model\AbstractModel implements \Shippit\Sh
     /**
      * Set the Item Price
      *
-     * @param string $sku
-     * @return string|null
+     * @param string $price
+     * @return self
      */
     public function setPrice($price)
     {
@@ -189,7 +189,7 @@ class Item extends \Magento\Framework\Model\AbstractModel implements \Shippit\Sh
      * Set the Item Weight
      *
      * @param string $weight
-     * @return string|null
+     * @return self
      */
     public function setWeight($weight)
     {
@@ -210,7 +210,7 @@ class Item extends \Magento\Framework\Model\AbstractModel implements \Shippit\Sh
      * Set the Item Length
      *
      * @param string $length
-     * @return string|null
+     * @return self
      */
     public function setLength($length)
     {
@@ -231,7 +231,7 @@ class Item extends \Magento\Framework\Model\AbstractModel implements \Shippit\Sh
      * Set the Item Width
      *
      * @param string $width
-     * @return string|null
+     * @return self
      */
     public function setWidth($width)
     {
@@ -252,7 +252,7 @@ class Item extends \Magento\Framework\Model\AbstractModel implements \Shippit\Sh
      * Set the Item Depth
      *
      * @param string $depth
-     * @return string|null
+     * @return self
      */
     public function setDepth($depth)
     {
@@ -273,7 +273,7 @@ class Item extends \Magento\Framework\Model\AbstractModel implements \Shippit\Sh
      * Set the Item Location
      *
      * @param string $location
-     * @return string|null
+     * @return self
      */
     public function setLocation($location)
     {
@@ -294,7 +294,7 @@ class Item extends \Magento\Framework\Model\AbstractModel implements \Shippit\Sh
      * Set the Item Tariffcode
      *
      * @param string $tariffCode
-     * @return string|null
+     * @return self
      */
     public function setTariffCode($tariffCode)
     {
@@ -315,7 +315,7 @@ class Item extends \Magento\Framework\Model\AbstractModel implements \Shippit\Sh
      * Set the Item OriginCountryCode
      *
      * @param string $originCountryCode
-     * @return string|null
+     * @return self
      */
     public function setOriginCountryCode($originCountryCode)
     {
@@ -336,7 +336,7 @@ class Item extends \Magento\Framework\Model\AbstractModel implements \Shippit\Sh
      * Set the Item DangerousGoodsCode
      *
      * @param string $dangerousGoodsCode
-     * @return string|null
+     * @return self
      */
     public function setDangerousGoodsCode($dangerousGoodsCode)
     {
@@ -357,7 +357,7 @@ class Item extends \Magento\Framework\Model\AbstractModel implements \Shippit\Sh
      * Set the Item DangerousGoodsText
      *
      * @param string $dangerousGoodsText
-     * @return string|null
+     * @return self
      */
     public function setDangerousGoodsText($dangerousGoodsText)
     {
@@ -366,6 +366,9 @@ class Item extends \Magento\Framework\Model\AbstractModel implements \Shippit\Sh
 
     /**
      * Add a new item to the sync order item request
+     *
+     * @param array $item
+     * @return self
      */
     public function addItem($item)
     {

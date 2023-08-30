@@ -5,19 +5,19 @@ namespace Shippit\Shipping\Model\Config\Source\Shipping;
 use Shippit\Shipping\Helper\Data as ShippitHelper;
 use Magento\Store\Model\ScopeInterface;
 
-class Methods implements \Magento\Framework\Option\ArrayInterface
+class Methods implements \Magento\Framework\Data\OptionSourceInterface
 {
     /**
      * Core store config
      *
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
      */
-    protected $_scopeConfig;
+    protected $scopeConfig;
 
     /**
      * @var \Magento\Shipping\Model\Config
      */
-    protected $_shippingConfig;
+    protected $shippingConfig;
 
     /**
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
@@ -27,26 +27,29 @@ class Methods implements \Magento\Framework\Option\ArrayInterface
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Shipping\Model\Config $shippingConfig
     ) {
-        $this->_scopeConfig = $scopeConfig;
-        $this->_shippingConfig = $shippingConfig;
+        $this->scopeConfig = $scopeConfig;
+        $this->shippingConfig = $shippingConfig;
     }
 
     /**
      * Return array of carriers.
      *
-     * @param bool $isActiveOnlyFlag
+     * @param boolean $showPlaceholder
+     * @param boolean $excludeShippit
      * @return array
      */
     public function toOptionArray($showPlaceholder = false, $excludeShippit = false)
     {
+        $methods = [];
+
         if (!$showPlaceholder) {
-            $methods = [[
+            $methods[] = [
                 'value' => '',
-                'label' => '-- Please Select --'
-            ]];
+                'label' => '-- Please Select --',
+            ];
         }
 
-        $carriers = $this->_shippingConfig->getAllCarriers();
+        $carriers = $this->shippingConfig->getAllCarriers();
 
         foreach ($carriers as $carrierCode => $carrierModel) {
             $carrierMethods = $carrierModel->getAllowedMethods();
@@ -64,7 +67,7 @@ class Methods implements \Magento\Framework\Option\ArrayInterface
             }
 
             if ($carrierMethods) {
-                $carrierTitle = $this->_scopeConfig->getValue(
+                $carrierTitle = $this->scopeConfig->getValue(
                     'carriers/' . $carrierCode . '/title',
                     ScopeInterface::SCOPE_STORE
                 );

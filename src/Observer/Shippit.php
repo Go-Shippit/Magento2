@@ -36,7 +36,7 @@ class Shippit implements ObserverInterface
     {
         // Ensure the module is active
         if (!$this->_helper->isActive()) {
-            return $this;
+            return;
         }
 
         // get the event parameters
@@ -66,8 +66,8 @@ class Shippit implements ObserverInterface
                 $apiKey,
                 $syncMode,
                 $displayNotifications
-        );
+            );
 
-        return $this;
+        return;
     }
 }

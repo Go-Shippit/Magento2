@@ -16,7 +16,7 @@
 
 namespace Shippit\Shipping\Model\Config\Source\Catalog;
 
-class Attributes implements \Magento\Framework\Option\ArrayInterface
+class Attributes implements \Magento\Framework\Data\OptionSourceInterface
 {
     protected $_product;
     protected $_entityType;
@@ -54,13 +54,13 @@ class Attributes implements \Magento\Framework\Option\ArrayInterface
 
         $attributeArray[] = [
             'label' => ' -- Please Select -- ',
-            'value' => ''
+            'value' => '',
         ];
 
         foreach ($attributes as $attribute) {
             $attributeArray[] = [
                 'label' => $attribute->getAttributeCode(),
-                'value' => $attribute->getAttributeCode()
+                'value' => $attribute->getAttributeCode(),
             ];
         }
 

@@ -16,7 +16,7 @@
 
 namespace Shippit\Shipping\Model\Config\Source\Shippit\Sync\Order;
 
-class SendAllOrders implements \Magento\Framework\Option\ArrayInterface
+class SendAllOrders implements \Magento\Framework\Data\OptionSourceInterface
 {
     const ALL = 'all';
     const ALL_LABEL = 'Yes - All Orders';
@@ -37,16 +37,16 @@ class SendAllOrders implements \Magento\Framework\Option\ArrayInterface
         $optionsArray = [
             [
                 'label' => self::ALL_LABEL,
-                'value' => self::ALL
+                'value' => self::ALL,
             ],
             [
                 'label' => self::ALL_AU_LABEL,
-                'value' => self::ALL_AU
+                'value' => self::ALL_AU,
             ],
             [
                 'label' => self::NO_LABEL,
-                'value' => self::NO
-            ]
+                'value' => self::NO,
+            ],
         ];
 
         return $optionsArray;
@@ -62,7 +62,7 @@ class SendAllOrders implements \Magento\Framework\Option\ArrayInterface
         $optionsArray = [
             self::ALL => self::ALL_LABEL,
             self::ALL_AU => self::ALL_AU_LABEL,
-            self::NO => self::NO_LABEL
+            self::NO => self::NO_LABEL,
         ];
 
         return $optionsArray;

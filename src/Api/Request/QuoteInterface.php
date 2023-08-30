@@ -23,10 +23,10 @@ interface QuoteInterface
      */
     const ORDER_DATE            = 'order_date';
     const DROPOFF_ADDRESS       = 'dropoff_address';
-    const DEST_CITY             = 'dest_city';
-    const DEST_POSTCODE         = 'dest_postcode';
-    const DEST_REGION_CODE      = 'dest_region_code';
+    const DROPOFF_SUBURB        = 'dropoff_suburb';
+    const DROPOFF_POSTCODE      = 'dropoff_postcode';
     const DROPOFF_STATE         = 'dropoff_state';
+    const DROPOFF_COUNTRY_CODE  = 'dropoff_country_code';
     const PARCEL_ATTRIBUTES     = 'parcel_attributes';
     const DUTIABLE_AMOUNT       = 'dutiable_amount';
 
@@ -40,8 +40,8 @@ interface QuoteInterface
     /**
      * Set the Order Date
      *
-     * @param DateTime|string $orderDate
-     * @return string|null
+     * @param string|null $orderDate
+     * @return self
      */
     public function setOrderDate($orderDate);
 
@@ -55,55 +55,40 @@ interface QuoteInterface
     /**
      * Set the Dropoff Address
      *
-     * @param string $dropoffAddress
-     * @return string|null
+     * @param string|null $dropoffAddress
+     * @return self
      */
     public function setDropoffAddress($dropoffAddress);
 
     /**
-     * Get the Dest City
+     * Get the Dropoff Suburb
      *
      * @return string|null
      */
-    public function getDestCity();
+    public function getDropoffSuburb();
 
     /**
-     * Set the Dest City
+     * Set the Dropoff Suburb
      *
-     * @param string $destCity
-     * @return string|null
+     * @param string|null $dropoffSuburb
+     * @return self
      */
-    public function setDestCity($destCity);
+    public function setDropoffSuburb($dropoffSuburb);
 
     /**
-     * Get the Dest Postcode
+     * Get the Dropoff Postcode
      *
      * @return string|null
      */
-    public function getDestPostcode();
+    public function getDropoffPostcode();
 
     /**
-     * Set the Dest Postcode
+     * Set the Dropoff Postcode
      *
-     * @param string $destPostcode
-     * @return string|null
+     * @param string|null $dropoffPostcode
+     * @return self
      */
-    public function setDestPostcode($destPostcode);
-
-    /**
-     * Get the Dest Region Code
-     *
-     * @return string|null
-     */
-    public function getDestRegionCode();
-
-    /**
-     * Set the Dest Region Code
-     *
-     * @param string $destRegionCode
-     * @return string|null
-     */
-    public function setDestRegionCode($destRegionCode);
+    public function setDropoffPostcode($dropoffPostcode);
 
     /**
      * Get the Dropoff State
@@ -116,9 +101,24 @@ interface QuoteInterface
      * Set the Dropoff State
      *
      * @param string $dropoffState
-     * @return string|null
+     * @return self
      */
     public function setDropoffState($dropoffState);
+
+    /**
+     * Get the Dropoff Country Code
+     *
+     * @return string|null
+     */
+    public function getDropoffCountryCode();
+
+    /**
+     * Set the Dropoff Country Code
+     *
+     * @param string|null $dropoffCountryCode
+     * @return self
+     */
+    public function setDropoffCountryCode($dropoffCountryCode);
 
     /**
      * Get the Parcel Attributes
@@ -131,7 +131,7 @@ interface QuoteInterface
      * Set the Parcel Attributes
      *
      * @param string $parcelAttributes
-     * @return string|null
+     * @return self
      */
     public function setParcelAttributes($parcelAttributes);
 
@@ -146,7 +146,7 @@ interface QuoteInterface
      * Set the Dutiable Amount
      *
      * @param float $dutiableAmount
-     * @return float|null
+     * @return self
      */
     public function setDutiableAmount($dutiableAmount);
 }

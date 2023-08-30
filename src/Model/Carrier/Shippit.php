@@ -40,12 +40,45 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
      */
     protected $_code = \Shippit\Shipping\Helper\Data::CARRIER_CODE;
 
-    protected $_helper;
-    protected $_itemsHelper;
-    protected $_api;
-    protected $_methods;
-    protected $_quote;
-    protected $_scopeConfig;
+    /**
+     * @var \Shippit\Shipping\Helper\Carrier\Shippit
+     */
+    protected $helper;
+
+    /**
+     * @var \Shippit\Shipping\Helper\Sync\Order\Items
+     */
+    protected $itemsHelper;
+
+    /**
+     * @var \Shippit\Shipping\Helper\Api
+     */
+    protected $api;
+
+    /**
+     * @var \Shippit\Shipping\Model\Config\Source\Shippit\Shipping\QuoteMethods
+     */
+    protected $methods;
+
+    /**
+     * @var \Shippit\Shipping\Api\Request\QuoteInterface
+     */
+    protected $quote;
+
+    /**
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     */
+    protected $scopeConfig;
+
+    /**
+     * @var \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory
+     */
+    protected $productCollectionFactory;
+
+    /**
+     * @var \Magento\Catalog\Model\Product\Attribute\Repository
+     */
+    protected $productAttributeRepository;
 
     /**
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
@@ -94,14 +127,14 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
         \Magento\Catalog\Model\Product\Attribute\Repository $productAttributeRepository,
         array $data = []
     ) {
-        $this->_helper = $helper;
-        $this->_itemsHelper = $itemsHelper;
-        $this->_api = $api;
-        $this->_methods = $methods;
-        $this->_quote = $quote;
-        $this->_productCollectionFactory = $productCollectionFactory;
-        $this->_productAttributeRepository = $productAttributeRepository;
-        $this->_scopeConfig = $scopeConfig;
+        $this->helper = $helper;
+        $this->itemsHelper = $itemsHelper;
+        $this->api = $api;
+        $this->methods = $methods;
+        $this->quote = $quote;
+        $this->productCollectionFactory = $productCollectionFactory;
+        $this->productAttributeRepository = $productAttributeRepository;
+        $this->scopeConfig = $scopeConfig;
 
         parent::__construct(
             $scopeConfig,
@@ -192,14 +225,14 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
     public function collectRates(RateRequest $request)
     {
         // check if the module is active
-        if (!$this->_helper->isActive()) {
+        if (!$this->helper->isActive()) {
             $this->_logger->debug(self::NOTICE_MODULE_DISABLED);
 
             return false;
         }
 
         // check if we have any methods allowed before proceeding
-        $allowedMethods = $this->_helper->getAllowedMethods();
+        $allowedMethods = $this->helper->getAllowedMethods();
         if (count($allowedMethods) == 0) {
             $this->_logger->debug(self::NOTICE_NOMETHODS_SELECTED);
 
@@ -209,10 +242,11 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
         // check the products are eligible for shippit shipping
         if (!$this->_canShipProducts($request)) {
             $this->_logger->debug(self::NOTICE_PRODUCTS_NOT_ELIGIBLE);
+
             return false;
         }
 
-        $quoteRequest = $this->_quote;
+        $quoteRequest = $this->quote;
 
         // Get the first available dates based on the customer's shippit profile settings
         $quoteRequest->setOrderDate('');
@@ -222,7 +256,7 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
         }
 
         if ($request->getShipperAddressStreet()) {
-            $quoteRequest->setDropoffStreet($request->getShipperAddressStreet());
+            $quoteRequest->setDropoffAddress($request->getShipperAddressStreet());
         }
 
         if ($request->getDestStreet()) {
@@ -236,7 +270,7 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
         $quoteRequest->setDropoffState($request->getDestRegionCode());
         $quoteRequest->setDropoffSuburb($request->getDestCity());
         $quoteRequest->setParcelAttributes($this->_getParcelAttributes($request));
-        $storeCountryCode = $this->_scopeConfig->getValue(
+        $storeCountryCode = $this->scopeConfig->getValue(
             'general/country/default',
             ScopeInterface::SCOPE_WEBSITES
         );
@@ -253,7 +287,7 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
 
         try {
             // Call the api and retrieve the quote
-            $shippingQuotes = $this->_api->getQuote($quoteRequest);
+            $shippingQuotes = $this->api->createQuote($quoteRequest);
         }
         catch (\Exception $e) {
             $this->_logger->error('Quote Request Error - ' . $e->getMessage());
@@ -276,7 +310,7 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
 
     protected function _processShippingQuotes(&$rateResult, $shippingQuotes)
     {
-        $allowedMethods = $this->_helper->getAllowedMethods();
+        $allowedMethods = $this->helper->getAllowedMethods();
 
         $isOnDemandAvailable = in_array('on_demand', $allowedMethods);
         $isPriorityAvailable = in_array('priority', $allowedMethods);
@@ -323,7 +357,7 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
         foreach ($shippingQuote->quotes as $shippingQuoteQuote) {
             $rateResultMethod = $this->_rateMethodFactory->create();
             $rateResultMethod->setCarrier($this->_code)
-                ->setCarrierTitle($this->_helper->getTitle())
+                ->setCarrierTitle($this->helper->getTitle())
                 ->setMethod('Standard')
                 ->setMethodTitle('Standard')
                 ->setCost($shippingQuoteQuote->price)
@@ -338,7 +372,7 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
         foreach ($shippingQuote->quotes as $shippingQuoteQuote) {
             $rateResultMethod = $this->_rateMethodFactory->create();
             $rateResultMethod->setCarrier($this->_code)
-                ->setCarrierTitle($this->_helper->getTitle())
+                ->setCarrierTitle($this->helper->getTitle())
                 ->setMethod('Express')
                 ->setMethodTitle('Express')
                 ->setCost($shippingQuoteQuote->price)
@@ -350,7 +384,7 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
 
     protected function _addPriorityQuote(&$rateResult, $shippingQuote)
     {
-        $maxTimeslots = $this->_helper->getMaxTimeslots();
+        $maxTimeslots = $this->helper->getMaxTimeslots();
         $timeslotCount = 0;
 
         foreach ($shippingQuote->quotes as $shippingQuoteQuote) {
@@ -364,12 +398,12 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
                 && property_exists($shippingQuoteQuote, 'delivery_window')
                 && property_exists($shippingQuoteQuote, 'delivery_window_desc')) {
                 $timeslotCount++;
-                $carrierTitle = $this->_helper->getTitle();
+                $carrierTitle = $this->helper->getTitle();
                 $method = 'Priority' . '_' . $shippingQuoteQuote->delivery_date . '_' . $shippingQuoteQuote->delivery_window;
-                $methodTitle = 'Priority' . ' - Delivered ' . $shippingQuoteQuote->delivery_date. ', Between ' . $shippingQuoteQuote->delivery_window_desc;
+                $methodTitle = 'Priority' . ' - Delivered ' . $shippingQuoteQuote->delivery_date . ', Between ' . $shippingQuoteQuote->delivery_window_desc;
             }
             else {
-                $carrierTitle = $this->_helper->getTitle();
+                $carrierTitle = $this->helper->getTitle();
                 $method = 'Priority';
                 $methodTitle = 'Priority';
             }
@@ -387,7 +421,7 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
 
     protected function _addOnDemandQuote(&$rateResult, $shippingQuote)
     {
-        $maxTimeslots = $this->_helper->getMaxTimeslots();
+        $maxTimeslots = $this->helper->getMaxTimeslots();
         $timeslotCount = 0;
 
         foreach ($shippingQuote->quotes as $shippingQuoteQuote) {
@@ -408,7 +442,7 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
 
             $rateResultMethod = $this->_rateMethodFactory->create();
 
-            $carrierTitle = $this->_helper->getTitle();
+            $carrierTitle = $this->helper->getTitle();
             $method = 'ondemand';
             $methodTitle = sprintf(
                 'On Demand - Delivered within %s',
@@ -433,12 +467,12 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
      */
     protected function _getQuotePrice($quotePrice)
     {
-        switch ($this->_helper->getMargin()) {
+        switch ($this->helper->getMargin()) {
             case 'fixed':
-                $quotePrice += (float) $this->_helper->getMarginAmount();
+                $quotePrice += (float) $this->helper->getMarginAmount();
                 break;
             case 'percentage':
-                $quotePrice *= (1 + ( (float) $this->_helper->getMarginAmount() / 100));
+                $quotePrice *= (1 + ( (float) $this->helper->getMarginAmount() / 100));
                 break;
         }
 
@@ -457,7 +491,7 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
      * Get tracking
      *
      * @param string|string[] $trackings
-     * @return Result
+     * @return \Magento\Shipping\Model\Tracking\Result
      */
     public function getTracking($trackings)
     {
@@ -486,13 +520,13 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
      * based on the available methods in Shippit's systems
      * and the user's configured options
      *
-     * @return array key => value array of allowed methods
+     * @return array
      */
     public function getAllowedMethods()
     {
-        $configAllowedMethods = $this->_helper->getAllowedMethods();
+        $configAllowedMethods = $this->helper->getAllowedMethods();
 
-        $availableMethods = $this->_methods->toArray();
+        $availableMethods = $this->methods->toArray();
 
         $allowedMethods = [];
 
@@ -519,16 +553,16 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
     {
         if ($countryId == 'AU') {
             return true;
-        } else {
-            return parent::isZipCodeRequired($countryId);
         }
+
+        return parent::isZipCodeRequired($countryId);
     }
 
     /**
      * Checks the request and ensures all products are either enabled, or part of the attributes elidgable
      *
-     * @param  [type] $request The shipment request
-     * @return boolean         True or false
+     * @param \Magento\Framework\DataObject $request
+     * @return bool
      */
     protected function _canShipProducts($request)
     {
@@ -560,11 +594,11 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
 
     protected function _canShipEnabledProducts($productIds)
     {
-        if (!$this->_helper->isEnabledProductActive()) {
+        if (!$this->helper->isEnabledProductActive()) {
             return true;
         }
 
-        $enabledProductIds = $this->_helper->getEnabledProductIds();
+        $enabledProductIds = $this->helper->getEnabledProductIds();
 
         // if we have enabled products, check that all
         // items in the shipping request are enabled
@@ -579,18 +613,18 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
 
     protected function _canShipEnabledProductAttributes($productIds)
     {
-        if (!$this->_helper->isEnabledProductAttributeActive()) {
+        if (!$this->helper->isEnabledProductAttributeActive()) {
             return true;
         }
 
-        $attributeCode = $this->_helper->getEnabledProductAttributeCode();
-        $attributeValue = $this->_helper->getEnabledProductAttributeValue();
+        $attributeCode = $this->helper->getEnabledProductAttributeCode();
+        $attributeValue = $this->helper->getEnabledProductAttributeValue();
 
         if (!empty($attributeCode) && !empty($attributeValue)) {
-            $attributeProductCount = $this->_productCollectionFactory->create();
+            $attributeProductCount = $this->productCollectionFactory->create();
             $attributeProductCount->addAttributeToFilter('entity_id', ['in' => $productIds]);
 
-            $attributeInputType = $this->_productAttributeRepository
+            $attributeInputType = $this->productAttributeRepository
                 ->get($attributeCode)
                 ->getFrontendInput();
 
@@ -617,7 +651,7 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
 
     protected function _filterByAttributeOptionId($collection, $attributeCode, $attributeValue)
     {
-        $attributeOptions = $this->_productAttributeRepository
+        $attributeOptions = $this->productAttributeRepository
             ->get($attributeCode)
             ->getSource();
 
@@ -713,8 +747,8 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
      * - This is useful due to Magento handling the orddered qty differently,
      *   based on the item type and it's shipping configuration
      *
-     * @param \Magento\Sales\Api\Data\OrderItemInterface $item
-     * @return int
+     * @param \Magento\Quote\Api\Data\CartItemInterface $item
+     * @return float|int
      */
     protected function getItemQty($item)
     {
@@ -809,29 +843,29 @@ class Shippit extends AbstractCarrierOnline implements CarrierInterface
 
     protected function getItemLength($item)
     {
-        if (!$this->_itemsHelper->isProductDimensionActive()) {
+        if (!$this->itemsHelper->isProductDimensionActive()) {
             return;
         }
 
-        return $this->_helper->getLength($item);
+        return $this->helper->getLength($item);
     }
 
     protected function getItemWidth($item)
     {
-        if (!$this->_itemsHelper->isProductDimensionActive()) {
+        if (!$this->itemsHelper->isProductDimensionActive()) {
             return;
         }
 
-        return $this->_helper->getWidth($item);
+        return $this->helper->getWidth($item);
     }
 
     protected function getItemDepth($item)
     {
-        if (!$this->_itemsHelper->isProductDimensionActive()) {
+        if (!$this->itemsHelper->isProductDimensionActive()) {
             return;
         }
 
-        return $this->_helper->getDepth($item);
+        return $this->helper->getDepth($item);
     }
 
     protected function _getRootItem($item)

@@ -16,7 +16,6 @@
 
 namespace Shippit\Shipping\Helper;
 
-use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\ScopeInterface;
 
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
@@ -26,18 +25,23 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     const CARRIER_CODE_CC_LEGACY = 'shippit_cc';
     const XML_PATH_SETTINGS = 'shippit/general/';
 
-    protected $_scopeConfig;
-    protected $_moduleList;
+    protected $scopeConfig;
+    protected $moduleList;
+    protected $productMetadata;
 
     /**
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param \Magento\Framework\Module\ModuleList $moduleList
+     * @param \Magento\Framework\App\ProductMetadataInterface $productMetadata
      */
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Framework\Module\ModuleList $moduleList
+        \Magento\Framework\Module\ModuleList $moduleList,
+        \Magento\Framework\App\ProductMetadataInterface $productMetadata
     ) {
-        $this->_scopeConfig = $scopeConfig;
-        $this->_moduleList = $moduleList;
+        $this->scopeConfig = $scopeConfig;
+        $this->moduleList = $moduleList;
+        $this->productMetadata = $productMetadata;
     }
 
     /**
@@ -50,7 +54,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
         $path = self::XML_PATH_SETTINGS . $key;
 
-        return $this->_scopeConfig->getValue($path, $scope);
+        return $this->scopeConfig->getValue($path, $scope);
     }
 
     /**
@@ -76,9 +80,14 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         return self::getValue('debug_active');
     }
 
+    public function getMagentoVersion()
+    {
+        return $this->productMetadata->getVersion();
+    }
+
     public function getModuleVersion()
     {
-        $version = $this->_moduleList
+        $version = $this->moduleList
             ->getOne('Shippit_Shipping')['setup_version'];
 
         return $version;
@@ -98,33 +107,57 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
         $postcode = (int) $postcode;
 
-        if ($postcode >= 1000 && $postcode <= 2599
+        if (
+            $postcode >= 1000 && $postcode <= 2599
             || $postcode >= 2619 && $postcode <= 2899
-            || $postcode >= 2921 && $postcode <= 2999) {
+            || $postcode >= 2921 && $postcode <= 2999
+        ) {
             return 'NSW';
-        } else if ($postcode >= 200 && $postcode <= 299
+        }
+        elseif (
+            $postcode >= 200 && $postcode <= 299
             || $postcode >= 2600 && $postcode <= 2618
-            || $postcode >= 2900 && $postcode <= 2920) {
+            || $postcode >= 2900 && $postcode <= 2920
+        ) {
             return 'ACT';
-        } else if ($postcode >= 3000 && $postcode <= 3999
-            || $postcode >= 8000 && $postcode <= 8999) {
+        }
+        elseif (
+            $postcode >= 3000 && $postcode <= 3999
+            || $postcode >= 8000 && $postcode <= 8999
+        ) {
             return 'VIC';
-        } else if ($postcode >= 4000 && $postcode <= 4999
-            || $postcode >= 9000 && $postcode <= 9999) {
+        }
+        elseif (
+            $postcode >= 4000 && $postcode <= 4999
+            || $postcode >= 9000 && $postcode <= 9999
+        ) {
             return 'QLD';
-        } else if ($postcode >= 5000 && $postcode <= 5799
-            || $postcode >= 5800 && $postcode <= 5999) {
+        }
+        elseif (
+            $postcode >= 5000 && $postcode <= 5799
+            || $postcode >= 5800 && $postcode <= 5999
+        ) {
             return 'SA';
-        } else if ($postcode >= 6000 && $postcode <= 6797
-            || $postcode >= 6800 && $postcode <= 6999) {
+        }
+        elseif (
+            $postcode >= 6000 && $postcode <= 6797
+            || $postcode >= 6800 && $postcode <= 6999
+        ) {
             return 'WA';
-        } else if ($postcode >= 7000 && $postcode <= 7799
-            || $postcode >= 7800 && $postcode <= 7999) {
+        }
+        elseif (
+            $postcode >= 7000 && $postcode <= 7799
+            || $postcode >= 7800 && $postcode <= 7999
+        ) {
             return 'TAS';
-        } else if ($postcode >= 800 && $postcode <= 899
-            || $postcode >= 900 && $postcode <= 999) {
+        }
+        elseif (
+            $postcode >= 800 && $postcode <= 899
+            || $postcode >= 900 && $postcode <= 999
+        ) {
             return 'NT';
-        } else {
+        }
+        else {
             return false;
         }
     }

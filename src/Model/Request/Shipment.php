@@ -27,19 +27,22 @@ class Shipment extends \Magento\Framework\Model\AbstractModel implements Shipmen
     /**
      * @var \Magento\Sales\Api\Data\OrderInterface
      */
-    protected $_orderInterface;
+    protected $orderInterface;
 
     /**
      * @var \Magento\Sales\Api\Data\OrderItemInterface
      */
-    protected $_orderItemInterface;
+    protected $orderItemInterface;
 
     /**
      * @var \Shippit\Shipping\Helper\Sync\Order\Items
      */
-    protected $_helper;
+    protected $helper;
 
-    protected $_items = null;
+    /**
+     * @var array
+     */
+    protected $items = null;
 
     /**
      * @param \Magento\Framework\Model\Context $context
@@ -61,21 +64,21 @@ class Shipment extends \Magento\Framework\Model\AbstractModel implements Shipmen
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
     ) {
-        $this->_helper = $helper;
-        $this->_orderInterface = $orderInterface;
-        $this->_orderItemInterface = $orderItemInterface;
+        $this->helper = $helper;
+        $this->orderInterface = $orderInterface;
+        $this->orderItemInterface = $orderItemInterface;
 
         parent::__construct($context, $registry, $resource, $resourceCollection, $data);
     }
 
     public function getOrderId()
     {
-        return $this->getOrder()->getId();
+        return $this->getOrder()->getEntityId();
     }
 
     public function setOrderByIncrementId($incrementId)
     {
-        $order = $this->_orderInterface
+        $order = $this->orderInterface
             ->load($incrementId, 'increment_id');
 
         return $this->setOrder($order);
@@ -108,21 +111,22 @@ class Shipment extends \Magento\Framework\Model\AbstractModel implements Shipmen
      * - ensures only items contained in the order are present
      * - ensures only qtys available for shipping are used in the shipment
      *
-     * @param object $items   The items to be included in the request
+     * @param array $items
+     * @return self
      */
     public function processItems($items = [])
     {
         // store items on the internal model property
-        $this->_items = $items;
+        $this->items = $items;
 
-        $itemsCollection = $this->_orderItemInterface
+        $itemsCollection = $this->orderItemInterface
             ->getCollection()
             ->addFieldToFilter('order_id', $this->getOrderId());
 
         // for the specific items that have been passed, ensure they are valid
         // items for the item
         if (!empty($items)) {
-            $itemsSkus = $this->_helper->getSkus($items);
+            $itemsSkus = $this->helper->getSkus($items);
 
             if (!empty($itemsSkus)) {
                 $itemsCollection->addFieldToFilter('sku', ['in' => $itemsSkus]);
@@ -131,7 +135,7 @@ class Shipment extends \Magento\Framework\Model\AbstractModel implements Shipmen
 
         // For all valid items, process the quantity to be marked as shipped
         foreach ($itemsCollection as $item) {
-            $requestedQty = $this->_helper->getItemData($items, 'sku', $item->getSku(), 'qty');
+            $requestedQty = $this->helper->getItemData($items, 'sku', $item->getSku(), 'qty');
 
             /**
              * Magento marks a shipment only for the parent item in the order
@@ -139,7 +143,7 @@ class Shipment extends \Magento\Framework\Model\AbstractModel implements Shipmen
              */
             $rootItem = $this->_getRootItem($item);
 
-            $itemQty = $this->_helper->getQtyToShip($rootItem, $requestedQty);
+            $itemQty = $this->helper->getQtyToShip($rootItem, $requestedQty);
 
             if ($itemQty > 0) {
                 $this->addItem($item->getId(), $itemQty);
@@ -159,6 +163,11 @@ class Shipment extends \Magento\Framework\Model\AbstractModel implements Shipmen
         }
     }
 
+    /**
+     * Get the Items in the request
+     *
+     * @return array|null
+     */
     public function getItems()
     {
         // if no items have been added, assume all items are to be marked as shipped
@@ -171,14 +180,23 @@ class Shipment extends \Magento\Framework\Model\AbstractModel implements Shipmen
         }
     }
 
+    /**
+     * Set the items in the request
+     *
+     * @param array $items The items to be included in the request
+     * @return self
+     */
     public function setItems($items)
     {
         return $this->setData(self::ITEMS, $items);
     }
 
     /**
-     * Add a parcel with attributes
+     * Add the item in the request
      *
+     * @param string $itemId The Item Id to be Shipped
+     * @param float $qty     The Item Qty to be Shipped
+     * @return self
      */
     public function addItem($itemId, $qty)
     {

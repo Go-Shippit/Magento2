@@ -48,7 +48,7 @@ class Schedule extends \Magento\Backend\App\Action
                     'shippit_add_order',
                     [
                         'order' => $id,
-                        'notification' => true
+                        'notification' => true,
                     ]
                 );
             } catch (\Exception $e) {

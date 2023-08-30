@@ -13,30 +13,33 @@
  * @license    http://www.shippit.com/terms
  */
 
-define([
-    'jquery',
-    'mage/utils/wrapper'
-], function (
-    jQuery,
-    wrapper
-) {
-    'use strict';
+define(
+    [
+        'jquery',
+        'mage/utils/wrapper'
+    ],
+    function (
+        jQuery,
+        wrapper
+    ) {
+        'use strict';
 
-    return function (processor) {
-        return wrapper.wrap(processor, function (proceed, payload) {
-            payload = proceed(payload);
+        return function (processor) {
+            return wrapper.wrap(processor, function (proceed, payload) {
+                payload = proceed(payload);
 
-            var shippitExtentionAttributes = {
-                shippit_authority_to_leave: (jQuery('#shippit-options [name="shippit_authority_to_leave"]').is(':checked') ? 1 : 0),
-                shippit_delivery_instructions: jQuery('#shippit-options [name="shippit_delivery_instructions"]').val()
-            };
+                var shippitExtentionAttributes = {
+                    shippit_authority_to_leave: (jQuery('#shippit-options [name="shippit_authority_to_leave"]').is(':checked') ? 1 : 0),
+                    shippit_delivery_instructions: jQuery('#shippit-options [name="shippit_delivery_instructions"]').val()
+                };
 
-            payload.addressInformation.extension_attributes = _.extend(
-                payload.addressInformation.extension_attributes,
-                shippitExtentionAttributes
-            );
+                payload.addressInformation.extension_attributes = _.extend(
+                    payload.addressInformation.extension_attributes,
+                    shippitExtentionAttributes
+                );
 
-            return payload;
-        });
-    };
-});
+                return payload;
+            });
+        };
+    }
+);

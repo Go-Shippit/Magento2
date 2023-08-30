@@ -16,9 +16,7 @@
 
 namespace Shippit\Shipping\Model\Config\Source\Shippit\Shipping;
 
-use Shippit\Shipping\Helper\Data;
-
-class Methods implements \Magento\Framework\Option\ArrayInterface
+class Methods implements \Magento\Framework\Data\OptionSourceInterface
 {
     const SERVICE_LEVEL_STANDARD = 'standard';
     const SERVICE_LEVEL_EXPRESS = 'express';

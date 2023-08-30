@@ -16,9 +16,12 @@
 
 namespace Shippit\Shipping\Model\Config\Source\Catalog;
 
-class Products implements \Magento\Framework\Option\ArrayInterface
+class Products implements \Magento\Framework\Data\OptionSourceInterface
 {
-    protected $_product;
+    /**
+     * @var \Magento\Catalog\Api\Data\ProductInterface
+     */
+    protected $product;
 
     /**
      * Inject Dependancies
@@ -26,7 +29,7 @@ class Products implements \Magento\Framework\Option\ArrayInterface
     public function __construct(
         \Magento\Catalog\Api\Data\ProductInterface $product
     ) {
-        $this->_product = $product;
+        $this->product = $product;
     }
 
     /**
@@ -36,7 +39,7 @@ class Products implements \Magento\Framework\Option\ArrayInterface
      */
     public function toOptionArray()
     {
-        $products = $this->_product
+        $products = $this->product
             ->getCollection()
             ->addAttributeToSelect('name')
             ->setOrder('name', 'ASC');
@@ -46,7 +49,7 @@ class Products implements \Magento\Framework\Option\ArrayInterface
         foreach ($products as $product) {
             $productArray[] = [
                 'label' => $product->getName(),
-                'value' => $product->getId()
+                'value' => $product->getId(),
             ];
         }
 

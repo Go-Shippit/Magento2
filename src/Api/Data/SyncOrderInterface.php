@@ -46,7 +46,7 @@ interface SyncOrderInterface
      * Set the Sync Order Id
      *
      * @param integer $syncOrderId
-     * @return string|null
+     * @return self
      */
     public function setId($syncOrderId);
 
@@ -61,7 +61,7 @@ interface SyncOrderInterface
      * Set the Sync Order Id
      *
      * @param integer $syncOrderId
-     * @return string|null
+     * @return self
      */
     public function setSyncOrderId($syncOrderId);
 
@@ -76,22 +76,22 @@ interface SyncOrderInterface
      * Set the API Key
      *
      * @param string $apiKey
-     * @return string|null
+     * @return self
      */
     public function setApiKey($apiKey);
 
     /**
      * Get the Order Id
      *
-     * @return string|null
+     * @return int|null
      */
     public function getOrderId();
 
     /**
      * Set the Order Id
      *
-     * @param string $orderId
-     * @return string|null
+     * @param int|null $orderId
+     * @return self
      */
     public function setOrderId($orderId);
 
@@ -106,37 +106,37 @@ interface SyncOrderInterface
      * Set the Shipping Method
      *
      * @param string $shippingMethod
-     * @return string|null
+     * @return self
      */
     public function setShippingMethod($shippingMethod);
 
     /**
      * Get the attempt count
      *
-     * @return string|null
+     * @return int|null
      */
     public function getAttemptCount();
 
     /**
      * Set the attempt count
      *
-     * @param string $attemptCount
-     * @return string|null
+     * @param int $attemptCount
+     * @return self
      */
     public function setAttemptCount($attemptCount);
 
     /**
      * Get the status
      *
-     * @return string|null
+     * @return int|null
      */
     public function getStatus();
 
     /**
      * Set the status
      *
-     * @param string $status
-     * @return string|null
+     * @param int $status
+     * @return self
      */
     public function setStatus($status);
 
@@ -151,7 +151,7 @@ interface SyncOrderInterface
      * Set the tracking number
      *
      * @param string $trackingNumber
-     * @return string|null
+     * @return self
      */
     public function setTrackingNumber($trackingNumber);
 

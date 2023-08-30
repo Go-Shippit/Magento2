@@ -39,6 +39,7 @@ class DeliveryInstructionsPlugin
             return $jsLayout;
         }
 
+        // @phpcs:disable Squiz.Arrays.ArrayBracketSpacing.SpaceBeforeBracket
         $jsLayout['components']
             ['checkout']
             ['children']
@@ -68,7 +69,7 @@ class DeliveryInstructionsPlugin
                 'visible' => true,
                 'validation' => [],
                 'sortOrder' => 201,
-                'id' => 'delivery-instructions'
+                'id' => 'delivery-instructions',
             ];
 
         return $jsLayout;

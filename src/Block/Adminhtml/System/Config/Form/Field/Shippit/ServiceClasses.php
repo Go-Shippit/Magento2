@@ -37,8 +37,7 @@ class ServiceClasses extends \Magento\Framework\View\Element\Html\Select
         \Magento\Framework\View\Element\Context $context,
         \Shippit\Shipping\Model\Config\Source\Shippit\Shipping\Methods $methods,
         array $data = []
-    )
-    {
+    ) {
         parent::__construct($context, $data);
 
         $this->methods = $methods;

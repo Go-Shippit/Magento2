@@ -22,61 +22,63 @@ use Shippit\Shipping\Model\Sync\Shipment as SyncShipment;
 
 class Shipment extends \Magento\Framework\Model\AbstractModel
 {
+    const ERROR_SHIPMENT_FAILED = 'The shipment could not be created.';
+
     /**
-     * @var \Shippit\Shipping\Helper\Sync\Shipment
+     * @var \Shippit\Shipping\Helper\Sync\Shipping
      */
-    protected $_helper;
+    protected $helper;
 
     /**
      * @var \Shippit\Shipping\Api\Request\ShipmentInterfaceFactory
      */
-    protected $_requestShipmentInterfaceFactory;
+    protected $requestShipmentInterfaceFactory;
 
     /**
      * @var \Shippit\Shipping\Api\Data\SyncShipmentInterfaceFactory
      */
-    protected $_syncShipmentInterfaceFactory;
+    protected $syncShipmentInterfaceFactory;
 
     /**
      * @var \Shippit\Shipping\Logger\Logger
      */
-    protected $_logger;
+    protected $logger;
 
     /**
      * @var \Magento\Sales\Model\Order\ShipmentFactory
      */
-    protected $_shipmentFactory;
+    protected $shipmentFactory;
 
     /**
      * @var \Magento\Framework\Message\ManagerInterface
      */
-    protected $_messageManager;
+    protected $messageManager;
 
     /**
      * @var \Magento\Framework\Stdlib\DateTime\DateTime
      */
-    protected $_date;
+    protected $date;
 
     /**
      * Store Manager Interface
      *
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    protected $_storeManagerInterface;
+    protected $storeManagerInterface;
 
     /**
      * App emulation model
      *
      * @var \Magento\Store\Model\App\Emulation
      */
-    protected $_appEmulation;
+    protected $appEmulation;
 
     /**
      * TransactionFactory
      *
      * @var \Magento\Framework\DB\TransactionFactory
      */
-    protected $_transactionFactory;
+    protected $transactionFactory;
 
     public function __construct(
         \Shippit\Shipping\Helper\Sync\Shipping $helper,
@@ -95,16 +97,16 @@ class Shipment extends \Magento\Framework\Model\AbstractModel
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
     ) {
-        $this->_helper = $helper;
-        $this->_requestShipmentInterfaceFactory = $requestShipmentInterfaceFactory;
-        $this->_syncShipmentInterfaceFactory = $syncShipmentInterfaceFactory;
-        $this->_logger = $logger;
-        $this->_shipmentFactory = $shipmentFactory;
-        $this->_messageManager = $messageManager;
-        $this->_date = $date;
-        $this->_storeManagerInterface = $storeManagerInterface;
-        $this->_appEmulation = $appEmulation;
-        $this->_transactionFactory = $transactionFactory;
+        $this->helper = $helper;
+        $this->requestShipmentInterfaceFactory = $requestShipmentInterfaceFactory;
+        $this->syncShipmentInterfaceFactory = $syncShipmentInterfaceFactory;
+        $this->logger = $logger;
+        $this->shipmentFactory = $shipmentFactory;
+        $this->messageManager = $messageManager;
+        $this->date = $date;
+        $this->storeManagerInterface = $storeManagerInterface;
+        $this->appEmulation = $appEmulation;
+        $this->transactionFactory = $transactionFactory;
 
         parent::__construct($context, $registry, $resource, $resourceCollection, $data);
     }
@@ -112,18 +114,18 @@ class Shipment extends \Magento\Framework\Model\AbstractModel
     public function run()
     {
         // get all stores, as we will emulate each storefront for integration run
-        $stores = $this->_storeManagerInterface->getStores();
+        $stores = $this->storeManagerInterface->getStores();
 
         foreach ($stores as $store) {
-            $storeId = $store->getStoreId();
+            $storeId = $store->getId();
 
             // Start Store Emulation
-            $this->_appEmulation->startEnvironmentEmulation(
+            $this->appEmulation->startEnvironmentEmulation(
                 $storeId,
                 AppArea::AREA_ADMINHTML
             );
 
-            if (!$this->_helper->isActive()) {
+            if (!$this->helper->isActive()) {
                 return $this;
             }
 
@@ -135,17 +137,16 @@ class Shipment extends \Magento\Framework\Model\AbstractModel
             }
 
             // // Stop Store Emulation
-            $this->_appEmulation->stopEnvironmentEmulation();
+            $this->appEmulation->stopEnvironmentEmulation();
         }
     }
 
     /**
      * Get a list of sync orders pending sync
-     * @return [type] [description]
      */
     public function getSyncShipments($storeId)
     {
-        return $this->_syncShipmentInterfaceFactory->create()
+        return $this->syncShipmentInterfaceFactory->create()
             ->getCollection()
             ->addFieldToFilter(
                 'status',
@@ -163,9 +164,9 @@ class Shipment extends \Magento\Framework\Model\AbstractModel
 
     /**
      * Process each shipment queue record to create shipment record
-     * @param  shipment  $syncShipment
-     * @param  boolean $displayNotifications
-     * @return Shipment
+     * @param \Shippit\Shipping\Model\Request\Shipment $syncShipment
+     * @param boolean $displayNotifications
+     * @return bool
      */
     public function sync($syncShipment, $displayNotifications = false)
     {
@@ -174,7 +175,7 @@ class Shipment extends \Magento\Framework\Model\AbstractModel
             $syncShipment->setAttemptCount($syncShipment->getAttemptCount() + 1);
             $products = $syncShipment->getItemsCollection()->toArray()['items'];
 
-            $shipmentRequest = $this->_requestShipmentInterfaceFactory->create()
+            $shipmentRequest = $this->requestShipmentInterfaceFactory->create()
                 ->setOrderByIncrementId($syncShipment->getOrderIncrement())
                 ->processItems($products);
 
@@ -188,12 +189,11 @@ class Shipment extends \Magento\Framework\Model\AbstractModel
             // Update the shipment to be marked as synced
             $syncShipment->setStatus(SyncShipment::STATUS_SYNCED)
                 ->setShipmentIncrement($shipment->getIncrementId())
-                ->setSyncedAt($this->_date->gmtDate())
+                ->setSyncedAt($this->date->gmtDate())
                 ->save();
-
         }
         catch (Exception $e) {
-            $this->_logger->error('Shipment Sync Request Failed - ' . $e->getMessage());
+            $this->logger->error('Shipment Sync Request Failed - ' . $e->getMessage());
 
             // Fail the sync item if it's breached the max attempts
             if ($syncShipment->getAttemptCount() > SyncShipment::SYNC_MAX_ATTEMPTS) {
@@ -204,8 +204,9 @@ class Shipment extends \Magento\Framework\Model\AbstractModel
             $syncShipment->save();
 
             if ($displayNotifications) {
-                $this->_messageManager->addError(__('Shipment for Order ' . $syncShipment->getOrderIncrement() . ' was not created - ' . $e->getMessage()));
+                $this->messageManager->addError(__('Shipment for Order ' . $syncShipment->getOrderIncrement() . ' was not created - ' . $e->getMessage()));
             }
+
             return false;
         }
 
@@ -214,15 +215,15 @@ class Shipment extends \Magento\Framework\Model\AbstractModel
 
     /**
      * Create shipment record
-     * @param  Order $order
+     * @param  \Magento\Sales\Api\Data\OrderInterface $order
      * @param  array $items
      * @param  string $courierName
      * @param  string $trackingNumber
-     * @return Shipment
+     * @return \Magento\Sales\Api\Data\ShipmentInterface
      */
     protected function _createShipment($order, $items, $courierName, $trackingNumber)
     {
-        $shipment = $this->_shipmentFactory
+        $shipment = $this->shipmentFactory
             ->create(
                 $order,
                 $items,
@@ -248,7 +249,7 @@ class Shipment extends \Magento\Framework\Model\AbstractModel
             ->register();
 
         $shipment->getOrder()->setIsInProcess(true);
-        $transaction = $this->_transactionFactory->create();
+        $transaction = $this->transactionFactory->create();
 
         $transaction->addObject($shipment)
             ->addObject($shipment->getOrder())
